@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 
 import '../../../../../core/constants/app_colors.dart';
@@ -37,21 +38,13 @@ abstract final class HomeCategories {
       icon: Iconsax.ticket,
       color: Colors.purple,
     ),
-    HomeCategoryItem(
-      label: 'Wisata',
-      icon: Iconsax.map,
-      color: Colors.teal,
-    ),
+    HomeCategoryItem(label: 'Wisata', icon: Iconsax.map, color: Colors.teal),
     HomeCategoryItem(
       label: 'Kuliner',
       icon: Iconsax.coffee,
       color: Colors.orange,
     ),
-    HomeCategoryItem(
-      label: 'UMKM',
-      icon: Iconsax.shop,
-      color: Colors.indigo,
-    ),
+    HomeCategoryItem(label: 'UMKM', icon: Iconsax.shop, color: Colors.indigo),
     HomeCategoryItem(
       label: 'Transport',
       icon: Iconsax.car,
@@ -73,10 +66,9 @@ class HomeCategoryGrid extends StatelessWidget {
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
+          crossAxisCount: 4,
           mainAxisSpacing: 10,
           crossAxisSpacing: 10,
-          childAspectRatio: 2.8,
         ),
         itemCount: HomeCategories.items.length,
         itemBuilder: (context, index) {
@@ -101,17 +93,18 @@ class _CategoryTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Material(
       color: Colors.white,
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(14),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(14),
         child: Container(
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(14),
             border: Border.all(color: AppColors.divider),
           ),
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-          child: Row(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
             children: [
               Container(
                 padding: const EdgeInsets.all(8),
@@ -121,16 +114,19 @@ class _CategoryTile extends StatelessWidget {
                 ),
                 child: Icon(category.icon, color: category.color, size: 20),
               ),
+              // Text(category.label),
               const SizedBox(width: 10),
               Expanded(
                 child: Text(
                   category.label,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 13,
-                    color: AppColors.textPrimary,
+                  style: GoogleFonts.poppins(
+                    textStyle: const TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 13,
+                      color: AppColors.textPrimary,
+                    ),
                   ),
                 ),
               ),

@@ -15,7 +15,7 @@ class BottomNavBar extends StatelessWidget {
   final ValueChanged<int> onTap;
 
   static const _items = [
-    _NavItem(label: 'Home', icon: Iconsax.home),
+    _NavItem(label: 'Home', icon: Iconsax.home_1),
     _NavItem(label: 'News', icon: Iconsax.document_text),
     _NavItem(label: 'Map', icon: Iconsax.map),
     _NavItem(label: 'Activity', icon: Iconsax.activity),
