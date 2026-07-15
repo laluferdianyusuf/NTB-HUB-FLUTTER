@@ -1,6 +1,7 @@
 import 'package:extended_nested_scroll_view/extended_nested_scroll_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 
 import '../../../../../core/constants/app_colors.dart';
@@ -111,13 +112,25 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                           ],
                         ),
                       ),
-                      IconButton(
-                        onPressed: () {},
-                        icon: Badge.count(
-                          count: item,
-                          child: const Icon(Iconsax.notification),
-                        ),
-                        // color: AppColors.textPrimary,
+                      Row(
+                        children: [
+                          IconButton(
+                            onPressed: () => context.push("/task"),
+                            icon: Badge.count(
+                              count: item,
+                              child: const Icon(Iconsax.task),
+                            ),
+                            // color: AppColors.textPrimary,
+                          ),
+                          IconButton(
+                            onPressed: () => context.push("/notification-user"),
+                            icon: Badge.count(
+                              count: item,
+                              child: const Icon(Iconsax.notification),
+                            ),
+                            // color: AppColors.textPrimary,
+                          ),
+                        ],
                       ),
                     ],
                   ),
