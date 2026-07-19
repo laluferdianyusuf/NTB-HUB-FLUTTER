@@ -134,7 +134,6 @@ class _ProfileContent extends ConsumerWidget {
     );
   }
 }
-
 class _ProfileMenuItem extends StatelessWidget {
   const _ProfileMenuItem({
     required this.icon,
@@ -160,3 +159,4 @@ class _ProfileMenuItem extends StatelessWidget {
     );
   }
 }
+
