@@ -1,73 +1,41 @@
 import 'package:flutter/material.dart';
-import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:iconsax_flutter/iconsax_flutter.dart';
 
 import '../../../../../core/constants/app_colors.dart';
-import '../../../../../core/helpers/date_formatter.dart';
+import '../../../../../core/extensions/context_extensions.dart';
+import '../../../../../core/utils/result.dart' as result;
 import '../../../../../models/news_model.dart';
-import '../../../../../repository/news_repository.dart';
+import '../../../../../widgets/common/app_skeleton.dart';
+import '../providers/news_provider.dart';
+import '../widgets/news_cards.dart';
 
-class NewsScreen extends StatefulWidget {
+class NewsScreen extends ConsumerWidget {
   const NewsScreen({super.key});
 
   @override
-  State<NewsScreen> createState() => _NewsScreenState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final newsAsync = ref.watch(newsListProvider);
 
-class _NewsScreenState extends State<NewsScreen> {
-  static const _pageSize = NewsRepository.pageSize;
-  final _repository = NewsRepository();
-
-  late final PagingController<int, NewsModel> _pagingController =
-      PagingController<int, NewsModel>(
-    getNextPageKey: (state) {
-      if (state.items == null) return 1;
-      if (state.items!.isEmpty) return null;
-      if (state.items!.length % _pageSize != 0) return null;
-      return state.keys!.last + 1;
-    },
-    fetchPage: (pageKey) async {
-      final result = await _repository.getNewsPage(pageKey);
-      if (!result.hasNextPage && result.items.isEmpty && pageKey > 1) {
-        return [];
-      }
-      return result.items;
-    },
-  );
-
-  @override
-  void dispose() {
-    _pagingController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      body: RefreshIndicator(
-        onRefresh: () async => _pagingController.refresh(),
-        child: PagingListener<int, NewsModel>(
-          controller: _pagingController,
-          builder: (context, state, fetchNextPage) {
-            return PagedListView<int, NewsModel>(
-              state: state,
-              fetchNextPage: fetchNextPage,
-              padding: const EdgeInsets.all(16),
-              builderDelegate: PagedChildBuilderDelegate<NewsModel>(
-                itemBuilder: (context, news, index) => _NewsCard(news: news),
-                firstPageErrorIndicatorBuilder: (context) => _ErrorView(
-                  message: 'Gagal memuat berita',
-                  onRetry: () => _pagingController.refresh(),
-                ),
-                newPageErrorIndicatorBuilder: (context) => _ErrorView(
-                  message: 'Gagal memuat halaman berikutnya',
-                  onRetry: fetchNextPage,
-                ),
-                noItemsFoundIndicatorBuilder: (context) => const Center(
-                  child: Text('Belum ada berita'),
-                ),
-              ),
-            );
+      body: SafeArea(
+        child: newsAsync.when(
+          loading: () => const _NewsLoadingView(),
+          error: (error, _) => _NewsErrorView(
+            message: error.toString(),
+            onRetry: () => ref.invalidate(newsListProvider),
+          ),
+          data: (resultValue) => switch (resultValue) {
+            result.Success(:final data) => _NewsContent(
+              newsList: data,
+              onRefresh: () async => ref.invalidate(newsListProvider),
+            ),
+            result.Error(:final failure) => _NewsErrorView(
+              message: failure.message,
+              onRetry: () => ref.invalidate(newsListProvider),
+            ),
           },
         ),
       ),
@@ -75,69 +43,145 @@ class _NewsScreenState extends State<NewsScreen> {
   }
 }
 
-class _NewsCard extends StatelessWidget {
-  const _NewsCard({required this.news});
+class _NewsContent extends StatelessWidget {
+  const _NewsContent({
+    required this.newsList,
+    required this.onRefresh,
+  });
 
-  final NewsModel news;
+  final List<NewsModel> newsList;
+  final Future<void> Function() onRefresh;
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 12),
-      elevation: 0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: const BorderSide(color: AppColors.divider),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              decoration: BoxDecoration(
-                color: AppColors.primary.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(6),
+    if (newsList.isEmpty) {
+      return RefreshIndicator(
+        onRefresh: onRefresh,
+        child: ListView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          children: const [
+            SizedBox(height: 120),
+            Icon(Iconsax.document, size: 48, color: AppColors.textSecondary),
+            SizedBox(height: 12),
+            Center(child: Text('Belum ada berita')),
+          ],
+        ),
+      );
+    }
+
+    final featured = newsList.first;
+    final others = newsList.length > 1 ? newsList.sublist(1) : <NewsModel>[];
+
+    return RefreshIndicator(
+      onRefresh: onRefresh,
+      child: CustomScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        slivers: [
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      'Berita',
+                      style: GoogleFonts.inter(
+                        fontSize: 24,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.textPrimary,
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: onRefresh,
+                    icon: const Icon(Iconsax.refresh),
+                  ),
+                ],
               ),
+            ),
+          ),
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
               child: Text(
-                news.category,
-                style: const TextStyle(
-                  color: AppColors.primary,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
+                'Berita Terbaru',
+                style: GoogleFonts.inter(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.textPrimary,
                 ),
               ),
             ),
-            const SizedBox(height: 8),
-            Text(
-              news.title,
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 6),
-            Text(
-              news.summary,
-              style: const TextStyle(color: AppColors.textSecondary),
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              '${news.author} · ${DateFormatter.formatRelative(news.publishedAt)}',
-              style: const TextStyle(
-                color: AppColors.textSecondary,
-                fontSize: 12,
+          ),
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: NewsFeaturedCard(
+                news: featured,
+                onTap: () => context.showSnackBar(featured.title),
               ),
             ),
-          ],
-        ),
+          ),
+          if (others.isNotEmpty) ...[
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(16, 24, 16, 12),
+                child: Text(
+                  'Berita Lainnya',
+                  style: GoogleFonts.inter(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.textPrimary,
+                  ),
+                ),
+              ),
+            ),
+            SliverPadding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+              sliver: SliverList.separated(
+                itemCount: others.length,
+                separatorBuilder: (_, _) => const SizedBox(height: 12),
+                itemBuilder: (context, index) {
+                  final news = others[index];
+                  return NewsListTileCard(
+                    news: news,
+                    onTap: () => context.showSnackBar(news.title),
+                  );
+                },
+              ),
+            ),
+          ] else
+            const SliverToBoxAdapter(child: SizedBox(height: 24)),
+        ],
       ),
     );
   }
 }
 
-class _ErrorView extends StatelessWidget {
-  const _ErrorView({required this.message, required this.onRetry});
+class _NewsLoadingView extends StatelessWidget {
+  const _NewsLoadingView();
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      padding: const EdgeInsets.all(16),
+      children: const [
+        AppSkeleton(height: 28, width: 120),
+        SizedBox(height: 20),
+        AppSkeleton(height: 260, width: double.infinity, borderRadius: 20),
+        SizedBox(height: 24),
+        AppSkeleton(height: 18, width: 140),
+        SizedBox(height: 12),
+        AppSkeleton(height: 110, width: double.infinity, borderRadius: 16),
+        SizedBox(height: 12),
+        AppSkeleton(height: 110, width: double.infinity, borderRadius: 16),
+      ],
+    );
+  }
+}
+
+class _NewsErrorView extends StatelessWidget {
+  const _NewsErrorView({required this.message, required this.onRetry});
 
   final String message;
   final VoidCallback onRetry;
@@ -145,13 +189,16 @@ class _ErrorView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(message),
-          const SizedBox(height: 12),
-          ElevatedButton(onPressed: onRetry, child: const Text('Coba Lagi')),
-        ],
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(message, textAlign: TextAlign.center),
+            const SizedBox(height: 12),
+            ElevatedButton(onPressed: onRetry, child: const Text('Coba Lagi')),
+          ],
+        ),
       ),
     );
   }

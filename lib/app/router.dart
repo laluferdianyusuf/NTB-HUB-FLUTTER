@@ -9,6 +9,23 @@ import '../features/users/auth/presentation/screens/login_screen.dart';
 import '../features/users/auth/presentation/screens/register_screen.dart';
 import '../features/users/auth/presentation/screens/splash_screen.dart';
 import '../features/users/booking/presentation/screens/booking_screen.dart';
+import '../features/users/home/presentation/screens/content_detail_screens.dart';
+import '../features/users/profile/presentation/screens/about_us_screen.dart';
+import '../features/users/profile/presentation/screens/change_password_screen.dart';
+import '../features/users/profile/presentation/screens/favorite_venues_screen.dart';
+import '../features/users/profile/presentation/screens/help_center_screen.dart';
+import '../features/users/profile/presentation/screens/manage_profile_screen.dart';
+import '../features/users/profile/presentation/screens/password_security_screen.dart';
+import '../features/users/profile/presentation/screens/privacy_policy_screen.dart';
+import '../features/users/profile/presentation/screens/terms_conditions_screen.dart';
+import '../features/users/profile/presentation/screens/transaction_history_screen.dart';
+import '../features/users/profile/presentation/screens/transaction_pin_screen.dart';
+import '../features/users/venue_category/presentation/screens/venue_category_screen.dart';
+import '../features/users/quick_action/presentation/screens/new_products_screen.dart';
+import '../features/users/quick_action/presentation/screens/order_food_screen.dart';
+import '../features/users/quick_action/presentation/screens/promo_deals_screen.dart';
+import '../features/users/quick_action/presentation/screens/top_up_balance_screen.dart';
+import '../features/users/search/presentation/screens/global_search_screen.dart';
 import '../navigation/main_navigation.dart';
 
 final GoRouter appRouter = GoRouter(
@@ -33,6 +50,25 @@ final GoRouter appRouter = GoRouter(
       builder: (context, state) => const MainNavigationPage(),
     ),
     GoRoute(
+      path: '/search',
+      builder: (context, state) => const GlobalSearchScreen(),
+    ),
+    GoRoute(
+      path: '/venue/:id',
+      builder: (context, state) =>
+          VenueDetailScreen(venueId: state.pathParameters['id']!),
+    ),
+    GoRoute(
+      path: '/event/:id',
+      builder: (context, state) =>
+          EventDetailScreen(eventId: state.pathParameters['id']!),
+    ),
+    GoRoute(
+      path: '/public-place/:id',
+      builder: (context, state) =>
+          PublicPlaceDetailScreen(placeId: state.pathParameters['id']!),
+    ),
+    GoRoute(
       path: '/booking',
       builder: (context, state) => const BookingScreen(),
     ),
@@ -45,5 +81,73 @@ final GoRouter appRouter = GoRouter(
       builder: (context, state) => const NotificationScreen(),
     ),
     GoRoute(path: '/task', builder: (context, state) => const TaskScreen()),
+    GoRoute(
+      path: '/venue-category/:id',
+      builder: (context, state) {
+        final query = state.uri.queryParameters;
+        return VenueCategoryScreen(
+          categoryId: state.pathParameters['id']!,
+          categoryName: query['name'] ?? 'Kategori',
+          categoryIcon: query['icon'],
+          categoryCode: query['code'],
+        );
+      },
+    ),
+    GoRoute(
+      path: '/quick/order-food',
+      builder: (context, state) => const OrderFoodScreen(),
+    ),
+    GoRoute(
+      path: '/quick/top-up',
+      builder: (context, state) => const TopUpBalanceScreen(),
+    ),
+    GoRoute(
+      path: '/quick/promo-deals',
+      builder: (context, state) => const PromoDealsScreen(),
+    ),
+    GoRoute(
+      path: '/quick/new-products',
+      builder: (context, state) => const NewProductsScreen(),
+    ),
+    GoRoute(
+      path: '/profile/manage',
+      builder: (context, state) => const ManageProfileScreen(),
+    ),
+    GoRoute(
+      path: '/profile/password-security',
+      builder: (context, state) => const PasswordSecurityScreen(),
+    ),
+    GoRoute(
+      path: '/profile/change-password',
+      builder: (context, state) => const ChangePasswordScreen(),
+    ),
+    GoRoute(
+      path: '/profile/transaction-pin',
+      builder: (context, state) => const TransactionPinScreen(),
+    ),
+    GoRoute(
+      path: '/profile/favorite-venues',
+      builder: (context, state) => const FavoriteVenuesScreen(),
+    ),
+    GoRoute(
+      path: '/profile/transactions',
+      builder: (context, state) => const TransactionHistoryScreen(),
+    ),
+    GoRoute(
+      path: '/profile/about',
+      builder: (context, state) => const AboutUsScreen(),
+    ),
+    GoRoute(
+      path: '/profile/help',
+      builder: (context, state) => const HelpCenterScreen(),
+    ),
+    GoRoute(
+      path: '/profile/privacy',
+      builder: (context, state) => const PrivacyPolicyScreen(),
+    ),
+    GoRoute(
+      path: '/profile/terms',
+      builder: (context, state) => const TermsConditionsScreen(),
+    ),
   ],
 );

@@ -4,16 +4,14 @@ import 'package:go_router/go_router.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 
 import '../../../../../core/constants/app_colors.dart';
-import '../../../../../core/helpers/date_formatter.dart';
+import '../../../../../core/extensions/context_extensions.dart';
 import '../../../../../core/utils/result.dart' as result;
 import '../../../../../models/user_model.dart';
-import '../../../../../repository/user_repository.dart';
+import '../../../../../widgets/common/app_confirm_dialog.dart';
+import '../../../../../widgets/common/app_page_scaffold.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
-
-final profileProvider = FutureProvider<result.Result<UserModel>>((ref) async {
-  final repository = UserRepository();
-  return repository.getCurrentUser();
-});
+import '../providers/profile_provider.dart';
+import '../providers/profile_settings_provider.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
@@ -41,92 +39,169 @@ class _ProfileContent extends ConsumerWidget {
 
   final UserModel user;
 
+  Future<void> _handleLogout(BuildContext context, WidgetRef ref) async {
+    final confirmed = await AppConfirmDialog.show(
+      context,
+      title: 'Keluar dari Akun',
+      message: 'Apakah Anda yakin ingin keluar dari NTB Hub?',
+      confirmLabel: 'Keluar',
+      cancelLabel: 'Batal',
+      isDestructive: true,
+    );
+
+    if (confirmed != true || !context.mounted) return;
+    await ref.read(authProvider.notifier).logout();
+    if (context.mounted) context.go('/login');
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final settingsAsync = ref.watch(profileSettingsProvider);
+
     return SingleChildScrollView(
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Container(
             width: double.infinity,
             padding: const EdgeInsets.all(24),
-            decoration: const BoxDecoration(
-              color: AppColors.primary,
-              borderRadius: BorderRadius.only(
-                bottomLeft: Radius.circular(24),
-                bottomRight: Radius.circular(24),
-              ),
-            ),
-            child: Column(
+
+            child: Row(
               children: [
-                CircleAvatar(
-                  radius: 48,
-                  backgroundColor: Colors.white,
-                  child: Text(
-                    user.name[0],
-                    style: const TextStyle(
-                      fontSize: 36,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.primary,
-                    ),
+                IconButton.filled(
+                  style: IconButton.styleFrom(
+                    backgroundColor: AppColors.primary.withValues(alpha: 0.1),
+                    foregroundColor: AppColors.primary,
+                  ),
+                  onPressed: () {},
+                  icon: const Icon(Iconsax.people),
+                  color: AppColors.textPrimary,
+                ),
+                const SizedBox(width: 14),
+                const Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Lalu Ferdian Yusuf',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.textPrimary,
+                        ),
+                      ),
+                      SizedBox(height: 2),
+                      Text(
+                        'nama@gmail.com',
+                        style: TextStyle(
+                          color: AppColors.textSecondary,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                const SizedBox(height: 12),
-                Text(
-                  user.name,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                if (user.location != null) ...[
-                  const SizedBox(height: 4),
-                  Text(
-                    user.location!,
-                    style: TextStyle(
-                      color: Colors.white.withValues(alpha: 0.8),
-                    ),
-                  ),
-                ],
               ],
             ),
           ),
+          const ProfileSectionHeader(title: 'Akun'),
+          ProfileMenuTile(
+            icon: Iconsax.user_edit,
+            title: 'Manage Profile',
+            onTap: () => context.push('/profile/manage'),
+          ),
+          ProfileMenuTile(
+            icon: Iconsax.lock,
+            title: 'Password & Security',
+            onTap: () => context.push('/profile/password-security'),
+          ),
+          ProfileMenuTile(
+            icon: Iconsax.password_check,
+            title: 'Transaction PIN',
+            subtitle: settingsAsync.maybeWhen(
+              data: (s) =>
+                  s.hasTransactionPin ? 'PIN sudah diatur' : 'Belum diatur',
+              orElse: () => null,
+            ),
+            onTap: () => context.push('/profile/transaction-pin'),
+          ),
+          settingsAsync.when(
+            loading: () => const SizedBox.shrink(),
+            error: (_, _) => const SizedBox.shrink(),
+            data: (state) => SwitchListTile(
+              secondary: const Icon(
+                Iconsax.finger_scan,
+                color: AppColors.primary,
+              ),
+              title: const Text('Enable Biometric'),
+              subtitle: const Text('Login cepat dengan sidik jari / Face ID'),
+              value: state.biometricEnabled,
+              activeThumbColor: AppColors.primary,
+              onChanged: (value) {
+                ref
+                    .read(profileSettingsProvider.notifier)
+                    .toggleBiometric(value);
+                context.showSnackBar(
+                  value ? 'Biometric diaktifkan' : 'Biometric dinonaktifkan',
+                );
+              },
+            ),
+          ),
+          const ProfileSectionHeader(title: 'Aktivitas'),
+          ProfileMenuTile(
+            icon: Iconsax.heart,
+            title: 'Favorite Venues',
+            onTap: () => context.push('/profile/favorite-venues'),
+          ),
+          ProfileMenuTile(
+            icon: Iconsax.receipt,
+            title: 'Transaction',
+            onTap: () => context.push('/profile/transactions'),
+          ),
+          const ProfileSectionHeader(title: 'Informasi'),
+          ProfileMenuTile(
+            icon: Iconsax.info_circle,
+            title: 'About Us',
+            onTap: () => context.push('/profile/about'),
+          ),
+          ProfileMenuTile(
+            icon: Iconsax.message_question,
+            title: 'Help Center',
+            onTap: () => context.push('/profile/help'),
+          ),
+          ProfileMenuTile(
+            icon: Iconsax.shield,
+            title: 'Privacy and Policy',
+            onTap: () => context.push('/profile/privacy'),
+          ),
+          ProfileMenuTile(
+            icon: Iconsax.document,
+            title: 'Terms and Conditions',
+            onTap: () => context.push('/profile/terms'),
+          ),
           const SizedBox(height: 16),
-          _ProfileMenuItem(
-            icon: Iconsax.sms,
-            title: user.email,
-          ),
-          if (user.bio != null)
-            _ProfileMenuItem(
-              icon: Iconsax.document_text,
-              title: user.bio!,
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: SizedBox(
+              height: 52,
+              child: OutlinedButton.icon(
+                onPressed: () => _handleLogout(context, ref),
+                icon: const Icon(Iconsax.logout, color: AppColors.error),
+                label: const Text(
+                  'Logout',
+                  style: TextStyle(
+                    color: AppColors.error,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                style: OutlinedButton.styleFrom(
+                  side: const BorderSide(color: AppColors.error),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+              ),
             ),
-          _ProfileMenuItem(
-            icon: Iconsax.calendar,
-            title: 'Bergabung ${DateFormatter.formatDate(user.joinedAt)}',
-          ),
-          const Divider(height: 32),
-          _ProfileMenuItem(
-            icon: Iconsax.ticket,
-            title: 'Booking Venue',
-            onTap: () => context.push('/booking'),
-          ),
-          _ProfileMenuItem(
-            icon: Iconsax.calendar,
-            title: 'Lihat Event',
-            onTap: () => context.push('/events'),
-          ),
-          const Divider(height: 32),
-          ListTile(
-            leading: const Icon(Iconsax.logout, color: AppColors.error),
-            title: const Text(
-              'Keluar',
-              style: TextStyle(color: AppColors.error),
-            ),
-            onTap: () async {
-              await ref.read(authProvider.notifier).logout();
-              if (context.mounted) context.go('/login');
-            },
           ),
           const SizedBox(height: 32),
         ],
@@ -134,29 +209,3 @@ class _ProfileContent extends ConsumerWidget {
     );
   }
 }
-class _ProfileMenuItem extends StatelessWidget {
-  const _ProfileMenuItem({
-    required this.icon,
-    required this.title,
-    this.onTap,
-  });
-
-  final IconData icon;
-  final String title;
-  final VoidCallback? onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      leading: Icon(icon, color: AppColors.primary, size: 22),
-      title: Text(title),
-      trailing: const Icon(
-        Iconsax.arrow_right_3,
-        color: AppColors.textSecondary,
-        size: 18,
-      ),
-      onTap: onTap,
-    );
-  }
-}
-

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 
 import '../../../../../models/home_event_model.dart';
@@ -6,10 +7,8 @@ import '../../../../../models/public_place_model.dart';
 import '../../../../../models/venue_model.dart';
 import '../../data/datasources/home_content_datasource.dart';
 import '../models/home_tab_item.dart';
-import 'home_event_list_item.dart';
-import 'home_nested_paged_tab.dart';
-import 'public_place_list_item.dart';
-import 'venue_list_item.dart';
+import 'home_grid_card.dart';
+import 'home_nested_paged_grid_tab.dart';
 
 List<HomeTabItem> buildHomeTabs() {
   return [
@@ -19,9 +18,6 @@ List<HomeTabItem> buildHomeTabs() {
       label: 'Public Place',
       builder: (_) => const _PublicPlacePagedTab(),
     ),
-    HomeTabItem(label: 'Kuliner', builder: (_) => const _KulinerPagedTab()),
-    HomeTabItem(label: 'Wisata', builder: (_) => const _WisataPagedTab()),
-    HomeTabItem(label: 'UMKM', builder: (_) => const _UmkmPagedTab()),
   ];
 }
 
@@ -39,17 +35,17 @@ class _VenuePagedTabState extends State<_VenuePagedTab>
 
   late final PagingController<int, VenueModel> _controller =
       PagingController<int, VenueModel>(
-    getNextPageKey: (state) {
-      if (state.items == null) return 1;
-      if (state.items!.isEmpty) return null;
-      if (state.items!.length % _pageSize != 0) return null;
-      return state.keys!.last + 1;
-    },
-    fetchPage: (pageKey) async {
-      final result = await _datasource.getVenuesPage(pageKey);
-      return result.items;
-    },
-  );
+        getNextPageKey: (state) {
+          if (state.items == null) return 1;
+          if (state.items!.isEmpty) return null;
+          if (state.items!.length % _pageSize != 0) return null;
+          return state.keys!.last + 1;
+        },
+        fetchPage: (pageKey) async {
+          final result = await _datasource.getVenuesPage(pageKey);
+          return result.items;
+        },
+      );
 
   @override
   bool get wantKeepAlive => true;
@@ -63,13 +59,18 @@ class _VenuePagedTabState extends State<_VenuePagedTab>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return HomeNestedPagedTab<VenueModel>(
+    return HomeNestedPagedGridTab<VenueModel>(
       storageKey: 'venue_tab',
       controller: _controller,
       emptyMessage: 'Belum ada venue',
-      itemBuilder: (context, venue, index) => Padding(
-        padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
-        child: VenueListItem(venue: venue),
+      itemBuilder: (context, venue, index) => HomeGridCard(
+        title: venue.name,
+        subtitle: '${venue.category} · ${venue.capacity} orang',
+        location: venue.location,
+        type: HomeGridCardType.venue,
+        rating: venue.rating,
+        badge: venue.priceRange,
+        onTap: () => context.push('/venue/${venue.id}'),
       ),
     );
   }
@@ -89,17 +90,17 @@ class _EventPagedTabState extends State<_EventPagedTab>
 
   late final PagingController<int, HomeEventModel> _controller =
       PagingController<int, HomeEventModel>(
-    getNextPageKey: (state) {
-      if (state.items == null) return 1;
-      if (state.items!.isEmpty) return null;
-      if (state.items!.length % _pageSize != 0) return null;
-      return state.keys!.last + 1;
-    },
-    fetchPage: (pageKey) async {
-      final result = await _datasource.getEventsPage(pageKey);
-      return result.items;
-    },
-  );
+        getNextPageKey: (state) {
+          if (state.items == null) return 1;
+          if (state.items!.isEmpty) return null;
+          if (state.items!.length % _pageSize != 0) return null;
+          return state.keys!.last + 1;
+        },
+        fetchPage: (pageKey) async {
+          final result = await _datasource.getEventsPage(pageKey);
+          return result.items;
+        },
+      );
 
   @override
   bool get wantKeepAlive => true;
@@ -113,13 +114,17 @@ class _EventPagedTabState extends State<_EventPagedTab>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return HomeNestedPagedTab<HomeEventModel>(
+    return HomeNestedPagedGridTab<HomeEventModel>(
       storageKey: 'event_tab',
       controller: _controller,
       emptyMessage: 'Belum ada event',
-      itemBuilder: (context, event, index) => Padding(
-        padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
-        child: HomeEventListItem(event: event),
+      itemBuilder: (context, event, index) => HomeGridCard(
+        title: event.title,
+        subtitle: event.category,
+        location: event.location,
+        type: HomeGridCardType.event,
+        badge: '${event.attendees} peserta',
+        onTap: () => context.push('/event/${event.id}'),
       ),
     );
   }
@@ -139,17 +144,17 @@ class _PublicPlacePagedTabState extends State<_PublicPlacePagedTab>
 
   late final PagingController<int, PublicPlaceModel> _controller =
       PagingController<int, PublicPlaceModel>(
-    getNextPageKey: (state) {
-      if (state.items == null) return 1;
-      if (state.items!.isEmpty) return null;
-      if (state.items!.length % _pageSize != 0) return null;
-      return state.keys!.last + 1;
-    },
-    fetchPage: (pageKey) async {
-      final result = await _datasource.getPublicPlacesPage(pageKey);
-      return result.items;
-    },
-  );
+        getNextPageKey: (state) {
+          if (state.items == null) return 1;
+          if (state.items!.isEmpty) return null;
+          if (state.items!.length % _pageSize != 0) return null;
+          return state.keys!.last + 1;
+        },
+        fetchPage: (pageKey) async {
+          final result = await _datasource.getPublicPlacesPage(pageKey);
+          return result.items;
+        },
+      );
 
   @override
   bool get wantKeepAlive => true;
@@ -163,50 +168,19 @@ class _PublicPlacePagedTabState extends State<_PublicPlacePagedTab>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return HomeNestedPagedTab<PublicPlaceModel>(
+    return HomeNestedPagedGridTab<PublicPlaceModel>(
       storageKey: 'public_place_tab',
       controller: _controller,
       emptyMessage: 'Belum ada public place',
-      itemBuilder: (context, place, index) => Padding(
-        padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
-        child: PublicPlaceListItem(place: place),
+      itemBuilder: (context, place, index) => HomeGridCard(
+        title: place.name,
+        subtitle: place.type,
+        location: place.location,
+        type: HomeGridCardType.publicPlace,
+        rating: place.rating,
+        badge: place.isOpen ? 'Buka' : 'Tutup',
+        onTap: () => context.push('/public-place/${place.id}'),
       ),
-    );
-  }
-}
-
-class _KulinerPagedTab extends StatelessWidget {
-  const _KulinerPagedTab();
-
-  @override
-  Widget build(BuildContext context) {
-    return _PlaceholderPagedTab(
-      storageKey: 'kuliner_tab',
-      category: 'Kuliner',
-    );
-  }
-}
-
-class _WisataPagedTab extends StatelessWidget {
-  const _WisataPagedTab();
-
-  @override
-  Widget build(BuildContext context) {
-    return _PlaceholderPagedTab(
-      storageKey: 'wisata_tab',
-      category: 'Wisata',
-    );
-  }
-}
-
-class _UmkmPagedTab extends StatelessWidget {
-  const _UmkmPagedTab();
-
-  @override
-  Widget build(BuildContext context) {
-    return _PlaceholderPagedTab(
-      storageKey: 'umkm_tab',
-      category: 'UMKM',
     );
   }
 }
@@ -230,21 +204,22 @@ class _PlaceholderPagedTabState extends State<_PlaceholderPagedTab>
 
   late final PagingController<int, String> _controller =
       PagingController<int, String>(
-    getNextPageKey: (state) {
-      if (state.items == null) return 1;
-      if (state.items!.isEmpty) return null;
-      if (state.items!.length % _pageSize != 0) return null;
-      return state.keys!.last + 1;
-    },
-    fetchPage: (pageKey) async {
-      await Future<void>.delayed(const Duration(milliseconds: 400));
-      if (pageKey > 3) return [];
-      return List.generate(
-        _pageSize,
-        (i) => '${widget.category} item ${(pageKey - 1) * _pageSize + i + 1}',
+        getNextPageKey: (state) {
+          if (state.items == null) return 1;
+          if (state.items!.isEmpty) return null;
+          if (state.items!.length % _pageSize != 0) return null;
+          return state.keys!.last + 1;
+        },
+        fetchPage: (pageKey) async {
+          await Future<void>.delayed(const Duration(milliseconds: 400));
+          if (pageKey > 3) return [];
+          return List.generate(
+            _pageSize,
+            (i) =>
+                '${widget.category} item ${(pageKey - 1) * _pageSize + i + 1}',
+          );
+        },
       );
-    },
-  );
 
   @override
   bool get wantKeepAlive => true;
@@ -258,16 +233,16 @@ class _PlaceholderPagedTabState extends State<_PlaceholderPagedTab>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return HomeNestedPagedTab<String>(
+    return HomeNestedPagedGridTab<String>(
       storageKey: widget.storageKey,
       controller: _controller,
       emptyMessage: 'Belum ada ${widget.category.toLowerCase()}',
-      itemBuilder: (context, item, index) => Padding(
-        padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
-        child: Card(
-          margin: const EdgeInsets.only(bottom: 10),
-          child: ListTile(title: Text(item)),
-        ),
+      itemBuilder: (context, item, index) => HomeGridCard(
+        title: item,
+        subtitle: widget.category,
+        location: 'NTB',
+        type: HomeGridCardType.venue,
+        onTap: () {},
       ),
     );
   }

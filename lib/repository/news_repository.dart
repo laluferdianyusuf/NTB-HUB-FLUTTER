@@ -1,40 +1,53 @@
+import '../core/api/api_endpoints.dart';
 import '../core/errors/failure.dart';
-import '../core/helpers/pagination_helper.dart';
+import '../core/helpers/json_field_helper.dart';
+import '../core/network/dio_client.dart';
 import '../core/utils/result.dart';
-import '../database/app_database.dart';
 import '../models/news_model.dart';
 
 class NewsRepository {
-  NewsRepository({AppDatabase? database})
-      : _database = database ?? AppDatabase.instance;
+  NewsRepository({DioClient? client}) : _client = client ?? DioClient();
 
-  final AppDatabase _database;
-  static const int pageSize = 10;
+  final DioClient _client;
 
-  Future<Result<List<NewsModel>>> getNewsList() async {
+  Future<Result<List<NewsModel>>> getAllNews() async {
     try {
-      await Future<void>.delayed(const Duration(milliseconds: 300));
-      return Success(_database.news);
-    } catch (e) {
-      return const Error(ServerFailure());
-    }
-  }
+      final response = await _client.get<List<NewsModel>>(
+        ApiEndpoints.allNews,
+        fromJson: _parseNewsList,
+      );
 
-  Future<PaginationResult<NewsModel>> getNewsPage(int page) async {
-    await Future<void>.delayed(const Duration(milliseconds: 600));
-    return PaginationHelper.paginate(
-      _database.news,
-      page: page,
-      pageSize: pageSize,
-    );
+      final news = response.data
+        ..sort((a, b) => b.publishedAt.compareTo(a.publishedAt));
+
+      return Success(news);
+    } catch (e) {
+      return Error(UnknownFailure(e.toString()));
+    }
   }
 
   Future<Result<NewsModel>> getNewsById(String id) async {
-    try {
-      final news = _database.news.firstWhere((n) => n.id == id);
-      return Success(news);
-    } catch (e) {
-      return const Error(UnknownFailure('Berita tidak ditemukan'));
+    final result = await getAllNews();
+
+    if (result case Success(:final data)) {
+      try {
+        return Success(data.firstWhere((news) => news.id == id));
+      } catch (_) {
+        return const Error(UnknownFailure('Berita tidak ditemukan'));
+      }
     }
+
+    if (result case Error(:final failure)) {
+      return Error(failure);
+    }
+
+    return const Error(UnknownFailure('Berita tidak ditemukan'));
+  }
+
+  List<NewsModel> _parseNewsList(dynamic json) {
+    return JsonFieldHelper.readObjectList(json)
+        .map(NewsModel.fromJson)
+        .where((news) => news.id.isNotEmpty)
+        .toList();
   }
 }

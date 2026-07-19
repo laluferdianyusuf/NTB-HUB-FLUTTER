@@ -1,3 +1,5 @@
+import '../core/helpers/json_field_helper.dart';
+
 class NewsModel {
   const NewsModel({
     required this.id,
@@ -19,13 +21,50 @@ class NewsModel {
 
   factory NewsModel.fromJson(Map<String, dynamic> json) {
     return NewsModel(
-      id: json['id'] as String,
-      title: json['title'] as String,
-      summary: json['summary'] as String,
-      category: json['category'] as String,
-      publishedAt: DateTime.parse(json['published_at'] as String),
-      author: json['author'] as String,
-      imageUrl: json['image_url'] as String?,
+      id: JsonFieldHelper.readString(json, ['id', '_id']) ?? '',
+      title: JsonFieldHelper.readString(json, ['title', 'headline', 'name']) ??
+          'Tanpa judul',
+      summary: JsonFieldHelper.readString(json, [
+            'summary',
+            'content',
+            'description',
+            'excerpt',
+            'body',
+          ]) ??
+          '',
+      category: JsonFieldHelper.readString(json, [
+            'category',
+            'categoryName',
+            'newsCategory',
+            'type',
+          ]) ??
+          'Umum',
+      publishedAt: JsonFieldHelper.readDateTime(json, [
+            'publishedAt',
+            'published_at',
+            'createdAt',
+            'created_at',
+            'updatedAt',
+            'updated_at',
+          ]) ??
+          DateTime.now(),
+      author: JsonFieldHelper.readString(json, [
+            'author',
+            'authorName',
+            'createdBy',
+            'writer',
+            'source',
+          ]) ??
+          'NTB Hub',
+      imageUrl: JsonFieldHelper.readString(json, [
+        'imageUrl',
+        'image_url',
+        'thumbnail',
+        'coverImage',
+        'cover_image',
+        'image',
+        'photo',
+      ]),
     );
   }
 

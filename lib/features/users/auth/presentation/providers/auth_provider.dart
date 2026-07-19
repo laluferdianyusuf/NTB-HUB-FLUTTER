@@ -66,6 +66,44 @@ class AuthNotifier extends AsyncNotifier<AuthModel?> {
     return registerResult;
   }
 
+  Future<result.Result<AuthModel>> loginWithGoogleAccount(
+    GoogleAccountInfo account,
+  ) async {
+    final previousState = state;
+
+    try {
+      final googleService = ref.read(googleAuthServiceProvider);
+      final credential = await googleService.signInWithAccount(account);
+
+      if (credential == null) {
+        state = previousState;
+        return const result.Error(
+          UnknownFailure('Login Google dibatalkan'),
+        );
+      }
+
+      state = const AsyncLoading();
+      final repository = ref.read(authRepositoryProvider);
+      final loginResult = await repository.loginWithGoogle(
+        payload: credential.toBackendPayload(),
+      );
+
+      switch (loginResult) {
+        case result.Success(:final data):
+          state = AsyncData(data);
+        case result.Error():
+          state = previousState;
+      }
+
+      return loginResult;
+    } catch (_) {
+      state = previousState;
+      return const result.Error(
+        UnknownFailure('Gagal login dengan Google'),
+      );
+    }
+  }
+
   Future<result.Result<AuthModel>> loginWithGoogle() async {
     final previousState = state;
 

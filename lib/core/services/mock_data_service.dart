@@ -1,12 +1,18 @@
 import 'package:flutter/material.dart';
 
+import 'package:latlong2/latlong.dart';
+
 import '../../models/activity_model.dart';
 import '../../models/carousel_item_model.dart';
 import '../../models/group_model.dart';
 import '../../models/home_event_model.dart';
 import '../../models/news_model.dart';
 import '../../models/post_model.dart';
+import '../../models/quick_action_models.dart';
 import '../../models/public_place_model.dart';
+import '../../models/notification_model.dart';
+import '../../models/task_model.dart';
+import '../../models/transaction_model.dart';
 import '../../models/user_model.dart';
 import '../../models/venue_model.dart';
 
@@ -268,4 +274,211 @@ class MockDataService {
       createdAt: DateTime.now().subtract(const Duration(days: 2)),
     ),
   ];
+
+  static List<TransactionModel> get transactions {
+    const titles = [
+      'Booking Auditorium Mataram',
+      'Booking Convention Hall Lombok',
+      'Tiket Festival Bau Nyale',
+      'Booking Outdoor Garden NTB Hub',
+      'Tiket NTB Expo & UMKM Fair',
+    ];
+
+    return List.generate(8, (index) {
+      return TransactionModel(
+        id: '${index + 1}',
+        title: titles[index % titles.length],
+        amount: 150000 + (index * 75000),
+        status: index == 2 ? 'Pending' : 'Sukses',
+        date: DateTime.now().subtract(Duration(days: index * 2)),
+        type: index.isEven ? 'Booking' : 'Event',
+      );
+    });
+  }
+
+  static List<NotificationModel> get notifications => [
+    NotificationModel(
+      id: '1',
+      title: 'Booking Dikonfirmasi',
+      body: 'Booking Auditorium Mataram #12 telah dikonfirmasi.',
+      createdAt: DateTime.now().subtract(const Duration(minutes: 15)),
+      type: NotificationType.booking,
+    ),
+    NotificationModel(
+      id: '2',
+      title: 'Event Baru di Sekitarmu',
+      body: 'Festival Bau Nyale 2026 akan dimulai minggu depan.',
+      createdAt: DateTime.now().subtract(const Duration(hours: 2)),
+      type: NotificationType.event,
+    ),
+    NotificationModel(
+      id: '3',
+      title: 'Promo NTB Hub',
+      body: 'Diskon 20% booking venue untuk member komunitas.',
+      createdAt: DateTime.now().subtract(const Duration(hours: 5)),
+      type: NotificationType.promo,
+      isRead: true,
+    ),
+    NotificationModel(
+      id: '4',
+      title: 'Pembaruan Sistem',
+      body: 'Fitur Task & Map telah tersedia di aplikasi terbaru.',
+      createdAt: DateTime.now().subtract(const Duration(days: 1)),
+      type: NotificationType.system,
+      isRead: true,
+    ),
+    NotificationModel(
+      id: '5',
+      title: 'Reminder Event',
+      body: 'NTB Expo & UMKM Fair dimulai besok pukul 09:00.',
+      createdAt: DateTime.now().subtract(const Duration(days: 2)),
+      type: NotificationType.event,
+      isRead: true,
+    ),
+  ];
+
+  static List<TaskModel> get tasks => [
+    TaskModel(
+      id: '1',
+      title: 'Survey Venue Auditorium',
+      description: 'Lakukan survey kondisi venue sebelum event.',
+      location: const LatLng(-8.5833, 116.1167),
+      status: TaskStatus.inProgress,
+      dueDate: DateTime.now().add(const Duration(hours: 4)),
+      priority: 'Tinggi',
+    ),
+    TaskModel(
+      id: '2',
+      title: 'Koordinasi Event Bau Nyale',
+      description: 'Hubungi panitia dan konfirmasi jadwal acara.',
+      location: const LatLng(-8.8975, 116.2778),
+      status: TaskStatus.pending,
+      dueDate: DateTime.now().add(const Duration(days: 1)),
+      priority: 'Sedang',
+    ),
+    TaskModel(
+      id: '3',
+      title: 'Cek Public Place Taman',
+      description: 'Verifikasi fasilitas dan kebersihan area.',
+      location: const LatLng(-8.5769, 116.1003),
+      status: TaskStatus.pending,
+      dueDate: DateTime.now().add(const Duration(days: 2)),
+      priority: 'Rendah',
+    ),
+    TaskModel(
+      id: '4',
+      title: 'Distribusi Flyer UMKM',
+      description: 'Sebarkan materi promosi UMKM di Mataram.',
+      location: const LatLng(-8.5900, 116.1200),
+      status: TaskStatus.completed,
+      dueDate: DateTime.now().subtract(const Duration(days: 1)),
+      priority: 'Sedang',
+    ),
+  ];
+
+  static const int walletBalance = 245000;
+
+  static List<FoodItemModel> get foodItems {
+    const names = [
+      'Ayam Taliwang Spesial',
+      'Plecing Kangkung',
+      'Nasi Balap Puyung',
+      'Beberuk Terong',
+      'Sate Rembiga',
+      'Es Kelapa Muda',
+    ];
+    const merchants = [
+      'Warung NTB Hub',
+      'Kuliner Mataram',
+      'UMKM Lombok',
+      'Dapur Sasak',
+      'Sate Pak Budi',
+      'Es Teler NTB',
+    ];
+    const categories = ['Makanan', 'Sayur', 'Nasi', 'Sayur', 'Sate', 'Minuman'];
+
+    return List.generate(12, (index) {
+      return FoodItemModel(
+        id: '${index + 1}',
+        name: names[index % names.length],
+        merchant: merchants[index % merchants.length],
+        price: 15000 + (index * 3500),
+        rating: 4.0 + (index % 10) / 10,
+        category: categories[index % categories.length],
+      );
+    });
+  }
+
+  static List<TopUpPackageModel> get topUpPackages => const [
+    TopUpPackageModel(id: '1', amount: 50000, bonus: 0, isPopular: false),
+    TopUpPackageModel(id: '2', amount: 100000, bonus: 5000, isPopular: true),
+    TopUpPackageModel(id: '3', amount: 200000, bonus: 15000, isPopular: false),
+    TopUpPackageModel(id: '4', amount: 500000, bonus: 50000, isPopular: true),
+    TopUpPackageModel(id: '5', amount: 1000000, bonus: 120000, isPopular: false),
+  ];
+
+  static List<PromoDealModel> get promoDeals => [
+    PromoDealModel(
+      id: '1',
+      title: 'Diskon Booking Venue 20%',
+      description: 'Berlaku untuk booking venue di Mataram & Lombok.',
+      discountLabel: '20% OFF',
+      validUntil: DateTime.now().add(const Duration(days: 7)),
+      category: 'Venue',
+    ),
+    PromoDealModel(
+      id: '2',
+      title: 'Gratis Ongkir Order Food',
+      description: 'Minimal order Rp 50.000 untuk wilayah Mataram.',
+      discountLabel: 'FREE ONGKIR',
+      validUntil: DateTime.now().add(const Duration(days: 3)),
+      category: 'Kuliner',
+    ),
+    PromoDealModel(
+      id: '3',
+      title: 'Cashback Top Up 10%',
+      description: 'Top up saldo minimal Rp 100.000 dapat cashback.',
+      discountLabel: '10% CASHBACK',
+      validUntil: DateTime.now().add(const Duration(days: 14)),
+      category: 'Wallet',
+    ),
+    PromoDealModel(
+      id: '4',
+      title: 'Buy 1 Get 1 Produk UMKM',
+      description: 'Produk pilihan UMKM NTB selama stok tersedia.',
+      discountLabel: 'B1G1',
+      validUntil: DateTime.now().add(const Duration(days: 5)),
+      category: 'UMKM',
+    ),
+  ];
+
+  static List<NewProductModel> get newProducts {
+    const names = [
+      'Tenun Songket NTB',
+      'Kerupuk Kulit Sapi',
+      'Madu Hutan Sumbawa',
+      'Kopi Sembalun',
+      'Tahu Bacem NTB',
+      'Minyak Kayu Putih',
+    ];
+    const sellers = [
+      'UMKM Songket Lombok',
+      'Kerupuk Bu Siti',
+      'Madu Sumbawa Asli',
+      'Kopi Sembalun Co.',
+      'Tahu Bu Ani',
+      'Minyak NTB Organik',
+    ];
+
+    return List.generate(10, (index) {
+      return NewProductModel(
+        id: '${index + 1}',
+        name: names[index % names.length],
+        seller: sellers[index % sellers.length],
+        price: 35000 + (index * 12000),
+        category: index.isEven ? 'Kerajinan' : 'Kuliner',
+        isNew: index < 6,
+      );
+    });
+  }
 }

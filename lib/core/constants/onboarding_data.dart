@@ -1,31 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 
-abstract final class UserInterests {
-  static const options = [
-    InterestOption(id: 'wisata', label: 'Wisata', icon: Iconsax.map),
-    InterestOption(id: 'kuliner', label: 'Kuliner', icon: Iconsax.coffee),
-    InterestOption(id: 'event', label: 'Event', icon: Iconsax.calendar),
-    InterestOption(id: 'umkm', label: 'UMKM', icon: Iconsax.shop),
-    InterestOption(id: 'budaya', label: 'Budaya', icon: Iconsax.book),
-    InterestOption(id: 'olahraga', label: 'Olahraga', icon: Iconsax.activity),
-    InterestOption(id: 'komunitas', label: 'Komunitas', icon: Iconsax.people),
-    InterestOption(id: 'booking', label: 'Booking', icon: Iconsax.ticket),
-  ];
-}
-
-class InterestOption {
-  const InterestOption({
-    required this.id,
-    required this.label,
-    required this.icon,
-  });
-
-  final String id;
-  final String label;
-  final IconData icon;
-}
-
 class OnboardingSlide {
   const OnboardingSlide({
     required this.title,

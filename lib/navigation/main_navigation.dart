@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:ntbhub_flutter/features/users/groups/presentation/screens/groups_screen.dart';
 
 import '../features/users/activity/presentation/screens/activity_screen.dart';
 import '../features/users/home/presentation/screens/home_screen.dart';
-import '../features/users/map/presentation/screens/map_screen.dart';
 import '../features/users/news/presentation/screens/news_screen.dart';
 import '../features/users/profile/presentation/screens/profile_screen.dart';
 import '../providers/navigation_provider.dart';
@@ -19,7 +19,7 @@ class MainNavigationPage extends ConsumerWidget {
     const pages = [
       HomeScreen(),
       NewsScreen(),
-      MapScreen(),
+      GroupsScreen(),
       ActivityScreen(),
       ProfileScreen(),
     ];

@@ -17,7 +17,7 @@ class BottomNavBar extends StatelessWidget {
   static const _items = [
     _NavItem(label: 'Home', icon: Iconsax.home_1),
     _NavItem(label: 'News', icon: Iconsax.document_text),
-    _NavItem(label: 'Map', icon: Iconsax.map),
+    _NavItem(label: 'Groups', icon: Iconsax.people),
     _NavItem(label: 'Activity', icon: Iconsax.activity),
     _NavItem(label: 'Profile', icon: Iconsax.profile_circle),
   ];

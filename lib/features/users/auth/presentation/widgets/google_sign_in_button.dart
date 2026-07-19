@@ -1,55 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
-import '../../../../../core/constants/app_colors.dart';import '../../../../../core/extensions/context_extensions.dart';
-import '../../../../../core/utils/result.dart' as result;
-import '../providers/auth_provider.dart';
+import '../../../../../core/constants/app_colors.dart';
+import 'google_account_picker_sheet.dart';
 
-class GoogleSignInButton extends ConsumerStatefulWidget {
+class GoogleSignInButton extends ConsumerWidget {
   const GoogleSignInButton({super.key});
 
   @override
-  ConsumerState<GoogleSignInButton> createState() =>
-      _GoogleSignInButtonState();
-}
-
-class _GoogleSignInButtonState extends ConsumerState<GoogleSignInButton> {
-  bool _isLoading = false;
-
-  Future<void> _handleGoogleSignIn() async {
-    setState(() => _isLoading = true);
-
-    final loginResult = await ref.read(authProvider.notifier).loginWithGoogle();
-
-    if (!mounted) return;
-    setState(() => _isLoading = false);
-
-    switch (loginResult) {
-      case result.Success():
-        context.go('/home');
-      case result.Error(:final failure):
-        context.showSnackBar(failure.message, isError: true);
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return SizedBox(
       height: 52,
       width: double.infinity,
       child: OutlinedButton.icon(
-        onPressed: _isLoading ? null : _handleGoogleSignIn,
-        icon: _isLoading
-            ? const SizedBox(
-                width: 20,
-                height: 20,
-                child: CircularProgressIndicator(strokeWidth: 2),
-              )
-            : const _GoogleLogo(),
-        label: Text(
-          _isLoading ? 'Menghubungkan...' : 'Lanjutkan dengan Google',
-          style: const TextStyle(
+        onPressed: () => GoogleAccountPickerSheet.show(context),
+        icon: const _GoogleLogo(),
+        label: const Text(
+          'Lanjutkan dengan Google',
+          style: TextStyle(
             fontSize: 15,
             fontWeight: FontWeight.w600,
             color: AppColors.textPrimary,
