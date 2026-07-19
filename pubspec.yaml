@@ -51,6 +51,7 @@ dependencies:
   smooth_page_indicator: ^2.0.1
   extended_nested_scroll_view: ^6.2.1
   google_sign_in: ^6.3.0
+  google_fonts: ^8.1.0
 
 dev_dependencies:
   flutter_test:

@@ -1,6 +1,7 @@
 import 'package:extended_nested_scroll_view/extended_nested_scroll_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 
 import '../../../../../core/constants/app_colors.dart';
@@ -11,6 +12,7 @@ import '../widgets/home_carousel.dart';
 import '../widgets/home_category_grid.dart';
 import '../widgets/home_category_tab_view.dart';
 import '../widgets/home_sticky_tab_bar.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -48,6 +50,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
   @override
   Widget build(BuildContext context) {
     final carouselItems = _datasource.getCarouselItems();
+    final int item = 10;
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -64,33 +67,70 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                   padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
                   child: Row(
                     children: [
-                      const Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                      Expanded(
+                        child: Row(
                           children: [
-                            Text(
-                              AppStrings.appName,
-                              style: TextStyle(
-                                fontSize: 22,
-                                fontWeight: FontWeight.bold,
-                                color: AppColors.textPrimary,
+                            IconButton.filled(
+                              style: IconButton.styleFrom(
+                                backgroundColor: AppColors.primary.withValues(
+                                  alpha: 0.1,
+                                ),
+                                foregroundColor: AppColors.primary,
                               ),
+                              onPressed: () {},
+                              icon: const Icon(Iconsax.people),
+                              color: AppColors.textPrimary,
                             ),
-                            SizedBox(height: 2),
-                            Text(
-                              'Jelajahi NTB',
-                              style: TextStyle(
-                                color: AppColors.textSecondary,
-                                fontSize: 13,
+                            const SizedBox(width: 14),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    AppStrings.appName,
+                                    style: GoogleFonts.poppins(
+                                      textStyle: const TextStyle(
+                                        fontSize: 22,
+                                        fontWeight: FontWeight.bold,
+                                        color: AppColors.textPrimary,
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(height: 2),
+                                  Text(
+                                    "nama@gmail.com",
+                                    style: GoogleFonts.poppins(
+                                      textStyle: const TextStyle(
+                                        color: AppColors.textSecondary,
+                                        fontSize: 13,
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                           ],
                         ),
                       ),
-                      IconButton(
-                        icon: const Icon(Iconsax.notification),
-                        color: AppColors.textPrimary,
-                        onPressed: () {},
+                      Row(
+                        children: [
+                          IconButton(
+                            onPressed: () => context.push("/task"),
+                            icon: Badge.count(
+                              count: item,
+                              child: const Icon(Iconsax.task),
+                            ),
+                            // color: AppColors.textPrimary,
+                          ),
+                          IconButton(
+                            onPressed: () => context.push("/notification-user"),
+                            icon: Badge.count(
+                              count: item,
+                              child: const Icon(Iconsax.notification),
+                            ),
+                            // color: AppColors.textPrimary,
+                          ),
+                        ],
                       ),
                     ],
                   ),
