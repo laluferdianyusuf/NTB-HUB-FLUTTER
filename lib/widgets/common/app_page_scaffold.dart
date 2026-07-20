@@ -54,10 +54,18 @@ class ProfileMenuTile extends StatelessWidget {
         style: TextStyle(color: titleColor ?? AppColors.textPrimary),
       ),
       subtitle: subtitle != null
-          ? Text(subtitle!, style: const TextStyle(color: AppColors.textSecondary))
+          ? Text(
+              subtitle!,
+              style: const TextStyle(color: AppColors.textSecondary),
+            )
           : null,
-      trailing: trailing ??
-          const Icon(Iconsax.arrow_right_3, color: AppColors.textSecondary, size: 18),
+      trailing:
+          trailing ??
+          const Icon(
+            Iconsax.arrow_right_1_copy,
+            color: AppColors.textSecondary,
+            size: 18,
+          ),
       onTap: onTap,
     );
   }

@@ -4,11 +4,11 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 
 import '../../../../../core/constants/app_colors.dart';
-import '../../../../../core/extensions/context_extensions.dart';
 import '../../../../../core/utils/result.dart' as result;
 import '../../../../../models/news_model.dart';
 import '../../../../../widgets/common/app_skeleton.dart';
 import '../providers/news_provider.dart';
+import '../utils/news_navigation.dart';
 import '../widgets/news_cards.dart';
 
 class NewsScreen extends ConsumerWidget {
@@ -118,7 +118,7 @@ class _NewsContent extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: NewsFeaturedCard(
                 news: featured,
-                onTap: () => context.showSnackBar(featured.title),
+                onTap: () => openNewsDetail(context, featured),
               ),
             ),
           ),
@@ -145,7 +145,7 @@ class _NewsContent extends StatelessWidget {
                   final news = others[index];
                   return NewsListTileCard(
                     news: news,
-                    onTap: () => context.showSnackBar(news.title),
+                    onTap: () => openNewsDetail(context, news),
                   );
                 },
               ),

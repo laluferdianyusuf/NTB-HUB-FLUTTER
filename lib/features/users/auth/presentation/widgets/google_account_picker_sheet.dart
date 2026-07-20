@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -65,6 +66,7 @@ class _GoogleAccountPickerSheetState
 
     switch (loginResult) {
       case result.Success():
+        if (!mounted) return;
         Navigator.of(context).pop();
         context.go('/home');
       case result.Error(:final failure):
@@ -73,6 +75,22 @@ class _GoogleAccountPickerSheetState
   }
 
   Future<void> _pickAnotherAccount() async {
+    if (kIsWeb) {
+      context.showSnackBar(
+        'Gunakan tombol "Continue with Google" di layar login.',
+        isError: true,
+      );
+      return;
+    }
+
+    if (!GoogleAuthService.isConfigured) {
+      context.showSnackBar(
+        'Atur GOOGLE_CLIENT_ID di file .env terlebih dahulu.',
+        isError: true,
+      );
+      return;
+    }
+
     setState(() => _signingIn = true);
     final loginResult = await ref.read(authProvider.notifier).loginWithGoogle();
     if (!mounted) return;
@@ -80,6 +98,7 @@ class _GoogleAccountPickerSheetState
 
     switch (loginResult) {
       case result.Success():
+        if (!mounted) return;
         Navigator.of(context).pop();
         context.go('/home');
       case result.Error(:final failure):

@@ -14,6 +14,7 @@ class HomeGridCard extends StatelessWidget {
     required this.type,
     this.rating,
     this.badge,
+    this.imageUrl,
     this.onTap,
   });
 
@@ -23,6 +24,7 @@ class HomeGridCard extends StatelessWidget {
   final HomeGridCardType type;
   final double? rating;
   final String? badge;
+  final String? imageUrl;
   final VoidCallback? onTap;
 
   List<Color> get _gradient => switch (type) {
@@ -72,18 +74,34 @@ class HomeGridCard extends StatelessWidget {
                 height: 92,
                 width: double.infinity,
                 decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: _gradient,
-                  ),
+                  gradient: imageUrl == null
+                      ? LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: _gradient,
+                        )
+                      : null,
+                  image: imageUrl != null
+                      ? DecorationImage(
+                          image: NetworkImage(imageUrl!),
+                          fit: BoxFit.cover,
+                        )
+                      : null,
                   borderRadius: const BorderRadius.vertical(
                     top: Radius.circular(14),
                   ),
                 ),
                 child: Stack(
                   children: [
-                    Center(child: Icon(_icon, color: Colors.white, size: 32)),
+                    Center(
+                      child: Icon(
+                        _icon,
+                        color: Colors.white.withValues(
+                          alpha: imageUrl == null ? 1 : 0.85,
+                        ),
+                        size: 32,
+                      ),
+                    ),
                     Positioned(
                       top: 8,
                       left: 8,

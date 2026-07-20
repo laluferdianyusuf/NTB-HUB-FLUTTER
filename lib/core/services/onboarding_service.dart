@@ -8,6 +8,7 @@ class OnboardingService {
 
   static const _onboardingCompletedKey = 'onboarding_completed';
   static const _userInterestsKey = 'user_interests';
+  static const _interestsSyncedKey = 'user_interests_synced';
 
   Future<bool> isOnboardingCompleted() async {
     return await _storage.read<bool>(_onboardingCompletedKey) ?? false;
@@ -25,5 +26,16 @@ class OnboardingService {
 
   Future<void> saveUserInterests(List<String> interests) async {
     await _storage.save(_userInterestsKey, interests);
+    await _storage.save(_interestsSyncedKey, false);
+  }
+
+  Future<bool> hasPendingInterestsToSync() async {
+    final interests = await getUserInterests();
+    if (interests.isEmpty) return false;
+    return !(await _storage.read<bool>(_interestsSyncedKey) ?? false);
+  }
+
+  Future<void> markInterestsSynced() async {
+    await _storage.save(_interestsSyncedKey, true);
   }
 }

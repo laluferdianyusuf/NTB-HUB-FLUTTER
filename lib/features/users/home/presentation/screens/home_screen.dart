@@ -5,7 +5,9 @@ import 'package:go_router/go_router.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 
 import '../../../../../core/constants/app_colors.dart';
+import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../search/presentation/widgets/home_search_bar.dart';
+import '../../../../../widgets/common/user_avatar.dart';
 import '../../data/datasources/home_content_datasource.dart';
 import '../models/home_tab_item.dart';
 import '../widgets/home_carousel.dart';
@@ -112,7 +114,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
   }
 }
 
-class _HomeTopHeader extends StatelessWidget {
+class _HomeTopHeader extends ConsumerWidget {
   const _HomeTopHeader({
     required this.taskCount,
     required this.onTaskTap,
@@ -124,7 +126,22 @@ class _HomeTopHeader extends StatelessWidget {
   final VoidCallback onNotificationTap;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final authAsync = ref.watch(authProvider);
+    final name = authAsync.maybeWhen(
+      data: (auth) => auth?.name,
+      orElse: () => null,
+    );
+    final email = authAsync.maybeWhen(
+      data: (auth) => auth?.email,
+      orElse: () => null,
+    );
+    final avatarUrl = authAsync.maybeWhen(
+      data: (auth) => auth?.avatarUrl,
+      orElse: () => null,
+    );
+    final isLoading = authAsync.isLoading;
+
     return ColoredBox(
       color: AppColors.background,
       child: Padding(
@@ -134,38 +151,50 @@ class _HomeTopHeader extends StatelessWidget {
             Expanded(
               child: Row(
                 children: [
-                  IconButton.filled(
-                    style: IconButton.styleFrom(
-                      backgroundColor: AppColors.primary.withValues(alpha: 0.1),
-                      foregroundColor: AppColors.primary,
-                    ),
-                    onPressed: () {},
-                    icon: const Icon(Iconsax.people),
-                    color: AppColors.textPrimary,
+                  UserAvatar(
+                    name: (name != null && name.isNotEmpty) ? name : 'Pengguna',
+                    imageUrl: avatarUrl,
+                    radius: 22,
                   ),
                   const SizedBox(width: 14),
-                  const Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Lalu Ferdian Yusuf',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.textPrimary,
+                  Expanded(
+                    child: isLoading
+                        ? const SizedBox(
+                            height: 36,
+                            child: Align(
+                              alignment: Alignment.centerLeft,
+                              child: SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(strokeWidth: 2),
+                              ),
+                            ),
+                          )
+                        : Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                (name != null && name.isNotEmpty)
+                                    ? name
+                                    : 'Pengguna',
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: AppColors.textPrimary,
+                                ),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                (email != null && email.isNotEmpty)
+                                    ? email
+                                    : '-',
+                                style: const TextStyle(
+                                  color: AppColors.textSecondary,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ],
                           ),
-                        ),
-                        SizedBox(height: 2),
-                        Text(
-                          'nama@gmail.com',
-                          style: TextStyle(
-                            color: AppColors.textSecondary,
-                            fontSize: 12,
-                          ),
-                        ),
-                      ],
-                    ),
                   ),
                 ],
               ),

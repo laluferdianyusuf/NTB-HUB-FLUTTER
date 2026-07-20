@@ -2,7 +2,7 @@ name: ntbhub_flutter
 description: "A new Flutter project."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
-publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+publish_to: "none" # Remove this line if you wish to publish to pub.dev
 
 # The following defines the version and build number for your application.
 # A version number is three numbers separated by dots, like 1.2.43
@@ -51,8 +51,14 @@ dependencies:
   smooth_page_indicator: ^2.0.1
   extended_nested_scroll_view: ^6.2.1
   google_sign_in: ^6.3.0
+  google_sign_in_web: ^0.12.4+4
   google_fonts: ^8.1.0
   flutter_svg: ^2.2.3
+  flutter_dotenv: ^6.0.1
+  shared_preferences: ^2.5.3
+  webview_flutter: ^4.14.1
+  url_launcher: ^6.3.2
+  webview_flutter_web: ^0.2.3+4
 
 dev_dependencies:
   flutter_test:
@@ -70,7 +76,6 @@ dev_dependencies:
 
 # The following section is specific to Flutter packages.
 flutter:
-
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.
@@ -78,6 +83,8 @@ flutter:
 
   assets:
     - lib/core/assets/svg/
+    - lib/core/assets/images/onboarding/
+    - .env
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

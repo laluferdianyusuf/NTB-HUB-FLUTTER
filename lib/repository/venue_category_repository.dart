@@ -5,7 +5,7 @@ import '../core/utils/result.dart';
 import '../models/venue_category_model.dart';
 
 class VenueCategoryRepository {
-  VenueCategoryRepository({DioClient? client}) : _client = client ?? DioClient();
+  VenueCategoryRepository({required DioClient client}) : _client = client;
 
   final DioClient _client;
 

@@ -53,6 +53,7 @@ class MockDataService {
         category: categories[index % categories.length],
         publishedAt: DateTime.now().subtract(Duration(hours: index * 3)),
         author: 'Redaksi NTB Hub',
+        sourceUrl: 'https://ntbhub.com/berita/${index + 1}',
       );
     });
   }

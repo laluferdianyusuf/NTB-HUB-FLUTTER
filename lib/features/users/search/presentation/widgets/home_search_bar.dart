@@ -12,7 +12,7 @@ class HomeSearchBar extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
       child: Material(
-        color: Colors.white,
+        // color: Colors.white,
         borderRadius: BorderRadius.circular(14),
         child: InkWell(
           borderRadius: BorderRadius.circular(14),
@@ -33,7 +33,11 @@ class HomeSearchBar extends StatelessWidget {
                     style: TextStyle(color: AppColors.textSecondary),
                   ),
                 ),
-                Icon(Iconsax.arrow_right_3, color: AppColors.textSecondary, size: 18),
+                Icon(
+                  Iconsax.arrow_right_1_copy,
+                  color: AppColors.textSecondary,
+                  size: 18,
+                ),
               ],
             ),
           ),

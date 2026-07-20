@@ -7,11 +7,7 @@ import '../../../../../core/helpers/date_formatter.dart';
 import '../../../../../models/news_model.dart';
 
 class NewsFeaturedCard extends StatelessWidget {
-  const NewsFeaturedCard({
-    super.key,
-    required this.news,
-    this.onTap,
-  });
+  const NewsFeaturedCard({super.key, required this.news, this.onTap});
 
   final NewsModel news;
   final VoidCallback? onTap;
@@ -151,11 +147,7 @@ class NewsFeaturedCard extends StatelessWidget {
 }
 
 class NewsListTileCard extends StatelessWidget {
-  const NewsListTileCard({
-    super.key,
-    required this.news,
-    this.onTap,
-  });
+  const NewsListTileCard({super.key, required this.news, this.onTap});
 
   final NewsModel news;
   final VoidCallback? onTap;
@@ -199,7 +191,7 @@ class NewsListTileCard extends StatelessWidget {
                     const SizedBox(height: 6),
                     Text(
                       news.title,
-                      maxLines: 2,
+                      maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: GoogleFonts.inter(
                         fontSize: 14,
@@ -271,10 +263,8 @@ class _NewsImage extends StatelessWidget {
                 width: width,
                 height: height,
                 fit: BoxFit.cover,
-                errorBuilder: (_, _, _) => _Placeholder(
-                  width: width,
-                  height: height,
-                ),
+                errorBuilder: (_, _, _) =>
+                    _Placeholder(width: width, height: height),
               )
             : _Placeholder(width: width, height: height),
       ),

@@ -39,7 +39,9 @@ class _GlobalSearchScreenState extends ConsumerState<GlobalSearchScreen> {
   }
 
   Future<void> _loadRecentSearches() async {
-    final recent = await ref.read(globalSearchServiceProvider).getRecentSearches();
+    final recent = await ref
+        .read(globalSearchServiceProvider)
+        .getRecentSearches();
     if (mounted) setState(() => _recentSearches = recent);
   }
 
@@ -63,7 +65,7 @@ class _GlobalSearchScreenState extends ConsumerState<GlobalSearchScreen> {
       backgroundColor: AppColors.background,
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Iconsax.arrow_left),
+          icon: const Icon(Iconsax.arrow_left_2_copy),
           onPressed: () => context.pop(),
         ),
         title: const Text('Pencarian'),
@@ -125,7 +127,9 @@ class _GlobalSearchScreenState extends ConsumerState<GlobalSearchScreen> {
                   label: 'Public Place',
                   selected: _selectedFilter == SearchResultType.publicPlace,
                   onTap: () {
-                    setState(() => _selectedFilter = SearchResultType.publicPlace);
+                    setState(
+                      () => _selectedFilter = SearchResultType.publicPlace,
+                    );
                     _performSearch();
                   },
                 ),
@@ -133,9 +137,7 @@ class _GlobalSearchScreenState extends ConsumerState<GlobalSearchScreen> {
             ),
           ),
           const SizedBox(height: 8),
-          Expanded(
-            child: hasQuery ? _buildResults() : _buildRecentSearches(),
-          ),
+          Expanded(child: hasQuery ? _buildResults() : _buildRecentSearches()),
         ],
       ),
     );
@@ -213,7 +215,9 @@ class _GlobalSearchScreenState extends ConsumerState<GlobalSearchScreen> {
             ),
             TextButton(
               onPressed: () async {
-                await ref.read(globalSearchServiceProvider).clearRecentSearches();
+                await ref
+                    .read(globalSearchServiceProvider)
+                    .clearRecentSearches();
                 await _loadRecentSearches();
               },
               child: const Text('Hapus'),

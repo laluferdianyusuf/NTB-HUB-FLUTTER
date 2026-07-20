@@ -1,9 +1,9 @@
-import '../network/dio_client.dart';
+import 'dio_client.dart';
 
 /// Legacy wrapper — gunakan [DioClient] untuk semua HTTP request.
 @Deprecated('Use DioClient instead')
 class ApiClient {
-  ApiClient({DioClient? client}) : _client = client ?? DioClient();
+  ApiClient({required DioClient client}) : _client = client;
 
   final DioClient _client;
 

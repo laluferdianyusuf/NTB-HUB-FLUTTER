@@ -14,6 +14,7 @@ class HomeNestedPagedGridTab<T> extends StatelessWidget {
     this.emptyMessage = 'Belum ada data',
     this.crossAxisCount = 2,
     this.childAspectRatio = 0.72,
+    this.onRefresh,
   });
 
   final String storageKey;
@@ -22,11 +23,12 @@ class HomeNestedPagedGridTab<T> extends StatelessWidget {
   final String emptyMessage;
   final int crossAxisCount;
   final double childAspectRatio;
+  final Future<void> Function()? onRefresh;
 
   @override
   Widget build(BuildContext context) {
     return RefreshIndicator(
-      onRefresh: () async => controller.refresh(),
+      onRefresh: onRefresh ?? () async => controller.refresh(),
       child: PagingListener<int, T>(
         controller: controller,
         builder: (context, state, fetchNextPage) {

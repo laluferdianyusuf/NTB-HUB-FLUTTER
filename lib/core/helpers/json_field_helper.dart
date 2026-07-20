@@ -9,6 +9,18 @@ abstract final class JsonFieldHelper {
     return null;
   }
 
+  static int? readInt(Map<String, dynamic> json, List<String> keys) {
+    for (final key in keys) {
+      final value = json[key];
+      if (value == null) continue;
+      if (value is int) return value;
+      if (value is num) return value.toInt();
+      final parsed = int.tryParse(value.toString());
+      if (parsed != null) return parsed;
+    }
+    return null;
+  }
+
   static double? readDouble(Map<String, dynamic> json, List<String> keys) {
     for (final key in keys) {
       final value = json[key];
@@ -57,7 +69,19 @@ abstract final class JsonFieldHelper {
     }
 
     if (json is Map<String, dynamic>) {
-      for (final key in ['data', 'items', 'tasks', 'news', 'list', 'results']) {
+      for (final key in [
+        'data',
+        'items',
+        'tasks',
+        'news',
+        'list',
+        'results',
+        'venues',
+        'events',
+        'places',
+        'publicPlaces',
+        'public_places',
+      ]) {
         final value = json[key];
         if (value is List) {
           return value.whereType<Map<String, dynamic>>().toList();

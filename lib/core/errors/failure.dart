@@ -16,6 +16,10 @@ final class ServerFailure extends Failure {
   const ServerFailure([super.message = 'Server mengalami gangguan']);
 }
 
+final class UnauthorizedFailure extends Failure {
+  const UnauthorizedFailure([super.message = 'Sesi tidak valid']);
+}
+
 final class UnknownFailure extends Failure {
   const UnknownFailure([super.message = 'Terjadi kesalahan tidak terduga']);
 }

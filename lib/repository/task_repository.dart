@@ -6,7 +6,7 @@ import '../core/utils/result.dart';
 import '../models/task_model.dart';
 
 class TaskRepository {
-  TaskRepository({DioClient? client}) : _client = client ?? DioClient();
+  TaskRepository({required DioClient client}) : _client = client;
 
   final DioClient _client;
 

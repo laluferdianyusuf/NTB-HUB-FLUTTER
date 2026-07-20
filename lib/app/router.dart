@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ntbhub_flutter/features/users/notification/presentation/screens/notification_screen.dart';
 import 'package:ntbhub_flutter/features/users/task/presentation/screens/task_screen.dart';
@@ -8,6 +9,7 @@ import '../features/users/auth/presentation/screens/location_permission_screen.d
 import '../features/users/auth/presentation/screens/login_screen.dart';
 import '../features/users/auth/presentation/screens/register_screen.dart';
 import '../features/users/auth/presentation/screens/splash_screen.dart';
+import '../features/users/auth/presentation/screens/verify_email_screen.dart';
 import '../features/users/booking/presentation/screens/booking_screen.dart';
 import '../features/users/home/presentation/screens/content_detail_screens.dart';
 import '../features/users/profile/presentation/screens/about_us_screen.dart';
@@ -26,6 +28,11 @@ import '../features/users/quick_action/presentation/screens/order_food_screen.da
 import '../features/users/quick_action/presentation/screens/promo_deals_screen.dart';
 import '../features/users/quick_action/presentation/screens/top_up_balance_screen.dart';
 import '../features/users/search/presentation/screens/global_search_screen.dart';
+import '../features/users/news/presentation/screens/news_detail_webview_screen.dart';
+import '../models/news_model.dart';
+import '../models/home_event_model.dart';
+import '../models/public_place_model.dart';
+import '../models/venue_model.dart';
 import '../navigation/main_navigation.dart';
 
 final GoRouter appRouter = GoRouter(
@@ -46,6 +53,16 @@ final GoRouter appRouter = GoRouter(
       builder: (context, state) => const RegisterScreen(),
     ),
     GoRoute(
+      path: '/verify-email',
+      builder: (context, state) {
+        final query = state.uri.queryParameters;
+        return VerifyEmailScreen(
+          userId: query['userId'] ?? '',
+          email: query['email'] ?? '',
+        );
+      },
+    ),
+    GoRoute(
       path: '/home',
       builder: (context, state) => const MainNavigationPage(),
     ),
@@ -54,19 +71,36 @@ final GoRouter appRouter = GoRouter(
       builder: (context, state) => const GlobalSearchScreen(),
     ),
     GoRoute(
+      path: '/news/:id',
+      builder: (context, state) {
+        final newsId = state.pathParameters['id']!;
+        final initialNews = state.extra as NewsModel?;
+        return NewsDetailWebViewScreen(
+          newsId: newsId,
+          initialNews: initialNews,
+        );
+      },
+    ),
+    GoRoute(
       path: '/venue/:id',
-      builder: (context, state) =>
-          VenueDetailScreen(venueId: state.pathParameters['id']!),
+      builder: (context, state) => VenueDetailScreen(
+        venueId: state.pathParameters['id']!,
+        initialVenue: state.extra as VenueModel?,
+      ),
     ),
     GoRoute(
       path: '/event/:id',
-      builder: (context, state) =>
-          EventDetailScreen(eventId: state.pathParameters['id']!),
+      builder: (context, state) => EventDetailScreen(
+        eventId: state.pathParameters['id']!,
+        initialEvent: state.extra as HomeEventModel?,
+      ),
     ),
     GoRoute(
       path: '/public-place/:id',
-      builder: (context, state) =>
-          PublicPlaceDetailScreen(placeId: state.pathParameters['id']!),
+      builder: (context, state) => PublicPlaceDetailScreen(
+        placeId: state.pathParameters['id']!,
+        initialPlace: state.extra as PublicPlaceModel?,
+      ),
     ),
     GoRoute(
       path: '/booking',

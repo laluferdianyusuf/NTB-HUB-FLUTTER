@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 
-import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/extensions/context_extensions.dart';
 import '../../../../../core/utils/result.dart' as result;
 import '../../../../../models/user_model.dart';
 import '../../../../../widgets/common/app_page_scaffold.dart';
 import '../../../../../widgets/common/app_text_field.dart';
+import '../../../../../widgets/common/user_avatar.dart';
 import '../providers/profile_provider.dart';
 
 class ManageProfileScreen extends ConsumerStatefulWidget {
@@ -88,17 +88,10 @@ class _ManageProfileScreenState extends ConsumerState<ManageProfileScreen> {
         key: _formKey,
         child: Column(
           children: [
-            CircleAvatar(
+            UserAvatar(
+              name: user.name,
+              imageUrl: user.avatarUrl,
               radius: 48,
-              backgroundColor: AppColors.primary.withValues(alpha: 0.1),
-              child: Text(
-                user.name[0],
-                style: const TextStyle(
-                  fontSize: 36,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.primary,
-                ),
-              ),
             ),
             const SizedBox(height: 8),
             TextButton.icon(

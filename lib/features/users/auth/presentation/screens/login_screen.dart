@@ -41,7 +41,18 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     setState(() => _isLoading = false);
 
     switch (loginResult) {
-      case result.Success():
+      case result.Success(:final data):
+        if (data.requiresEmailVerification || !data.isAuthenticated) {
+          final query = Uri(
+            path: '/verify-email',
+            queryParameters: {
+              'userId': data.userId,
+              'email': (formData['email'] as String).trim(),
+            },
+          ).toString();
+          context.go(query);
+          return;
+        }
         context.go('/home');
       case result.Error(:final failure):
         context.showSnackBar(failure.message, isError: true);

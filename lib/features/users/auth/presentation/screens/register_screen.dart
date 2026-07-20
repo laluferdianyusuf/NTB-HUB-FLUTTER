@@ -30,7 +30,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     final formData = _formKey.currentState!.value;
     setState(() => _isLoading = true);
 
-    final registerResult = await ref.read(authProvider.notifier).register(
+    final registerResult = await ref
+        .read(authProvider.notifier)
+        .register(
           name: (formData['name'] as String).trim(),
           email: (formData['email'] as String).trim(),
           password: formData['password'] as String,
@@ -40,8 +42,15 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     setState(() => _isLoading = false);
 
     switch (registerResult) {
-      case result.Success():
-        context.go('/home');
+      case result.Success(:final data):
+        final query = Uri(
+          path: '/verify-email',
+          queryParameters: {
+            'userId': data.userId,
+            'email': (formData['email'] as String).trim(),
+          },
+        ).toString();
+        context.go(query);
       case result.Error(:final failure):
         context.showSnackBar(failure.message, isError: true);
     }
@@ -56,7 +65,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
         elevation: 0,
         foregroundColor: AppColors.textPrimary,
         leading: IconButton(
-          icon: const Icon(Iconsax.arrow_left),
+          icon: const Icon(Iconsax.arrow_left_2_copy),
           onPressed: () => context.go('/login'),
         ),
       ),

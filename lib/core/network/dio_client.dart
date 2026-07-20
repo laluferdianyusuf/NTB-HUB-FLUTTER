@@ -7,11 +7,16 @@ import '../constants/api_constants.dart';
 import '../errors/app_exception.dart';
 import '../logger/app_logger.dart';
 import '../storage/local_storage.dart';
+import '../storage/storage_provider.dart';
 import 'api_response.dart';
 import 'dio_interceptor.dart';
+import 'session_expired_handler.dart';
 
 class DioClient {
-  DioClient({Dio? dio, LocalStorage? storage}) {
+  DioClient({
+    Dio? dio,
+    required LocalStorage storage,
+  }) : _storage = storage {
     _dio = dio ??
         Dio(
           BaseOptions(
@@ -26,13 +31,22 @@ class DioClient {
           ),
         );
 
+    _refreshInterceptor = RefreshInterceptor(
+      dio: _dio,
+      storage: _storage,
+      onSessionExpired: notifySessionExpired,
+    );
+
     _dio.interceptors.addAll([
-      AuthInterceptor(storage: storage),
+      AuthInterceptor(storage: _storage),
+      _refreshInterceptor,
       LoggingInterceptor(),
     ]);
   }
 
   late final Dio _dio;
+  late final RefreshInterceptor _refreshInterceptor;
+  final LocalStorage _storage;
 
   Dio get instance => _dio;
 
@@ -269,6 +283,9 @@ class DioClient {
         if (statusCode == 404) {
           return NotFoundException(message);
         }
+        if (statusCode == 401) {
+          return UnauthorizedException(message);
+        }
         return ServerException(message);
       case DioExceptionType.cancel:
         return const NetworkException('Request dibatalkan');
@@ -287,4 +304,6 @@ class DioClient {
   }
 }
 
-final dioClientProvider = Provider<DioClient>((ref) => DioClient());
+final dioClientProvider = Provider<DioClient>((ref) {
+  return DioClient(storage: ref.watch(localStorageProvider));
+});

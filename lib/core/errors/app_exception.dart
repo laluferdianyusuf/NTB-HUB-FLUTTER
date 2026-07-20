@@ -22,3 +22,7 @@ final class ServerException extends AppException {
 final class NotFoundException extends AppException {
   const NotFoundException([super.message = 'Data tidak ditemukan']);
 }
+
+final class UnauthorizedException extends AppException {
+  const UnauthorizedException([super.message = 'Sesi tidak valid']);
+}

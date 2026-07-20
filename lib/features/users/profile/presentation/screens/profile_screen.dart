@@ -9,6 +9,7 @@ import '../../../../../core/utils/result.dart' as result;
 import '../../../../../models/user_model.dart';
 import '../../../../../widgets/common/app_confirm_dialog.dart';
 import '../../../../../widgets/common/app_page_scaffold.dart';
+import '../../../../../widgets/common/user_avatar.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../providers/profile_provider.dart';
 import '../providers/profile_settings_provider.dart';
@@ -68,32 +69,28 @@ class _ProfileContent extends ConsumerWidget {
 
             child: Row(
               children: [
-                IconButton.filled(
-                  style: IconButton.styleFrom(
-                    backgroundColor: AppColors.primary.withValues(alpha: 0.1),
-                    foregroundColor: AppColors.primary,
-                  ),
-                  onPressed: () {},
-                  icon: const Icon(Iconsax.people),
-                  color: AppColors.textPrimary,
+                UserAvatar(
+                  name: user.name,
+                  imageUrl: user.avatarUrl,
+                  radius: 22,
                 ),
                 const SizedBox(width: 14),
-                const Expanded(
+                Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Lalu Ferdian Yusuf',
-                        style: TextStyle(
+                        user.name,
+                        style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
                           color: AppColors.textPrimary,
                         ),
                       ),
-                      SizedBox(height: 2),
+                      const SizedBox(height: 2),
                       Text(
-                        'nama@gmail.com',
-                        style: TextStyle(
+                        user.email,
+                        style: const TextStyle(
                           color: AppColors.textSecondary,
                           fontSize: 12,
                         ),

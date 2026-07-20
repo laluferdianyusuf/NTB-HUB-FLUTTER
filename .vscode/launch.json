@@ -1,0 +1,22 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "NTB Hub (Chrome Web - OAuth)",
+      "request": "launch",
+      "type": "dart",
+      "args": [
+        "-d",
+        "chrome",
+        "--web-hostname=localhost",
+        "--web-port=7357",
+        "--web-launch-url=http://localhost:7357"
+      ]
+    },
+    {
+      "name": "NTB Hub (Android)",
+      "request": "launch",
+      "type": "dart"
+    }
+  ]
+}
