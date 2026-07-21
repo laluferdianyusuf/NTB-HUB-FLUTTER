@@ -25,18 +25,16 @@ class HomeSearchBar extends StatelessWidget {
             ),
             child: const Row(
               children: [
-                Icon(Iconsax.search_normal, color: AppColors.textSecondary),
+                Icon(
+                  Iconsax.search_normal_copy,
+                  color: AppColors.textSecondary,
+                ),
                 SizedBox(width: 12),
                 Expanded(
                   child: Text(
                     'Cari venue, event, public place...',
                     style: TextStyle(color: AppColors.textSecondary),
                   ),
-                ),
-                Icon(
-                  Iconsax.arrow_right_1_copy,
-                  color: AppColors.textSecondary,
-                  size: 18,
                 ),
               ],
             ),

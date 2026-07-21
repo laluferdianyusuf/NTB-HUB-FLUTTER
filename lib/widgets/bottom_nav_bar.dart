@@ -15,11 +15,31 @@ class BottomNavBar extends StatelessWidget {
   final ValueChanged<int> onTap;
 
   static const _items = [
-    _NavItem(label: 'Home', icon: Iconsax.home_1),
-    _NavItem(label: 'News', icon: Iconsax.document_text),
-    _NavItem(label: 'Groups', icon: Iconsax.people),
-    _NavItem(label: 'Activity', icon: Iconsax.activity),
-    _NavItem(label: 'Profile', icon: Iconsax.profile_circle),
+    _NavItem(
+      label: 'Home',
+      outlineIcon: Iconsax.home,
+      filledIcon: Iconsax.home_1,
+    ),
+    _NavItem(
+      label: 'News',
+      outlineIcon: Iconsax.document_text,
+      filledIcon: Iconsax.document_text_1,
+    ),
+    _NavItem(
+      label: 'Groups',
+      outlineIcon: Iconsax.people,
+      filledIcon: Iconsax.people,
+    ),
+    _NavItem(
+      label: 'Activity',
+      outlineIcon: Iconsax.activity,
+      filledIcon: Iconsax.activity,
+    ),
+    _NavItem(
+      label: 'Profile',
+      outlineIcon: Iconsax.profile_circle,
+      filledIcon: Iconsax.profile_circle,
+    ),
   ];
 
   @override
@@ -45,7 +65,7 @@ class BottomNavBar extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Icon(
-                        item.icon,
+                        isSelected ? item.filledIcon : item.outlineIcon,
                         size: 22,
                         color: isSelected
                             ? AppColors.primary
@@ -77,8 +97,13 @@ class BottomNavBar extends StatelessWidget {
 }
 
 class _NavItem {
-  const _NavItem({required this.label, required this.icon});
+  const _NavItem({
+    required this.label,
+    required this.outlineIcon,
+    required this.filledIcon,
+  });
 
   final String label;
-  final IconData icon;
+  final IconData outlineIcon;
+  final IconData filledIcon;
 }
