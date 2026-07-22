@@ -6,6 +6,7 @@ import '../core/network/dio_client.dart';
 import '../core/repository/repository_exception_mapper.dart';
 import '../core/utils/result.dart';
 import '../models/venue_model.dart';
+import '../models/venue_service_model.dart';
 
 class VenueRepository {
   VenueRepository({required DioClient client}) : _client = client;
@@ -45,6 +46,34 @@ class VenueRepository {
     }
   }
 
+  Future<Result<List<VenueServiceModel>>> getVenueServices(
+    String venueId, {
+    VenueServiceQuery query = const VenueServiceQuery(isActive: true),
+  }) async {
+    try {
+      final response = await _client.get<List<VenueServiceModel>>(
+        ApiEndpoints.venueServices(venueId),
+        queryParameters: query.toQueryParameters(),
+        fromJson: _parseVenueServiceList,
+      );
+
+      final services = response.data
+          .where((service) => service.isActive && service.id.isNotEmpty)
+          .toList()
+        ..sort((a, b) {
+          final aDate = a.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0);
+          final bDate = b.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0);
+          return bDate.compareTo(aDate);
+        });
+
+      return Success(services);
+    } on AppException catch (error) {
+      return Error(mapRepositoryException(error));
+    } catch (error) {
+      return Error(UnknownFailure(error.toString()));
+    }
+  }
+
   Future<Result<VenueModel>> getVenueById(String id) async {
     final detailResult = await getVenueDetail(id);
     if (detailResult case Success()) {
@@ -71,6 +100,13 @@ class VenueRepository {
     return JsonFieldHelper.readObjectList(json)
         .map(VenueModel.fromJson)
         .where((venue) => venue.id.isNotEmpty)
+        .toList();
+  }
+
+  List<VenueServiceModel> _parseVenueServiceList(dynamic json) {
+    return JsonFieldHelper.readObjectList(json)
+        .map(VenueServiceModel.fromJson)
+        .where((service) => service.id.isNotEmpty)
         .toList();
   }
 }

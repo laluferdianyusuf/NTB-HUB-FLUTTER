@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 
 import '../../core/constants/app_colors.dart';
@@ -19,7 +20,10 @@ class AppPageScaffold extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(title: Text(title), actions: actions),
+      appBar: AppBar(
+        title: Text(title, overflow: TextOverflow.ellipsis, maxLines: 1),
+        actions: actions,
+      ),
       body: body,
     );
   }

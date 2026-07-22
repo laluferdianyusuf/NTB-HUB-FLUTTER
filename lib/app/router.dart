@@ -2,6 +2,7 @@ import 'package:go_router/go_router.dart';
 import 'package:ntbhub_flutter/features/users/notification/presentation/screens/notification_screen.dart';
 import 'package:ntbhub_flutter/features/users/task/presentation/screens/task_screen.dart';
 
+import '../models/venue_service_model.dart';
 import '../features/event/presentation/screens/event_list_screen.dart';
 import '../features/users/auth/presentation/screens/onboarding_screen.dart';
 import '../features/users/auth/presentation/screens/location_permission_screen.dart';
@@ -10,6 +11,7 @@ import '../features/users/auth/presentation/screens/register_screen.dart';
 import '../features/users/auth/presentation/screens/splash_screen.dart';
 import '../features/users/auth/presentation/screens/verify_email_screen.dart';
 import '../features/users/booking/presentation/screens/booking_screen.dart';
+import '../features/users/booking/presentation/screens/service_booking_screen.dart';
 import '../features/users/home/presentation/screens/content_detail_screens.dart';
 import '../features/users/profile/presentation/screens/about_us_screen.dart';
 import '../features/users/profile/presentation/screens/change_password_screen.dart';
@@ -104,6 +106,17 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: '/booking',
       builder: (context, state) => const BookingScreen(),
+    ),
+    GoRoute(
+      path: '/booking/service/:serviceId',
+      builder: (context, state) {
+        final query = state.uri.queryParameters;
+        return ServiceBookingScreen(
+          serviceId: state.pathParameters['serviceId']!,
+          venueId: query['venueId'] ?? '',
+          initialService: state.extra as VenueServiceModel?,
+        );
+      },
     ),
     GoRoute(
       path: '/events',

@@ -26,8 +26,12 @@ class VenueModel {
   String get displayDescription {
     final value = description?.trim();
     if (value != null && value.isNotEmpty) return value;
-    return '$name adalah venue populer di $location dengan kapasitas '
-        '$capacity orang. Cocok untuk acara komunitas, seminar, dan pertemuan.';
+    if (capacity > 0) {
+      return '$name adalah venue populer di $location dengan kapasitas '
+          '$capacity orang. Cocok untuk acara komunitas, seminar, dan pertemuan.';
+    }
+    return '$name berlokasi di $location. Cocok untuk acara komunitas, '
+        'seminar, dan pertemuan.';
   }
 
   VenueModel mergeWith(VenueModel? other) {
@@ -100,7 +104,7 @@ class VenueModel {
             'priceLabel',
             'price_label',
           ]) ??
-          '-',
+          '',
       description: JsonFieldHelper.readString(source, [
         'description',
         'desc',

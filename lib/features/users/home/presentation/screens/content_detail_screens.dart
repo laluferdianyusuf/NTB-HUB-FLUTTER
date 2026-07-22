@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 
 import '../../../../../core/constants/app_colors.dart';
@@ -12,6 +11,8 @@ import '../../../../../models/venue_model.dart';
 import '../../../../../widgets/common/app_page_scaffold.dart';
 import '../../../../../widgets/common/app_skeleton.dart';
 import '../providers/home_content_provider.dart';
+import '../widgets/venue_detail_hero.dart';
+import '../widgets/venue_services_section.dart';
 
 class VenueDetailScreen extends ConsumerWidget {
   const VenueDetailScreen({
@@ -31,6 +32,7 @@ class VenueDetailScreen extends ConsumerWidget {
       loading: () {
         if (initialVenue != null) {
           return _VenueDetailBody(
+            venueId: venueId,
             venue: initialVenue!,
             onRetry: () => ref.invalidate(venueDetailProvider(venueId)),
           );
@@ -43,6 +45,7 @@ class VenueDetailScreen extends ConsumerWidget {
       error: (error, _) {
         if (initialVenue != null) {
           return _VenueDetailBody(
+            venueId: venueId,
             venue: initialVenue!,
             onRetry: () => ref.invalidate(venueDetailProvider(venueId)),
           );
@@ -55,19 +58,22 @@ class VenueDetailScreen extends ConsumerWidget {
       },
       data: (resultValue) => switch (resultValue) {
         result.Success(:final data) => _VenueDetailBody(
+          venueId: venueId,
           venue: data.mergeWith(initialVenue),
           onRetry: () => ref.invalidate(venueDetailProvider(venueId)),
         ),
-        result.Error(:final failure) => initialVenue != null
-            ? _VenueDetailBody(
-                venue: initialVenue!,
-                onRetry: () => ref.invalidate(venueDetailProvider(venueId)),
-              )
-            : _DetailErrorScaffold(
-                title: 'Detail Venue',
-                message: failure.message,
-                onRetry: () => ref.invalidate(venueDetailProvider(venueId)),
-              ),
+        result.Error(:final failure) =>
+          initialVenue != null
+              ? _VenueDetailBody(
+                  venueId: venueId,
+                  venue: initialVenue!,
+                  onRetry: () => ref.invalidate(venueDetailProvider(venueId)),
+                )
+              : _DetailErrorScaffold(
+                  title: 'Detail Venue',
+                  message: failure.message,
+                  onRetry: () => ref.invalidate(venueDetailProvider(venueId)),
+                ),
       },
     );
   }
@@ -118,16 +124,17 @@ class EventDetailScreen extends ConsumerWidget {
           event: data.mergeWith(initialEvent),
           onRetry: () => ref.invalidate(eventDetailProvider(eventId)),
         ),
-        result.Error(:final failure) => initialEvent != null
-            ? _EventDetailBody(
-                event: initialEvent!,
-                onRetry: () => ref.invalidate(eventDetailProvider(eventId)),
-              )
-            : _DetailErrorScaffold(
-                title: 'Detail Event',
-                message: failure.message,
-                onRetry: () => ref.invalidate(eventDetailProvider(eventId)),
-              ),
+        result.Error(:final failure) =>
+          initialEvent != null
+              ? _EventDetailBody(
+                  event: initialEvent!,
+                  onRetry: () => ref.invalidate(eventDetailProvider(eventId)),
+                )
+              : _DetailErrorScaffold(
+                  title: 'Detail Event',
+                  message: failure.message,
+                  onRetry: () => ref.invalidate(eventDetailProvider(eventId)),
+                ),
       },
     );
   }
@@ -178,90 +185,110 @@ class PublicPlaceDetailScreen extends ConsumerWidget {
           place: data.mergeWith(initialPlace),
           onRetry: () => ref.invalidate(publicPlaceDetailProvider(placeId)),
         ),
-        result.Error(:final failure) => initialPlace != null
-            ? _PublicPlaceDetailBody(
-                place: initialPlace!,
-                onRetry: () => ref.invalidate(publicPlaceDetailProvider(placeId)),
-              )
-            : _DetailErrorScaffold(
-                title: 'Detail Public Place',
-                message: failure.message,
-                onRetry: () => ref.invalidate(publicPlaceDetailProvider(placeId)),
-              ),
+        result.Error(:final failure) =>
+          initialPlace != null
+              ? _PublicPlaceDetailBody(
+                  place: initialPlace!,
+                  onRetry: () =>
+                      ref.invalidate(publicPlaceDetailProvider(placeId)),
+                )
+              : _DetailErrorScaffold(
+                  title: 'Detail Public Place',
+                  message: failure.message,
+                  onRetry: () =>
+                      ref.invalidate(publicPlaceDetailProvider(placeId)),
+                ),
       },
     );
   }
 }
 
 class _VenueDetailBody extends StatelessWidget {
-  const _VenueDetailBody({required this.venue, required this.onRetry});
+  const _VenueDetailBody({
+    required this.venueId,
+    required this.venue,
+    required this.onRetry,
+  });
 
+  final String venueId;
   final VenueModel venue;
   final VoidCallback onRetry;
 
   @override
   Widget build(BuildContext context) {
-    return AppPageScaffold(
-      title: 'Detail Venue',
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _HeroBanner(
-              icon: Iconsax.buildings,
-              label: 'Venue',
-              title: venue.name,
-              imageUrl: venue.imageUrl,
-            ),
-            const SizedBox(height: 20),
-            _InfoRow(icon: Iconsax.location, text: venue.location),
-            const SizedBox(height: 8),
-            _InfoRow(
-              icon: Iconsax.people,
-              text: 'Kapasitas ${venue.capacity} orang',
-            ),
-            const SizedBox(height: 8),
-            _InfoRow(icon: Iconsax.tag, text: venue.category),
-            const SizedBox(height: 8),
-            _InfoRow(icon: Iconsax.wallet, text: venue.priceRange),
-            if (venue.rating > 0) ...[
-              const SizedBox(height: 8),
-              _InfoRow(
-                icon: Iconsax.star,
-                text: 'Rating ${venue.rating.toStringAsFixed(1)}',
-              ),
-            ],
-            const SizedBox(height: 24),
-            const Text(
-              'Deskripsi',
-              style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              venue.displayDescription,
-              style: const TextStyle(
-                color: AppColors.textSecondary,
-                height: 1.6,
-              ),
-            ),
-            const SizedBox(height: 24),
-            SizedBox(
-              width: double.infinity,
-              height: 52,
-              child: ElevatedButton.icon(
-                onPressed: () => context.push('/booking'),
-                icon: const Icon(Iconsax.ticket, color: Colors.white),
-                label: const Text(
-                  'Booking Venue',
-                  style: TextStyle(color: Colors.white),
-                ),
-              ),
-            ),
-          ],
+    return Scaffold(
+      backgroundColor: AppColors.background,
+      body: CustomScrollView(
+        physics: const BouncingScrollPhysics(
+          parent: AlwaysScrollableScrollPhysics(),
         ),
+        slivers: [
+          VenueDetailSliverHeader(venue: venue),
+          const SliverToBoxAdapter(child: SizedBox(height: 12)),
+          SliverToBoxAdapter(
+            child: Container(
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: AppColors.background,
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(28),
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.04),
+                    blurRadius: 12,
+                    offset: const Offset(0, -2),
+                  ),
+                ],
+              ),
+              padding: const EdgeInsets.fromLTRB(20, 36, 20, 20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (_hasVenueStats(venue)) ...[
+                    const VenueDetailSectionHeader(
+                      title: 'Informasi Venue',
+                      subtitle: 'Ringkasan fasilitas dan kapasitas',
+                    ),
+                    const SizedBox(height: 16),
+                    VenueDetailStatGrid(venue: venue),
+                    const SizedBox(height: 28),
+                  ],
+                  const VenueDetailSectionHeader(title: 'Deskripsi'),
+                  const SizedBox(height: 10),
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: AppColors.divider),
+                    ),
+                    child: Text(
+                      venue.displayDescription,
+                      style: const TextStyle(
+                        color: AppColors.textSecondary,
+                        height: 1.65,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 28),
+                  VenueServicesSection(venueId: venueId),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
+  }
+
+  bool _hasVenueStats(VenueModel venue) {
+    return venue.capacity > 0 ||
+        venue.rating > 0 ||
+        venue.priceRange.isNotEmpty ||
+        (venue.category.isNotEmpty && venue.category != 'Umum');
   }
 }
 
@@ -521,7 +548,10 @@ class _InfoRow extends StatelessWidget {
         Icon(icon, size: 18, color: AppColors.primary),
         const SizedBox(width: 10),
         Expanded(
-          child: Text(text, style: const TextStyle(color: AppColors.textPrimary)),
+          child: Text(
+            text,
+            style: const TextStyle(color: AppColors.textPrimary),
+          ),
         ),
       ],
     );

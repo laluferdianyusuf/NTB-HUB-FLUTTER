@@ -81,6 +81,9 @@ abstract final class JsonFieldHelper {
         'places',
         'publicPlaces',
         'public_places',
+        'services',
+        'venueServices',
+        'venue_services',
       ]) {
         final value = json[key];
         if (value is List) {

@@ -26,6 +26,13 @@ abstract final class ApiEndpoints {
   static String publicPlaceDetail(String id) => '/public-places/detail-place/$id';
   static const String allEvents = '/events/list-events';
   static String eventDetail(String id) => '/events/detail-event/$id';
+  static String venueServices(String venueId) =>
+      '/venue-service/services-venue/$venueId';
+  static String venueServiceDetail(String id) => '/venue-service/detail/$id';
+  static String operationalHoursByVenue(String venueId) =>
+      '/operational/operate/venue/$venueId';
+  static String venueUnitsByService(String serviceId) =>
+      '/venue-unit/by-service/$serviceId';
   static String venueSubCategoriesByCategory(String categoryId) =>
       '/venue-sub-category/by-category/$categoryId';
 }
