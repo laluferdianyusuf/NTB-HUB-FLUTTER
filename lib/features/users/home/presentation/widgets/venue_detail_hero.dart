@@ -4,12 +4,13 @@ import 'package:iconsax_flutter/iconsax_flutter.dart';
 
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../models/venue_model.dart';
+import 'package:ntbhub_flutter/widgets/common/app_image.dart';
 
 class VenueDetailSliverHeader extends StatelessWidget {
   const VenueDetailSliverHeader({
     super.key,
     required this.venue,
-    this.expandedHeight = 360,
+    this.expandedHeight = 280,
   });
 
   final VenueModel venue;
@@ -40,81 +41,16 @@ class VenueDetailSliverHeader extends StatelessWidget {
           onPressed: () => context.pop(),
         ),
       ),
-      flexibleSpace: LayoutBuilder(
-        builder: (context, constraints) {
-          final currentHeight = constraints.biggest.height;
-          final collapsedHeight = kToolbarHeight + topPadding;
-          final expandRange = expandedHeight - collapsedHeight;
-          final expandRatio = expandRange <= 0
-              ? 0.0
-              : ((currentHeight - collapsedHeight) / expandRange).clamp(
-                  0.0,
-                  1.0,
-                );
-          final collapseProgress = 1 - expandRatio;
-          final headerReveal = ((collapseProgress - 0.55) / 0.45).clamp(
-            0.0,
-            1.0,
-          );
-
-          return Stack(
-            fit: StackFit.expand,
-            children: [
-              _HeroBackdrop(venue: venue),
-              Positioned(
-                top: 0,
-                left: 0,
-                right: 0,
-                height: collapsedHeight,
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: headerReveal),
-                    border: headerReveal > 0.95
-                        ? Border(
-                            bottom: BorderSide(
-                              color: AppColors.divider.withValues(
-                                alpha: headerReveal,
-                              ),
-                            ),
-                          )
-                        : null,
-                    boxShadow: headerReveal > 0.95
-                        ? [
-                            BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.05),
-                              blurRadius: 8,
-                              offset: const Offset(0, 2),
-                            ),
-                          ]
-                        : null,
-                  ),
-                ),
-              ),
-              Positioned(
-                top: topPadding,
-                left: 65,
-                right: 16,
-                height: kToolbarHeight,
-                child: Opacity(
-                  opacity: headerReveal,
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      venue.name,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        fontSize: 17,
-                        fontWeight: FontWeight.w700,
-                        color: AppColors.textPrimary,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          );
-        },
+      flexibleSpace: FlexibleSpaceBar(
+        background: PageView.builder(
+          itemCount: 1,
+          itemBuilder: (_, i) => AppImage(
+            source: venue.imageUrl,
+            fit: BoxFit.cover,
+            width: double.infinity,
+            height: double.infinity,
+          ),
+        ),
       ),
     );
   }
