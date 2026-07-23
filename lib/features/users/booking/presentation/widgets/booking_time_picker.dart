@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:iconsax_flutter/iconsax_flutter.dart';
+import 'package:iconsax/iconsax.dart';
 
-import '../../../../../core/constants/app_colors.dart';
+import '../../../../../core/extensions/context_extensions.dart';
 import '../../../../../models/booking_time_selection.dart';
 
 class BookingTimePicker extends StatelessWidget {
@@ -34,8 +34,7 @@ class BookingTimePicker extends StatelessWidget {
         const _PickerLabel(
           icon: Iconsax.clock,
           title: 'Pilih Waktu',
-          subtitle:
-              'Ketuk kotak jam mulai, ketuk lagi untuk perpanjang durasi',
+          subtitle: 'Ketuk kotak jam mulai, ketuk lagi untuk perpanjang durasi',
         ),
         const SizedBox(height: 12),
         LayoutBuilder(
@@ -49,7 +48,8 @@ class BookingTimePicker extends StatelessWidget {
               spacing: spacing,
               runSpacing: spacing,
               children: slots.map((slot) {
-                final isSelected = selection != null &&
+                final isSelected =
+                    selection != null &&
                     BookingTimeSelection.isSlotSelected(
                       slot: slot,
                       selection: selection!,
@@ -116,10 +116,10 @@ class _PickerLabel extends StatelessWidget {
           width: 32,
           height: 32,
           decoration: BoxDecoration(
-            color: AppColors.primary.withValues(alpha: 0.1),
+            color: context.primaryColor.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(10),
           ),
-          child: Icon(icon, size: 16, color: AppColors.primary),
+          child: Icon(icon, size: 16, color: context.primaryColor),
         ),
         const SizedBox(width: 10),
         Expanded(
@@ -128,15 +128,12 @@ class _PickerLabel extends StatelessWidget {
             children: [
               Text(
                 title,
-                style: const TextStyle(
-                  fontWeight: FontWeight.w700,
-                  fontSize: 14,
-                ),
+                style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14),
               ),
               Text(
                 subtitle,
-                style: const TextStyle(
-                  color: AppColors.textSecondary,
+                style: TextStyle(
+                  color: context.adaptiveTextSecondary,
                   fontSize: 12,
                 ),
               ),
@@ -177,18 +174,18 @@ class _TimeSlotBox extends StatelessWidget {
           child: Ink(
             height: 52,
             decoration: BoxDecoration(
-              color: isSelected ? AppColors.primary : Colors.white,
+              color: isSelected ? context.primaryColor : Colors.white,
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
                 color: isSelected
-                    ? AppColors.primary
-                    : AppColors.divider,
+                    ? context.primaryColor
+                    : context.adaptiveDivider,
                 width: isRangeStart ? 2 : 1,
               ),
               boxShadow: isSelected
                   ? [
                       BoxShadow(
-                        color: AppColors.primary.withValues(alpha: 0.2),
+                        color: context.primaryColor.withValues(alpha: 0.2),
                         blurRadius: 8,
                         offset: const Offset(0, 3),
                       ),
@@ -201,7 +198,9 @@ class _TimeSlotBox extends StatelessWidget {
                 Text(
                   label,
                   style: TextStyle(
-                    color: isSelected ? Colors.white : AppColors.textPrimary,
+                    color: isSelected
+                        ? Colors.white
+                        : context.adaptiveTextPrimary,
                     fontWeight: FontWeight.w800,
                     fontSize: 14,
                   ),
@@ -244,12 +243,12 @@ class _TimeRangeSummary extends StatelessWidget {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            AppColors.primary.withValues(alpha: 0.12),
-            AppColors.primary.withValues(alpha: 0.04),
+            context.primaryColor.withValues(alpha: 0.12),
+            context.primaryColor.withValues(alpha: 0.04),
           ],
         ),
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.primary.withValues(alpha: 0.2)),
+        border: Border.all(color: context.primaryColor.withValues(alpha: 0.2)),
       ),
       child: Row(
         children: [
@@ -257,14 +256,10 @@ class _TimeRangeSummary extends StatelessWidget {
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              color: AppColors.primary,
+              color: context.primaryColor,
               borderRadius: BorderRadius.circular(12),
             ),
-            child: const Icon(
-              Iconsax.calendar_tick,
-              color: Colors.white,
-              size: 20,
-            ),
+            child: Icon(Iconsax.calendar_tick, color: Colors.white, size: 20),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -273,16 +268,13 @@ class _TimeRangeSummary extends StatelessWidget {
               children: [
                 Text(
                   selection.displayRange,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w800,
-                    fontSize: 15,
-                  ),
+                  style: TextStyle(fontWeight: FontWeight.w800, fontSize: 15),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   '${selection.displayDuration} · Operasional $openTime–$closeTime',
-                  style: const TextStyle(
-                    color: AppColors.textSecondary,
+                  style: TextStyle(
+                    color: context.adaptiveTextSecondary,
                     fontSize: 12,
                   ),
                 ),
@@ -306,13 +298,13 @@ class _EmptySlotMessage extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: AppColors.background,
+        color: Theme.of(context).scaffoldBackgroundColor,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.divider),
+        border: Border.all(color: context.adaptiveDivider),
       ),
       child: Text(
         message,
-        style: const TextStyle(color: AppColors.textSecondary),
+        style: TextStyle(color: context.adaptiveTextSecondary),
       ),
     );
   }

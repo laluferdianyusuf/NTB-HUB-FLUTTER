@@ -3,9 +3,8 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:go_router/go_router.dart';
-import 'package:iconsax_flutter/iconsax_flutter.dart';
+import 'package:iconsax/iconsax.dart';
 
-import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/constants/app_strings.dart';
 import '../../../../../core/extensions/context_extensions.dart';
 import '../../../../../core/utils/result.dart' as result;
@@ -59,13 +58,13 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        foregroundColor: AppColors.textPrimary,
+        foregroundColor: context.adaptiveTextPrimary,
         leading: IconButton(
-          icon: const Icon(Iconsax.arrow_left_2_copy),
+          icon: Icon(Iconsax.arrow_left_3),
           onPressed: () => context.go('/login'),
         ),
       ),
@@ -81,31 +80,31 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   child: Container(
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
-                      color: AppColors.primary.withValues(alpha: 0.1),
+                      color: context.primaryColor.withValues(alpha: 0.1),
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(
+                    child: Icon(
                       Iconsax.user_add,
                       size: 48,
-                      color: AppColors.primary,
+                      color: context.primaryColor,
                     ),
                   ),
                 ),
                 const SizedBox(height: 24),
-                const Text(
+                Text(
                   'Daftar Akun',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 28,
                     fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
+                    color: context.adaptiveTextPrimary,
                   ),
                 ),
                 const SizedBox(height: 8),
                 Text(
                   'Bergabung dengan komunitas ${AppStrings.appName}',
                   textAlign: TextAlign.center,
-                  style: const TextStyle(color: AppColors.textSecondary),
+                  style: TextStyle(color: context.adaptiveTextSecondary),
                 ),
                 const SizedBox(height: 32),
                 AuthFormField(
@@ -179,7 +178,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   child: ElevatedButton(
                     onPressed: _isLoading ? null : _handleRegister,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primary,
+                      backgroundColor: context.primaryColor,
                       foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
@@ -211,9 +210,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text(
+                    Text(
                       'Sudah punya akun?',
-                      style: TextStyle(color: AppColors.textSecondary),
+                      style: TextStyle(color: context.adaptiveTextSecondary),
                     ),
                     TextButton(
                       onPressed: () => context.go('/login'),

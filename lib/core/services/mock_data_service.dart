@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:latlong2/latlong.dart';
 
+import '../../models/enums/app_enums.dart';
 import '../../models/activity_model.dart';
 import '../../models/carousel_item_model.dart';
 import '../../models/group_model.dart';
@@ -23,7 +24,7 @@ class MockDataService {
     id: '1',
     name: 'Ahmad Rizki',
     email: 'ahmad.rizki@email.com',
-    avatarUrl: null,
+    photo: null,
     location: 'Mataram, NTB',
     bio: 'Pecinta wisata dan budaya NTB',
     joinedAt: DateTime(2024, 3, 15),
@@ -47,13 +48,17 @@ class MockDataService {
     return List.generate(40, (index) {
       return NewsModel(
         id: '${index + 1}',
+        sourceUrl: 'https://ntbhub.com/berita/${index + 1}',
         title: '${titles[index % titles.length]} #${index + 1}',
+        description:
+            'Berita terkini seputar NTB dan komunitas lokal. Update ke-${index + 1}.',
+        source: 'Redaksi NTB Hub',
+        status: NewsStatus.manual,
         summary:
             'Berita terkini seputar NTB dan komunitas lokal. Update ke-${index + 1}.',
         category: categories[index % categories.length],
         publishedAt: DateTime.now().subtract(Duration(hours: index * 3)),
         author: 'Redaksi NTB Hub',
-        sourceUrl: 'https://ntbhub.com/berita/${index + 1}',
       );
     });
   }
@@ -127,18 +132,34 @@ class MockDataService {
       'Ballroom Hotel Lombok',
       'Outdoor Garden NTB Hub',
     ];
-    const locations = ['Mataram', 'Lombok', 'Sumbawa', 'Lombok', 'Mataram'];
-    const categories = ['Indoor', 'Indoor', 'Indoor', 'Hotel', 'Outdoor'];
+    const cities = ['Mataram', 'Lombok', 'Sumbawa', 'Lombok', 'Mataram'];
+    const provinces = ['NTB', 'NTB', 'NTB', 'NTB', 'NTB'];
+    const addresses = [
+      'Jl. Pejanggik No. 115',
+      'Jl. Raya Senggigi',
+      'Jl. Garuda No. 8',
+      'Jl. Raya Kuta',
+      'Jl. Pendidikan No. 2',
+    ];
 
     return List.generate(24, (index) {
       return VenueModel(
         id: '${index + 1}',
         name: '${names[index % names.length]} #${index + 1}',
-        location: locations[index % locations.length],
-        capacity: 100 + (index * 50) % 2000,
-        rating: 3.5 + (index % 15) / 10,
-        category: categories[index % categories.length],
-        priceRange: index % 3 == 0 ? 'Rp 500rb+' : 'Rp 1jt+',
+        address: addresses[index % addresses.length],
+        city: cities[index % cities.length],
+        province: provinces[index % provinces.length],
+        description:
+            'Venue populer di ${cities[index % cities.length]} untuk acara komunitas dan pertemuan.',
+        image:
+            'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=800',
+        gallery: const [],
+        isActive: true,
+        averageRating: 3.5 + (index % 15) / 10,
+        totalReviews: 10 + (index * 3) % 120,
+        totalLikes: 20 + (index * 5) % 200,
+        totalViews: 100 + (index * 17) % 1000,
+        createdAt: DateTime.now().subtract(Duration(days: index)),
       );
     });
   }
@@ -163,11 +184,12 @@ class MockDataService {
     return List.generate(24, (index) {
       return HomeEventModel(
         id: '${index + 1}',
-        title: '${titles[index % titles.length]} #${index + 1}',
+        name: '${titles[index % titles.length]} #${index + 1}',
+        description: 'Event ${categories[index % categories.length]} NTB Hub.',
+        startAt: DateTime.now().add(Duration(days: index * 3 + 1)),
+        endAt: DateTime.now().add(Duration(days: index * 3 + 2)),
         location: locations[index % locations.length],
-        date: DateTime.now().add(Duration(days: index * 3 + 1)),
-        attendees: 100 + (index * 37) % 1500,
-        category: categories[index % categories.length],
+        capacity: 100 + (index * 37) % 1500,
       );
     });
   }
@@ -189,23 +211,23 @@ class MockDataService {
       'Mataram',
       'Mataram',
     ];
-    const types = [
-      'Taman',
-      'Pantai',
-      'Bukit',
-      'Air Terjun',
-      'Religi',
-      'Museum',
+    const placeTypes = [
+      PublicPlaceType.park,
+      PublicPlaceType.tourism,
+      PublicPlaceType.tourism,
+      PublicPlaceType.tourism,
+      PublicPlaceType.other,
+      PublicPlaceType.other,
     ];
 
     return List.generate(24, (index) {
       return PublicPlaceModel(
         id: '${index + 1}',
         name: '${names[index % names.length]} #${index + 1}',
-        location: locations[index % locations.length],
-        type: types[index % types.length],
-        rating: 3.8 + (index % 12) / 10,
-        isOpen: index % 4 != 0,
+        address: locations[index % locations.length],
+        type: placeTypes[index % placeTypes.length],
+        isActive: index % 4 != 0,
+        averageRating: 3.8 + (index % 12) / 10,
       );
     });
   }
@@ -300,40 +322,50 @@ class MockDataService {
   static List<NotificationModel> get notifications => [
     NotificationModel(
       id: '1',
+      recipientType: NotificationRecipientType.user,
+      recipientId: '1',
       title: 'Booking Dikonfirmasi',
-      body: 'Booking Auditorium Mataram #12 telah dikonfirmasi.',
+      message: 'Booking Auditorium Mataram #12 telah dikonfirmasi.',
       createdAt: DateTime.now().subtract(const Duration(minutes: 15)),
-      type: NotificationType.booking,
+      type: AppNotificationType.booking,
     ),
     NotificationModel(
       id: '2',
-      title: 'Event Baru di Sekitarmu',
-      body: 'Festival Bau Nyale 2026 akan dimulai minggu depan.',
+      recipientType: NotificationRecipientType.user,
+      recipientId: '1',
+      title: 'Pesanan Baru',
+      message: 'Pesanan makanan venue #45 menunggu konfirmasi.',
       createdAt: DateTime.now().subtract(const Duration(hours: 2)),
-      type: NotificationType.event,
+      type: AppNotificationType.order,
     ),
     NotificationModel(
       id: '3',
+      recipientType: NotificationRecipientType.user,
+      recipientId: '1',
       title: 'Promo NTB Hub',
-      body: 'Diskon 20% booking venue untuk member komunitas.',
+      message: 'Diskon 20% booking venue untuk member komunitas.',
       createdAt: DateTime.now().subtract(const Duration(hours: 5)),
-      type: NotificationType.promo,
+      type: AppNotificationType.system,
       isRead: true,
     ),
     NotificationModel(
       id: '4',
+      recipientType: NotificationRecipientType.user,
+      recipientId: '1',
       title: 'Pembaruan Sistem',
-      body: 'Fitur Task & Map telah tersedia di aplikasi terbaru.',
+      message: 'Fitur Task & Map telah tersedia di aplikasi terbaru.',
       createdAt: DateTime.now().subtract(const Duration(days: 1)),
-      type: NotificationType.system,
+      type: AppNotificationType.system,
       isRead: true,
     ),
     NotificationModel(
       id: '5',
-      title: 'Reminder Event',
-      body: 'NTB Expo & UMKM Fair dimulai besok pukul 09:00.',
+      recipientType: NotificationRecipientType.user,
+      recipientId: '1',
+      title: 'Penarikan Diproses',
+      message: 'Permintaan withdraw venue sedang diproses.',
       createdAt: DateTime.now().subtract(const Duration(days: 2)),
-      type: NotificationType.event,
+      type: AppNotificationType.withdraw,
       isRead: true,
     ),
   ];

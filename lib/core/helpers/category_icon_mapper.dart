@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:iconsax_flutter/iconsax_flutter.dart';
+import 'package:iconsax/iconsax.dart';
 
 abstract final class CategoryIconMapper {
   static const _assetBase = 'lib/core/assets/svg';

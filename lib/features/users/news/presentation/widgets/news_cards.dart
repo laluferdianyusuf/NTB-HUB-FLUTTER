@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:iconsax_flutter/iconsax_flutter.dart';
+import 'package:iconsax/iconsax.dart';
 
 import '../../../../../core/constants/app_colors.dart';
+import '../../../../../core/extensions/context_extensions.dart';
 import '../../../../../core/helpers/date_formatter.dart';
 import '../../../../../models/news_model.dart';
 
@@ -63,14 +63,13 @@ class NewsFeaturedCard extends StatelessWidget {
                           vertical: 5,
                         ),
                         decoration: BoxDecoration(
-                          color: AppColors.primary,
+                          color: context.primaryColor,
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Text(
-                          news.category,
-                          style: GoogleFonts.inter(
+                          news.category ?? "",
+                          style: context.textTheme.labelSmall?.copyWith(
                             color: Colors.white,
-                            fontSize: 11,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
@@ -80,56 +79,46 @@ class NewsFeaturedCard extends StatelessWidget {
                         news.title,
                         maxLines: 3,
                         overflow: TextOverflow.ellipsis,
-                        style: GoogleFonts.inter(
+                        style: context.textTheme.headlineMedium?.copyWith(
                           color: Colors.white,
-                          fontSize: 24,
                           fontWeight: FontWeight.w700,
                           height: 1.2,
                         ),
                       ),
                       const SizedBox(height: 10),
                       Text(
-                        news.summary,
+                        news.summary ?? "",
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
-                        style: GoogleFonts.inter(
+                        style: context.textTheme.bodySmall?.copyWith(
                           color: Colors.white.withValues(alpha: 0.88),
-                          fontSize: 13,
                           height: 1.4,
                         ),
                       ),
                       const SizedBox(height: 12),
                       Row(
                         children: [
-                          const Icon(
-                            Iconsax.user,
-                            size: 14,
-                            color: Colors.white70,
-                          ),
+                          Icon(Iconsax.user, size: 14, color: Colors.white70),
                           const SizedBox(width: 4),
                           Expanded(
                             child: Text(
-                              news.author,
+                              news.author ?? "",
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
-                              style: GoogleFonts.inter(
+                              style: context.textTheme.labelSmall?.copyWith(
                                 color: Colors.white70,
-                                fontSize: 12,
                               ),
                             ),
                           ),
                           const SizedBox(width: 8),
-                          const Icon(
-                            Iconsax.clock,
-                            size: 14,
-                            color: Colors.white70,
-                          ),
+                          Icon(Iconsax.clock, size: 14, color: Colors.white70),
                           const SizedBox(width: 4),
                           Text(
-                            DateFormatter.formatRelative(news.publishedAt),
-                            style: GoogleFonts.inter(
+                            DateFormatter.formatRelative(
+                              news.publishedAt ?? DateTime.now(),
+                            ),
+                            style: context.textTheme.labelSmall?.copyWith(
                               color: Colors.white70,
-                              fontSize: 12,
                             ),
                           ),
                         ],
@@ -155,7 +144,7 @@ class NewsListTileCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: Colors.white,
+      color: context.cardColor,
       borderRadius: BorderRadius.circular(16),
       child: InkWell(
         onTap: onTap,
@@ -163,7 +152,7 @@ class NewsListTileCard extends StatelessWidget {
         child: Ink(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: AppColors.divider),
+            border: Border.all(color: context.adaptiveDivider),
           ),
           padding: const EdgeInsets.all(12),
           child: Row(
@@ -181,10 +170,9 @@ class NewsListTileCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      news.category,
-                      style: GoogleFonts.inter(
-                        color: AppColors.primary,
-                        fontSize: 11,
+                      news.category ?? "",
+                      style: context.textTheme.labelSmall?.copyWith(
+                        color: context.primaryColor,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -193,32 +181,29 @@ class NewsListTileCard extends StatelessWidget {
                       news.title,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: GoogleFonts.inter(
-                        fontSize: 14,
+                      style: context.textTheme.titleSmall?.copyWith(
                         fontWeight: FontWeight.w700,
                         height: 1.25,
-                        color: AppColors.textPrimary,
+                        color: context.adaptiveTextPrimary,
                       ),
                     ),
                     const SizedBox(height: 6),
                     Text(
-                      news.summary,
+                      news.summary ?? "",
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: GoogleFonts.inter(
-                        color: AppColors.textSecondary,
-                        fontSize: 12,
+                      style: context.textTheme.bodySmall?.copyWith(
+                        color: context.adaptiveTextSecondary,
                         height: 1.35,
                       ),
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      '${news.author} · ${DateFormatter.formatRelative(news.publishedAt)}',
+                      '${news.author} · ${DateFormatter.formatRelative(news.publishedAt!)}',
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: GoogleFonts.inter(
-                        color: AppColors.textSecondary,
-                        fontSize: 11,
+                      style: context.textTheme.labelSmall?.copyWith(
+                        color: context.adaptiveTextSecondary,
                       ),
                     ),
                   ],
@@ -256,7 +241,7 @@ class _NewsImage extends StatelessWidget {
       child: Container(
         width: width,
         height: height,
-        color: AppColors.primary.withValues(alpha: 0.08),
+        color: context.primaryColor.withValues(alpha: 0.08),
         child: hasImage
             ? Image.network(
                 imageUrl!,
@@ -287,14 +272,14 @@ class _Placeholder extends StatelessWidget {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            AppColors.primary.withValues(alpha: 0.18),
+            context.primaryColor.withValues(alpha: 0.18),
             AppColors.secondary.withValues(alpha: 0.12),
           ],
         ),
       ),
       child: Icon(
         Iconsax.image,
-        color: AppColors.primary.withValues(alpha: 0.55),
+        color: context.primaryColor.withValues(alpha: 0.55),
         size: width == null ? 42 : 28,
       ),
     );

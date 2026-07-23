@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:iconsax_flutter/iconsax_flutter.dart';
+import 'package:iconsax/iconsax.dart';
 
 import '../../../../../core/extensions/context_extensions.dart';
 import '../../../../../core/utils/result.dart' as result;
@@ -88,16 +88,12 @@ class _ManageProfileScreenState extends ConsumerState<ManageProfileScreen> {
         key: _formKey,
         child: Column(
           children: [
-            UserAvatar(
-              name: user.name,
-              imageUrl: user.avatarUrl,
-              radius: 48,
-            ),
+            UserAvatar(name: user.name, imageUrl: user.avatarUrl, radius: 48),
             const SizedBox(height: 8),
             TextButton.icon(
               onPressed: () =>
                   context.showSnackBar('Fitur upload foto segera hadir'),
-              icon: const Icon(Iconsax.camera),
+              icon: Icon(Iconsax.camera),
               label: const Text('Ubah Foto'),
             ),
             const SizedBox(height: 24),

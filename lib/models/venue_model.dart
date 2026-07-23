@@ -4,32 +4,77 @@ class VenueModel {
   const VenueModel({
     required this.id,
     required this.name,
-    required this.location,
-    required this.capacity,
-    required this.rating,
-    required this.category,
-    required this.priceRange,
-    this.description,
-    this.imageUrl,
+    required this.address,
+    required this.city,
+    required this.province,
+    required this.description,
+    this.ownerId,
+    this.latitude,
+    this.longitude,
+    this.image,
+    this.gallery = const [],
+    this.isActive = false,
+    this.averageRating = 0,
+    this.totalReviews = 0,
+    this.totalLikes = 0,
+    this.totalViews = 0,
+    this.createdAt,
+    this.updatedAt,
   });
 
   final String id;
   final String name;
-  final String location;
-  final int capacity;
-  final double rating;
-  final String category;
-  final String priceRange;
-  final String? description;
-  final String? imageUrl;
+  final String address;
+  final String city;
+  final String province;
+  final String description;
+  final String? ownerId;
+  final double? latitude;
+  final double? longitude;
+  final String? image;
+  final List<String> gallery;
+  final bool isActive;
+  final double averageRating;
+  final int totalReviews;
+  final int totalLikes;
+  final int totalViews;
+  final DateTime? createdAt;
+  final DateTime? updatedAt;
+
+  /// Alamat lengkap untuk tampilan UI.
+  String get location {
+    final parts = [address, city, province]
+        .map((part) => part.trim())
+        .where((part) => part.isNotEmpty)
+        .toList();
+    return parts.isEmpty ? '-' : parts.join(', ');
+  }
+
+  /// Alias untuk kompatibilitas UI yang masih memakai [imageUrl].
+  String? get imageUrl => image;
+
+  /// Alias untuk kompatibilitas UI yang masih memakai [rating].
+  double get rating => averageRating;
+
+  /// Semua gambar venue (cover + gallery).
+  List<String> get allImages {
+    final images = <String>[];
+    final main = image?.trim();
+    if (main != null && main.isNotEmpty) {
+      images.add(main);
+    }
+    for (final item in gallery) {
+      final trimmed = item.trim();
+      if (trimmed.isNotEmpty && !images.contains(trimmed)) {
+        images.add(trimmed);
+      }
+    }
+    return images;
+  }
 
   String get displayDescription {
-    final value = description?.trim();
-    if (value != null && value.isNotEmpty) return value;
-    if (capacity > 0) {
-      return '$name adalah venue populer di $location dengan kapasitas '
-          '$capacity orang. Cocok untuk acara komunitas, seminar, dan pertemuan.';
-    }
+    final value = description.trim();
+    if (value.isNotEmpty) return value;
     return '$name berlokasi di $location. Cocok untuk acara komunitas, '
         'seminar, dan pertemuan.';
   }
@@ -40,13 +85,23 @@ class VenueModel {
     return VenueModel(
       id: id.isNotEmpty ? id : other.id,
       name: name.isNotEmpty ? name : other.name,
-      location: location.isNotEmpty ? location : other.location,
-      capacity: capacity > 0 ? capacity : other.capacity,
-      rating: rating > 0 ? rating : other.rating,
-      category: category.isNotEmpty ? category : other.category,
-      priceRange: priceRange.isNotEmpty ? priceRange : other.priceRange,
-      description: description ?? other.description,
-      imageUrl: imageUrl ?? other.imageUrl,
+      address: address.isNotEmpty ? address : other.address,
+      city: city.isNotEmpty ? city : other.city,
+      province: province.isNotEmpty ? province : other.province,
+      description: description.isNotEmpty ? description : other.description,
+      ownerId: ownerId ?? other.ownerId,
+      latitude: latitude ?? other.latitude,
+      longitude: longitude ?? other.longitude,
+      image: image ?? other.image,
+      gallery: gallery.isNotEmpty ? gallery : other.gallery,
+      isActive: isActive || other.isActive,
+      averageRating:
+          averageRating > 0 ? averageRating : other.averageRating,
+      totalReviews: totalReviews > 0 ? totalReviews : other.totalReviews,
+      totalLikes: totalLikes > 0 ? totalLikes : other.totalLikes,
+      totalViews: totalViews > 0 ? totalViews : other.totalViews,
+      createdAt: createdAt ?? other.createdAt,
+      updatedAt: updatedAt ?? other.updatedAt,
     );
   }
 
@@ -67,58 +122,93 @@ class VenueModel {
             'venue_name',
           ]) ??
           'Venue',
-      location: JsonFieldHelper.readString(source, [
-            'location',
+      address: JsonFieldHelper.readString(source, [
             'address',
-            'city',
-            'area',
-            'district',
+            'street',
+            'streetAddress',
+            'street_address',
           ]) ??
-          '-',
-      capacity: JsonFieldHelper.readInt(source, [
-            'capacity',
-            'maxCapacity',
-            'max_capacity',
-            'maxGuest',
-          ]) ??
-          0,
-      rating: JsonFieldHelper.readDouble(source, [
-            'rating',
-            'averageRating',
-            'average_rating',
-            'score',
-          ]) ??
-          0,
-      category: JsonFieldHelper.readString(source, [
-            'category',
-            'categoryName',
-            'category_name',
-            'type',
-            'venueType',
-          ]) ??
-          'Umum',
-      priceRange: JsonFieldHelper.readString(source, [
-            'priceRange',
-            'price_range',
-            'price',
-            'priceLabel',
-            'price_label',
+          '',
+      city: JsonFieldHelper.readString(source, ['city', 'area', 'district']) ??
+          '',
+      province: JsonFieldHelper.readString(source, [
+            'province',
+            'state',
+            'region',
           ]) ??
           '',
       description: JsonFieldHelper.readString(source, [
-        'description',
-        'desc',
-        'about',
-        'overview',
+            'description',
+            'desc',
+            'about',
+            'overview',
+          ]) ??
+          '',
+      ownerId: JsonFieldHelper.readString(source, [
+        'ownerId',
+        'owner_id',
+        'ownerID',
       ]),
-      imageUrl: JsonFieldHelper.readString(source, [
+      latitude: JsonFieldHelper.readDouble(source, ['latitude', 'lat']),
+      longitude: JsonFieldHelper.readDouble(source, [
+        'longitude',
+        'lng',
+        'long',
+      ]),
+      image: JsonFieldHelper.readString(source, [
+        'image',
         'imageUrl',
         'image_url',
         'thumbnail',
         'coverImage',
         'cover_image',
-        'image',
         'photo',
+      ]),
+      gallery: JsonFieldHelper.readStringList(source, [
+        'gallery',
+        'images',
+        'photos',
+      ]),
+      isActive: JsonFieldHelper.readBool(source, [
+        'isActive',
+        'is_active',
+        'active',
+      ], fallback: false),
+      averageRating: JsonFieldHelper.readDouble(source, [
+            'averageRating',
+            'average_rating',
+            'rating',
+            'score',
+          ]) ??
+          0,
+      totalReviews: JsonFieldHelper.readInt(source, [
+            'totalReviews',
+            'total_reviews',
+            'reviewCount',
+            'review_count',
+          ]) ??
+          0,
+      totalLikes: JsonFieldHelper.readInt(source, [
+            'totalLikes',
+            'total_likes',
+            'likeCount',
+            'like_count',
+          ]) ??
+          0,
+      totalViews: JsonFieldHelper.readInt(source, [
+            'totalViews',
+            'total_views',
+            'viewCount',
+            'view_count',
+          ]) ??
+          0,
+      createdAt: JsonFieldHelper.readDateTime(source, [
+        'createdAt',
+        'created_at',
+      ]),
+      updatedAt: JsonFieldHelper.readDateTime(source, [
+        'updatedAt',
+        'updated_at',
       ]),
     );
   }

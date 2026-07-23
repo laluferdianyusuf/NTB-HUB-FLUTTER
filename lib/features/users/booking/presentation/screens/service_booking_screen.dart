@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:iconsax_flutter/iconsax_flutter.dart';
+import 'package:iconsax/iconsax.dart';
 
 import '../../../../../core/constants/app_colors.dart';
+import '../../../../../core/extensions/context_extensions.dart';
 import '../../../../../core/helpers/date_formatter.dart';
 import '../../../../../core/helpers/time_slot_helper.dart';
 import '../../../../../core/utils/result.dart' as result;
@@ -36,11 +37,11 @@ class _ServiceBookingScreenState extends ConsumerState<ServiceBookingScreen> {
   BookingTimeSelection? _timeSelection;
 
   ServiceBookingArgs get _args => (
-        serviceId: widget.serviceId,
-        venueId: widget.venueId.isNotEmpty
-            ? widget.venueId
-            : (widget.initialService?.venueId ?? ''),
-      );
+    serviceId: widget.serviceId,
+    venueId: widget.venueId.isNotEmpty
+        ? widget.venueId
+        : (widget.initialService?.venueId ?? ''),
+  );
 
   int get _currentStep {
     if (_selectedDate == null) return 0;
@@ -54,11 +55,11 @@ class _ServiceBookingScreenState extends ConsumerState<ServiceBookingScreen> {
     final bookingAsync = ref.watch(serviceBookingDataProvider(_args));
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: const Text('Booking Layanan'),
         backgroundColor: Colors.white,
-        foregroundColor: AppColors.textPrimary,
+        foregroundColor: context.adaptiveTextPrimary,
         elevation: 0,
         scrolledUnderElevation: 0.5,
         surfaceTintColor: Colors.transparent,
@@ -97,7 +98,8 @@ class _ServiceBookingScreenState extends ConsumerState<ServiceBookingScreen> {
       bottomNavigationBar: bookingAsync.maybeWhen(
         data: (bookingResult) => switch (bookingResult) {
           result.Success(:final data) => _BookingBottomBar(
-            enabled: _selectedDate != null &&
+            enabled:
+                _selectedDate != null &&
                 _selectedUnitId != null &&
                 _timeSelection != null &&
                 _timeSelection!.isValid,
@@ -155,7 +157,7 @@ class _BookingContent extends StatelessWidget {
   final BookingTimeSelection? timeSelection;
   final ValueChanged<DateTime> onSelectDate;
   final void Function(String unitId, OperationalDayModel? daySchedule)
-      onSelectUnit;
+  onSelectUnit;
   final ValueChanged<BookingTimeSelection?> onTimeChanged;
 
   @override
@@ -163,8 +165,9 @@ class _BookingContent extends StatelessWidget {
     final openDates = data.schedule.upcomingOpenDates();
     final activeDate =
         selectedDate ?? (openDates.isNotEmpty ? openDates.first : null);
-    final daySchedule =
-        activeDate == null ? null : data.schedule.scheduleFor(activeDate);
+    final daySchedule = activeDate == null
+        ? null
+        : data.schedule.scheduleFor(activeDate);
     final timeSlots = daySchedule == null
         ? const <String>[]
         : TimeSlotHelper.generateSlots(
@@ -232,8 +235,7 @@ class _BookingContent extends StatelessWidget {
                 isSelected: selectedUnitId == unit.id,
                 daySchedule: daySchedule,
                 timeSlots: timeSlots,
-                timeSelection:
-                    selectedUnitId == unit.id ? timeSelection : null,
+                timeSelection: selectedUnitId == unit.id ? timeSelection : null,
                 onSelectUnit: () => onSelectUnit(unit.id, daySchedule),
                 onTimeChanged: onTimeChanged,
               ),
@@ -262,7 +264,7 @@ class _BookingStepHeader extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.divider),
+        border: Border.all(color: context.adaptiveDivider),
       ),
       child: Row(
         children: [
@@ -281,8 +283,8 @@ class _BookingStepHeader extends StatelessWidget {
                 height: 2,
                 margin: const EdgeInsets.only(bottom: 18),
                 color: currentStep > i
-                    ? AppColors.primary
-                    : AppColors.divider,
+                    ? context.primaryColor
+                    : context.adaptiveDivider,
               ),
           ],
         ],
@@ -314,15 +316,17 @@ class _StepItem extends StatelessWidget {
           width: 28,
           height: 28,
           decoration: BoxDecoration(
-            color: isActive ? AppColors.primary : AppColors.background,
+            color: isActive
+                ? context.primaryColor
+                : Theme.of(context).scaffoldBackgroundColor,
             shape: BoxShape.circle,
             border: Border.all(
-              color: isCurrent ? AppColors.primary : AppColors.divider,
+              color: isCurrent ? context.primaryColor : context.adaptiveDivider,
             ),
             boxShadow: isCurrent
                 ? [
                     BoxShadow(
-                      color: AppColors.primary.withValues(alpha: 0.25),
+                      color: context.primaryColor.withValues(alpha: 0.25),
                       blurRadius: 8,
                       offset: const Offset(0, 2),
                     ),
@@ -333,7 +337,7 @@ class _StepItem extends StatelessWidget {
           child: Text(
             '$index',
             style: TextStyle(
-              color: isActive ? Colors.white : AppColors.textSecondary,
+              color: isActive ? Colors.white : context.adaptiveTextSecondary,
               fontWeight: FontWeight.w700,
               fontSize: 12,
             ),
@@ -345,7 +349,9 @@ class _StepItem extends StatelessWidget {
           style: TextStyle(
             fontSize: 11,
             fontWeight: isCurrent ? FontWeight.w700 : FontWeight.w500,
-            color: isCurrent ? AppColors.primary : AppColors.textSecondary,
+            color: isCurrent
+                ? context.primaryColor
+                : context.adaptiveTextSecondary,
           ),
         ),
       ],
@@ -366,7 +372,7 @@ class _ServiceSummaryCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: AppColors.divider),
+        border: Border.all(color: context.adaptiveDivider),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.04),
@@ -380,18 +386,18 @@ class _ServiceSummaryCard extends StatelessWidget {
         children: [
           Text(
             service.displayName,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.w800,
-              color: AppColors.textPrimary,
+              color: context.adaptiveTextPrimary,
             ),
           ),
           if (service.displayCategory.isNotEmpty) ...[
             const SizedBox(height: 6),
             Text(
               service.displayCategory,
-              style: const TextStyle(
-                color: AppColors.primary,
+              style: TextStyle(
+                color: context.primaryColor,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -400,8 +406,8 @@ class _ServiceSummaryCard extends StatelessWidget {
             const SizedBox(height: 10),
             Text(
               service.description,
-              style: const TextStyle(
-                color: AppColors.textSecondary,
+              style: TextStyle(
+                color: context.adaptiveTextSecondary,
                 height: 1.5,
               ),
             ),
@@ -454,13 +460,13 @@ class _UnitBookingCard extends StatelessWidget {
         color: Colors.white,
         borderRadius: BorderRadius.circular(18),
         border: Border.all(
-          color: isSelected ? AppColors.primary : AppColors.divider,
+          color: isSelected ? context.primaryColor : context.adaptiveDivider,
           width: isSelected ? 1.5 : 1,
         ),
         boxShadow: isSelected
             ? [
                 BoxShadow(
-                  color: AppColors.primary.withValues(alpha: 0.08),
+                  color: context.primaryColor.withValues(alpha: 0.08),
                   blurRadius: 16,
                   offset: const Offset(0, 6),
                 ),
@@ -485,13 +491,13 @@ class _UnitBookingCard extends StatelessWidget {
                       height: 44,
                       decoration: BoxDecoration(
                         color: isSelected
-                            ? AppColors.primary
-                            : AppColors.primary.withValues(alpha: 0.1),
+                            ? context.primaryColor
+                            : context.primaryColor.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Icon(
                         Iconsax.box,
-                        color: isSelected ? Colors.white : AppColors.primary,
+                        color: isSelected ? Colors.white : context.primaryColor,
                       ),
                     ),
                     const SizedBox(width: 12),
@@ -501,7 +507,7 @@ class _UnitBookingCard extends StatelessWidget {
                         children: [
                           Text(
                             unit.name,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontWeight: FontWeight.w700,
                               fontSize: 16,
                             ),
@@ -510,8 +516,8 @@ class _UnitBookingCard extends StatelessWidget {
                             const SizedBox(height: 4),
                             Text(
                               'Kapasitas ${unit.capacity} orang',
-                              style: const TextStyle(
-                                color: AppColors.textSecondary,
+                              style: TextStyle(
+                                color: context.adaptiveTextSecondary,
                                 fontSize: 13,
                               ),
                             ),
@@ -522,16 +528,18 @@ class _UnitBookingCard extends StatelessWidget {
                     if (unit.price != null)
                       Text(
                         'Rp ${unit.price!.round()}',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontWeight: FontWeight.w700,
-                          color: AppColors.primary,
+                          color: context.primaryColor,
                         ),
                       ),
                     const SizedBox(width: 8),
                     Icon(
                       isSelected ? Iconsax.tick_circle : Iconsax.arrow_down_1,
                       size: 18,
-                      color: isSelected ? AppColors.primary : AppColors.textSecondary,
+                      color: isSelected
+                          ? context.primaryColor
+                          : context.adaptiveTextSecondary,
                     ),
                   ],
                 ),
@@ -545,7 +553,7 @@ class _UnitBookingCard extends StatelessWidget {
             child: isSelected && daySchedule != null
                 ? Column(
                     children: [
-                      const Divider(height: 1),
+                      Divider(height: 1),
                       Padding(
                         padding: const EdgeInsets.fromLTRB(16, 14, 16, 16),
                         child: BookingTimePicker(
@@ -578,8 +586,18 @@ class _DayChip extends StatelessWidget {
   final VoidCallback onTap;
 
   static const _months = [
-    'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun',
-    'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des',
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'Mei',
+    'Jun',
+    'Jul',
+    'Agu',
+    'Sep',
+    'Okt',
+    'Nov',
+    'Des',
   ];
 
   @override
@@ -599,15 +617,17 @@ class _DayChip extends StatelessWidget {
             width: 76,
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
             decoration: BoxDecoration(
-              color: isSelected ? AppColors.primary : Colors.white,
+              color: isSelected ? context.primaryColor : Colors.white,
               borderRadius: BorderRadius.circular(16),
               border: Border.all(
-                color: isSelected ? AppColors.primary : AppColors.divider,
+                color: isSelected
+                    ? context.primaryColor
+                    : context.adaptiveDivider,
               ),
               boxShadow: isSelected
                   ? [
                       BoxShadow(
-                        color: AppColors.primary.withValues(alpha: 0.22),
+                        color: context.primaryColor.withValues(alpha: 0.22),
                         blurRadius: 10,
                         offset: const Offset(0, 4),
                       ),
@@ -620,7 +640,9 @@ class _DayChip extends StatelessWidget {
                 Text(
                   dayLabel,
                   style: TextStyle(
-                    color: isSelected ? Colors.white70 : AppColors.textSecondary,
+                    color: isSelected
+                        ? Colors.white70
+                        : context.adaptiveTextSecondary,
                     fontWeight: FontWeight.w600,
                     fontSize: 11,
                   ),
@@ -629,7 +651,9 @@ class _DayChip extends StatelessWidget {
                 Text(
                   '${date.day}',
                   style: TextStyle(
-                    color: isSelected ? Colors.white : AppColors.textPrimary,
+                    color: isSelected
+                        ? Colors.white
+                        : context.adaptiveTextPrimary,
                     fontWeight: FontWeight.w800,
                     fontSize: 20,
                   ),
@@ -637,7 +661,9 @@ class _DayChip extends StatelessWidget {
                 Text(
                   monthLabel,
                   style: TextStyle(
-                    color: isSelected ? Colors.white70 : AppColors.textSecondary,
+                    color: isSelected
+                        ? Colors.white70
+                        : context.adaptiveTextSecondary,
                     fontWeight: FontWeight.w500,
                     fontSize: 10,
                   ),
@@ -664,16 +690,16 @@ class _SectionTitle extends StatelessWidget {
       children: [
         Text(
           title,
-          style: const TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.w700,
-          ),
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
         ),
         if (subtitle != null) ...[
           const SizedBox(height: 4),
           Text(
             subtitle!,
-            style: const TextStyle(color: AppColors.textSecondary, fontSize: 13),
+            style: TextStyle(
+              color: context.adaptiveTextSecondary,
+              fontSize: 13,
+            ),
           ),
         ],
       ],
@@ -692,20 +718,17 @@ class _InfoChip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: AppColors.background,
+        color: Theme.of(context).scaffoldBackgroundColor,
         borderRadius: BorderRadius.circular(999),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 14, color: AppColors.primary),
+          Icon(icon, size: 14, color: context.primaryColor),
           const SizedBox(width: 4),
           Text(
             label,
-            style: const TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
-            ),
+            style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
           ),
         ],
       ),
@@ -726,9 +749,9 @@ class _EmptyInfo extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.divider),
+        border: Border.all(color: context.adaptiveDivider),
       ),
-      child: Text(text, style: const TextStyle(color: AppColors.textSecondary)),
+      child: Text(text, style: TextStyle(color: context.adaptiveTextSecondary)),
     );
   }
 }
@@ -774,15 +797,12 @@ class _BookingBottomBar extends StatelessWidget {
           if (enabled && selectedDate != null && timeSelection != null) ...[
             Text(
               '${DateFormatter.formatDate(selectedDate!)} · ${timeSelection!.displayRange}',
-              style: const TextStyle(
-                fontWeight: FontWeight.w700,
-                fontSize: 13,
-              ),
+              style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13),
             ),
             Text(
               'Durasi ${timeSelection!.displayDuration}',
-              style: const TextStyle(
-                color: AppColors.textSecondary,
+              style: TextStyle(
+                color: context.adaptiveTextSecondary,
                 fontSize: 12,
               ),
             ),
@@ -793,11 +813,11 @@ class _BookingBottomBar extends StatelessWidget {
             child: ElevatedButton(
               onPressed: enabled ? onContinue : null,
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primary,
+                backgroundColor: context.primaryColor,
                 foregroundColor: Colors.white,
-                disabledBackgroundColor: AppColors.divider,
+                disabledBackgroundColor: context.adaptiveDivider,
                 elevation: enabled ? 2 : 0,
-                shadowColor: AppColors.primary.withValues(alpha: 0.35),
+                shadowColor: context.primaryColor.withValues(alpha: 0.35),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(14),
                 ),
@@ -806,7 +826,7 @@ class _BookingBottomBar extends StatelessWidget {
                 enabled
                     ? 'Lanjutkan · ${service.displayPrice}'
                     : 'Pilih hari, unit & waktu',
-                style: const TextStyle(fontWeight: FontWeight.w700),
+                style: TextStyle(fontWeight: FontWeight.w700),
               ),
             ),
           ),
@@ -839,10 +859,7 @@ class _BookingLoadingView extends StatelessWidget {
 }
 
 class _BookingErrorView extends StatelessWidget {
-  const _BookingErrorView({
-    required this.message,
-    required this.onRetry,
-  });
+  const _BookingErrorView({required this.message, required this.onRetry});
 
   final String message;
   final VoidCallback onRetry;
@@ -855,7 +872,7 @@ class _BookingErrorView extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Iconsax.warning_2, size: 40, color: AppColors.error),
+            Icon(Iconsax.warning_2, size: 40, color: AppColors.error),
             const SizedBox(height: 12),
             Text(message, textAlign: TextAlign.center),
             const SizedBox(height: 12),

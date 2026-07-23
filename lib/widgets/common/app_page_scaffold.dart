@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:iconsax_flutter/iconsax_flutter.dart';
+import 'package:iconsax/iconsax.dart';
 
-import '../../core/constants/app_colors.dart';
+import '../../core/extensions/context_extensions.dart';
 
 class AppPageScaffold extends StatelessWidget {
   const AppPageScaffold({
@@ -19,7 +18,7 @@ class AppPageScaffold extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: Text(title, overflow: TextOverflow.ellipsis, maxLines: 1),
         actions: actions,
@@ -52,22 +51,26 @@ class ProfileMenuTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      leading: Icon(icon, color: iconColor ?? AppColors.primary, size: 22),
+      leading: Icon(icon, color: iconColor ?? context.primaryColor, size: 22),
       title: Text(
         title,
-        style: TextStyle(color: titleColor ?? AppColors.textPrimary),
+        style: context.textTheme.bodyLarge?.copyWith(
+          color: titleColor ?? context.adaptiveTextPrimary,
+        ),
       ),
       subtitle: subtitle != null
           ? Text(
               subtitle!,
-              style: const TextStyle(color: AppColors.textSecondary),
+              style: context.textTheme.bodySmall?.copyWith(
+                color: context.adaptiveTextSecondary,
+              ),
             )
           : null,
       trailing:
           trailing ??
-          const Icon(
-            Iconsax.arrow_right_1_copy,
-            color: AppColors.textSecondary,
+          Icon(
+            Iconsax.arrow_right_3,
+            color: context.adaptiveTextSecondary,
             size: 18,
           ),
       onTap: onTap,
@@ -86,10 +89,9 @@ class ProfileSectionHeader extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
       child: Text(
         title,
-        style: const TextStyle(
-          fontSize: 13,
+        style: context.textTheme.labelLarge?.copyWith(
           fontWeight: FontWeight.w600,
-          color: AppColors.textSecondary,
+          color: context.adaptiveTextSecondary,
         ),
       ),
     );
@@ -114,10 +116,9 @@ class StaticContentScreen extends StatelessWidget {
         padding: const EdgeInsets.all(20),
         child: Text(
           content,
-          style: const TextStyle(
-            color: AppColors.textPrimary,
+          style: context.textTheme.bodyMedium?.copyWith(
+            color: context.adaptiveTextPrimary,
             height: 1.6,
-            fontSize: 14,
           ),
         ),
       ),

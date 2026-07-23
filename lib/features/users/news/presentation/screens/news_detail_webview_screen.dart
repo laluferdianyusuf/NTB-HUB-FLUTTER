@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:iconsax_flutter/iconsax_flutter.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
@@ -245,10 +245,10 @@ class _NewsWebViewBodyState extends State<_NewsWebViewBody> {
               children: [
                 WebViewWidget(controller: controller),
                 if (_isLoading)
-                  const LinearProgressIndicator(
+                  LinearProgressIndicator(
                     minHeight: 2,
-                    color: AppColors.primary,
-                    backgroundColor: AppColors.divider,
+                    color: context.primaryColor,
+                    backgroundColor: context.adaptiveDivider,
                   ),
                 if (_hasError)
                   _NewsLoadError(
@@ -288,13 +288,13 @@ class _NewsNativeDetailBody extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
               decoration: BoxDecoration(
-                color: AppColors.primary.withValues(alpha: 0.12),
+                color: context.primaryColor.withValues(alpha: 0.12),
                 borderRadius: BorderRadius.circular(999),
               ),
               child: Text(
-                news.category,
-                style: const TextStyle(
-                  color: AppColors.primary,
+                news.category ?? "",
+                style: TextStyle(
+                  color: context.primaryColor,
                   fontWeight: FontWeight.w700,
                   fontSize: 12,
                 ),
@@ -309,42 +309,42 @@ class _NewsNativeDetailBody extends StatelessWidget {
                   width: double.infinity,
                   height: 220,
                   fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+                  errorBuilder: (_, _, _) => const SizedBox.shrink(),
                 ),
               ),
               const SizedBox(height: 16),
             ],
             Text(
               news.title,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.w700,
                 height: 1.25,
-                color: AppColors.textPrimary,
+                color: context.adaptiveTextPrimary,
               ),
             ),
             const SizedBox(height: 8),
             Text(
-              '${news.author} · ${DateFormatter.formatRelative(news.publishedAt)}',
-              style: const TextStyle(color: AppColors.textSecondary),
+              '${news.author} · ${DateFormatter.formatRelative(news.publishedAt!)}',
+              style: TextStyle(color: context.adaptiveTextSecondary),
             ),
             const SizedBox(height: 20),
             Text(
               news.displayBody.isNotEmpty
                   ? news.displayBody
                   : 'Konten berita belum tersedia.',
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 16,
                 height: 1.7,
-                color: AppColors.textPrimary,
+                color: context.adaptiveTextPrimary,
               ),
             ),
             if (news.hasValidExternalUrl) ...[
               const SizedBox(height: 24),
               if (kIsWeb) ...[
-                const Text(
+                Text(
                   'Artikel lengkap hanya bisa dibaca di website NTB Hub.',
-                  style: TextStyle(color: AppColors.textSecondary),
+                  style: TextStyle(color: context.adaptiveTextSecondary),
                 ),
                 const SizedBox(height: 12),
               ],
@@ -353,7 +353,7 @@ class _NewsNativeDetailBody extends StatelessWidget {
                 height: 48,
                 child: FilledButton.icon(
                   onPressed: () => _openInBrowser(context),
-                  icon: const Icon(Iconsax.export_1),
+                  icon: Icon(Iconsax.export_1),
                   label: Text(
                     kIsWeb ? 'Buka di Website' : 'Buka artikel lengkap',
                   ),
@@ -383,24 +383,24 @@ class _NewsDetailScaffold extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: AppColors.darkBackground,
       appBar: AppBar(
         title: Text(title, maxLines: 1, overflow: TextOverflow.ellipsis),
         leading: IconButton(
-          icon: const Icon(Iconsax.arrow_left_2_copy),
+          icon: Icon(Iconsax.arrow_left_3),
           onPressed: () => context.pop(),
         ),
         actions: [
           if (onRefresh != null)
             IconButton(
               onPressed: onRefresh,
-              icon: const Icon(Iconsax.refresh),
+              icon: Icon(Iconsax.refresh),
               tooltip: 'Muat ulang',
             ),
           if (onOpenBrowser != null)
             IconButton(
               onPressed: onOpenBrowser,
-              icon: const Icon(Iconsax.export_1),
+              icon: Icon(Iconsax.export_1),
               tooltip: 'Buka di browser',
             ),
         ],
@@ -419,25 +419,25 @@ class _NewsLoadError extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ColoredBox(
-      color: AppColors.background,
+      color: AppColors.darkBackground,
       child: Center(
         child: Padding(
           padding: const EdgeInsets.all(24),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(
+              Icon(
                 Iconsax.warning_2,
                 size: 48,
-                color: AppColors.textSecondary,
+                color: context.adaptiveTextSecondary,
               ),
               const SizedBox(height: 12),
-              const Text(
+              Text(
                 'Gagal memuat berita',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontWeight: FontWeight.w600,
-                  color: AppColors.textPrimary,
+                  color: context.adaptiveTextPrimary,
                 ),
               ),
               const SizedBox(height: 8),
@@ -447,19 +447,19 @@ class _NewsLoadError extends StatelessWidget {
                           'Coba buka langsung di browser.'
                     : 'Periksa koneksi internet Anda lalu coba lagi.',
                 textAlign: TextAlign.center,
-                style: const TextStyle(color: AppColors.textSecondary),
+                style: TextStyle(color: context.adaptiveTextSecondary),
               ),
               const SizedBox(height: 16),
               ElevatedButton.icon(
                 onPressed: onRetry,
-                icon: const Icon(Iconsax.refresh, color: Colors.white),
+                icon: Icon(Iconsax.refresh, color: Colors.white),
                 label: const Text('Coba Lagi'),
               ),
               if (onOpenBrowser != null) ...[
                 const SizedBox(height: 10),
                 OutlinedButton.icon(
                   onPressed: onOpenBrowser,
-                  icon: const Icon(Iconsax.export_1),
+                  icon: Icon(Iconsax.export_1),
                   label: const Text('Buka di Browser'),
                 ),
               ],

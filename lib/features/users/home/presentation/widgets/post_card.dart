@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:iconsax_flutter/iconsax_flutter.dart';
+import 'package:iconsax/iconsax.dart';
 
 import '../../../../../core/constants/app_colors.dart';
+import '../../../../../core/extensions/context_extensions.dart';
 import '../../../../../core/helpers/date_formatter.dart';
 import '../../domain/entities/post_entity.dart';
 
@@ -17,7 +18,7 @@ class PostCard extends StatelessWidget {
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
-        side: const BorderSide(color: AppColors.divider),
+        side: BorderSide(color: context.adaptiveDivider),
       ),
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -30,7 +31,7 @@ class PostCard extends StatelessWidget {
                   backgroundColor: AppColors.primaryLight,
                   child: Text(
                     post.authorName[0],
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
                     ),
@@ -43,12 +44,12 @@ class PostCard extends StatelessWidget {
                     children: [
                       Text(
                         post.authorName,
-                        style: const TextStyle(fontWeight: FontWeight.w600),
+                        style: TextStyle(fontWeight: FontWeight.w600),
                       ),
                       Text(
                         DateFormatter.formatRelative(post.createdAt),
-                        style: const TextStyle(
-                          color: AppColors.textSecondary,
+                        style: TextStyle(
+                          color: context.adaptiveTextSecondary,
                           fontSize: 12,
                         ),
                       ),
@@ -62,18 +63,18 @@ class PostCard extends StatelessWidget {
             const SizedBox(height: 12),
             Row(
               children: [
-                const Icon(
+                Icon(
                   Iconsax.heart,
                   size: 18,
-                  color: AppColors.textSecondary,
+                  color: context.adaptiveTextSecondary,
                 ),
                 const SizedBox(width: 4),
                 Text('${post.likes}'),
                 const SizedBox(width: 16),
-                const Icon(
+                Icon(
                   Iconsax.message,
                   size: 18,
-                  color: AppColors.textSecondary,
+                  color: context.adaptiveTextSecondary,
                 ),
                 const SizedBox(width: 4),
                 Text('${post.comments}'),

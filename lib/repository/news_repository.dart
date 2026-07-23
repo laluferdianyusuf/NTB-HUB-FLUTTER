@@ -19,7 +19,7 @@ class NewsRepository {
       );
 
       final news = response.data
-        ..sort((a, b) => b.publishedAt.compareTo(a.publishedAt));
+        ..sort((a, b) => b.publishedAt!.compareTo(a.publishedAt!));
 
       return Success(news);
     } on AppException catch (error) {
@@ -67,10 +67,9 @@ class NewsRepository {
   }
 
   List<NewsModel> _parseNewsList(dynamic json) {
-    return JsonFieldHelper.readObjectList(json)
-        .map(NewsModel.fromJson)
-        .where((news) => news.id.isNotEmpty)
-        .toList();
+    return JsonFieldHelper.readObjectList(
+      json,
+    ).map(NewsModel.fromJson).where((news) => news.id.isNotEmpty).toList();
   }
 
   Failure _mapException(AppException error) {

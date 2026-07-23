@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:iconsax_flutter/iconsax_flutter.dart';
+import 'package:iconsax/iconsax.dart';
 
 import '../../../../../core/constants/app_colors.dart';
+import '../../../../../core/extensions/context_extensions.dart';
 import '../../../../../models/public_place_model.dart';
 
 class PublicPlaceListItem extends StatelessWidget {
@@ -16,7 +17,7 @@ class PublicPlaceListItem extends StatelessWidget {
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
-        side: const BorderSide(color: AppColors.divider),
+        side: BorderSide(color: context.adaptiveDivider),
       ),
       child: Padding(
         padding: const EdgeInsets.all(14),
@@ -28,11 +29,7 @@ class PublicPlaceListItem extends StatelessWidget {
                 color: Colors.blue.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: const Icon(
-                Iconsax.tree,
-                color: Colors.blue,
-                size: 24,
-              ),
+              child: Icon(Iconsax.tree, color: Colors.blue, size: 24),
             ),
             const SizedBox(width: 14),
             Expanded(
@@ -41,16 +38,13 @@ class PublicPlaceListItem extends StatelessWidget {
                 children: [
                   Text(
                     place.name,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 15,
-                    ),
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    '${place.type} · ${place.location}',
-                    style: const TextStyle(
-                      color: AppColors.textSecondary,
+                    '${place.typeLabel} · ${place.location}',
+                    style: TextStyle(
+                      color: context.adaptiveTextSecondary,
                       fontSize: 12,
                     ),
                   ),
@@ -65,7 +59,7 @@ class PublicPlaceListItem extends StatelessWidget {
                       const SizedBox(width: 4),
                       Text(
                         place.rating.toStringAsFixed(1),
-                        style: const TextStyle(fontSize: 12),
+                        style: TextStyle(fontSize: 12),
                       ),
                       const SizedBox(width: 12),
                       Container(

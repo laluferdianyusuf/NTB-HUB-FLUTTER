@@ -32,6 +32,47 @@ abstract final class JsonFieldHelper {
     return null;
   }
 
+  static double readDecimal(
+    Map<String, dynamic> json,
+    List<String> keys, {
+    double fallback = 0,
+  }) {
+    return readDouble(json, keys) ?? fallback;
+  }
+
+  static List<String> readStringList(
+    Map<String, dynamic> json,
+    List<String> keys,
+  ) {
+    for (final key in keys) {
+      final value = json[key];
+      if (value is! List) continue;
+      return value
+          .map((item) => item?.toString().trim() ?? '')
+          .where((item) => item.isNotEmpty)
+          .toList();
+    }
+    return const [];
+  }
+
+  static Map<String, dynamic> readJson(
+    Map<String, dynamic> json,
+    List<String> keys,
+  ) {
+    for (final key in keys) {
+      final value = json[key];
+      if (value is Map<String, dynamic>) return value;
+    }
+    return const {};
+  }
+
+  static Map<String, dynamic> unwrap(
+    Map<String, dynamic> json, {
+    List<String> keys = const ['data', 'result', 'item'],
+  }) {
+    return readMap(json, keys) ?? json;
+  }
+
   static bool readBool(Map<String, dynamic> json, List<String> keys,
       {bool fallback = true}) {
     for (final key in keys) {

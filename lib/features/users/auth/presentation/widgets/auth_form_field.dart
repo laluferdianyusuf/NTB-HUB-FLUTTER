@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
-import 'package:iconsax_flutter/iconsax_flutter.dart';
+import 'package:iconsax/iconsax.dart';
 
-import '../../../../../core/constants/app_colors.dart';
+import '../../../../../core/extensions/context_extensions.dart';
 
 class AuthFormField extends StatefulWidget {
   const AuthFormField({
@@ -39,9 +39,9 @@ class _AuthFormFieldState extends State<AuthFormField> {
       children: [
         Text(
           widget.label,
-          style: const TextStyle(
+          style: context.textTheme.titleSmall?.copyWith(
             fontWeight: FontWeight.w600,
-            color: AppColors.textPrimary,
+            color: context.adaptiveTextPrimary,
           ),
         ),
         const SizedBox(height: 8),
@@ -50,37 +50,19 @@ class _AuthFormFieldState extends State<AuthFormField> {
           obscureText: widget.isPassword && _obscure,
           keyboardType: widget.keyboardType,
           validator: FormBuilderValidators.compose(widget.validators),
-          decoration: InputDecoration(
+          style: context.inputTextStyle,
+          decoration: context.appInputDecoration(
             hintText: widget.hint,
-            prefixIcon: Icon(widget.icon, color: AppColors.primary, size: 20),
+            prefixIcon: Icon(widget.icon, size: 20),
             suffixIcon: widget.isPassword
                 ? IconButton(
                     icon: Icon(
                       _obscure ? Iconsax.eye_slash : Iconsax.eye,
-                      color: AppColors.textSecondary,
                       size: 20,
                     ),
                     onPressed: () => setState(() => _obscure = !_obscure),
                   )
                 : null,
-            filled: true,
-            fillColor: Colors.white,
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: AppColors.divider),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: AppColors.divider),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: AppColors.primary, width: 2),
-            ),
-            errorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: AppColors.error),
-            ),
           ),
         ),
       ],

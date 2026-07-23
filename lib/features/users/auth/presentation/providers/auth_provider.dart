@@ -192,12 +192,16 @@ class AuthNotifier extends AsyncNotifier<AuthModel?> {
     }
   }
 
-  Future<result.Result<AuthModel>> loginWithGoogle() async {
+  Future<result.Result<AuthModel>> loginWithGoogle({
+    bool forceAccountPicker = true,
+  }) async {
     final previousState = state;
 
     try {
       final googleService = ref.read(googleAuthServiceProvider);
-      final credential = await googleService.signIn();
+      final credential = await googleService.signIn(
+        forceAccountPicker: forceAccountPicker,
+      );
 
       if (credential == null) {
         state = previousState;
@@ -230,6 +234,11 @@ class AuthNotifier extends AsyncNotifier<AuthModel?> {
 
   Future<void> logout() async {
     await ref.read(authRepositoryProvider).logout();
+    try {
+      await ref.read(googleAuthServiceProvider).signOut();
+    } catch (_) {
+      // Lanjut clear session app meski Google SDK gagal sign out.
+    }
     state = const AsyncData(null);
   }
 }

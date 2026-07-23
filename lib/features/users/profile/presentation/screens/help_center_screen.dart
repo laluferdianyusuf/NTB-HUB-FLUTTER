@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:iconsax_flutter/iconsax_flutter.dart';
+import 'package:iconsax/iconsax.dart';
 
-import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/extensions/context_extensions.dart';
 import '../../../../../widgets/common/app_page_scaffold.dart';
 
@@ -11,10 +10,19 @@ class HelpCenterScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const faqs = [
-      ('Bagaimana cara booking venue?', 'Buka menu Booking, pilih venue, lalu ikuti langkah pembayaran.'),
-      ('Bagaimana reset password?', 'Profile > Password & Security > Ubah Password.'),
+      (
+        'Bagaimana cara booking venue?',
+        'Buka menu Booking, pilih venue, lalu ikuti langkah pembayaran.',
+      ),
+      (
+        'Bagaimana reset password?',
+        'Profile > Password & Security > Ubah Password.',
+      ),
       ('Bagaimana mengaktifkan biometric?', 'Profile > Enable Biometric.'),
-      ('Hubungi support?', 'Email: support@ntbhub.id atau WhatsApp: 0812-0000-0000.'),
+      (
+        'Hubungi support?',
+        'Email: support@ntbhub.id atau WhatsApp: 0812-0000-0000.',
+      ),
     ];
 
     return AppPageScaffold(
@@ -25,12 +33,12 @@ class HelpCenterScreen extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: AppColors.primary.withValues(alpha: 0.08),
+              color: context.primaryColor.withValues(alpha: 0.08),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: const Row(
+            child: Row(
               children: [
-                Icon(Iconsax.message_question, color: AppColors.primary),
+                Icon(Iconsax.message_question, color: context.primaryColor),
                 SizedBox(width: 12),
                 Expanded(
                   child: Text(
@@ -48,7 +56,7 @@ class HelpCenterScreen extends StatelessWidget {
               child: ExpansionTile(
                 title: Text(
                   faq.$1,
-                  style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
                 ),
                 children: [
                   Padding(
@@ -57,8 +65,8 @@ class HelpCenterScreen extends StatelessWidget {
                       alignment: Alignment.centerLeft,
                       child: Text(
                         faq.$2,
-                        style: const TextStyle(
-                          color: AppColors.textSecondary,
+                        style: TextStyle(
+                          color: context.adaptiveTextSecondary,
                           height: 1.5,
                         ),
                       ),
@@ -72,7 +80,7 @@ class HelpCenterScreen extends StatelessWidget {
             height: 48,
             child: OutlinedButton.icon(
               onPressed: () => context.showSnackBar('Membuka chat support...'),
-              icon: const Icon(Iconsax.messages_2),
+              icon: Icon(Iconsax.messages_2),
               label: const Text('Hubungi Support'),
             ),
           ),

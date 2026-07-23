@@ -4,6 +4,7 @@ import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../models/carousel_item_model.dart';
+import '../../../../../core/extensions/context_extensions.dart';
 
 class HomeCarousel extends StatefulWidget {
   const HomeCarousel({super.key, required this.items});
@@ -50,13 +51,13 @@ class _HomeCarouselState extends State<HomeCarousel> {
         AnimatedSmoothIndicator(
           activeIndex: _currentIndex,
           count: widget.items.length,
-          effect: const ExpandingDotsEffect(
+          effect: ExpandingDotsEffect(
             dotHeight: 6,
             dotWidth: 6,
             expansionFactor: 3,
             spacing: 6,
-            activeDotColor: AppColors.primary,
-            dotColor: AppColors.divider,
+            activeDotColor: context.primaryColor,
+            dotColor: context.adaptiveDivider,
           ),
           onDotClicked: (index) {
             _carouselController.animateToPage(index);
@@ -121,7 +122,7 @@ class _CarouselSlide extends StatelessWidget {
                   item.title,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: Colors.white,
                     fontSize: 18,
                     fontWeight: FontWeight.bold,

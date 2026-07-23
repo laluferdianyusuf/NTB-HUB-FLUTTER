@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:iconsax_flutter/iconsax_flutter.dart';
+import 'package:iconsax/iconsax.dart';
 
 abstract final class InterestIconMapper {
   static IconData iconForName(String name) {
@@ -24,7 +24,8 @@ abstract final class InterestIconMapper {
       return Iconsax.activity;
     }
     if (key.contains('tech')) return Iconsax.cpu;
-    if (key.contains('travel') || key.contains('tourism')) return Iconsax.global;
+    if (key.contains('travel') || key.contains('tourism'))
+      return Iconsax.global;
     if (key.contains('event')) return Iconsax.calendar;
     if (key.contains('community') || key.contains('komunitas')) {
       return Iconsax.people;

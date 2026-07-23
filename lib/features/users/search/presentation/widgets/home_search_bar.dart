@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:iconsax_flutter/iconsax_flutter.dart';
+import 'package:iconsax/iconsax.dart';
 
-import '../../../../../core/constants/app_colors.dart';
+import '../../../../../core/extensions/context_extensions.dart';
 
 class HomeSearchBar extends StatelessWidget {
   const HomeSearchBar({super.key});
@@ -12,7 +12,7 @@ class HomeSearchBar extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
       child: Material(
-        // color: Colors.white,
+        color: context.cardColor,
         borderRadius: BorderRadius.circular(14),
         child: InkWell(
           borderRadius: BorderRadius.circular(14),
@@ -21,19 +21,21 @@ class HomeSearchBar extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: AppColors.divider),
+              border: Border.all(color: context.adaptiveDivider),
             ),
-            child: const Row(
+            child: Row(
               children: [
                 Icon(
-                  Iconsax.search_normal_copy,
-                  color: AppColors.textSecondary,
+                  Iconsax.search_normal,
+                  color: context.adaptiveTextSecondary,
                 ),
                 SizedBox(width: 12),
                 Expanded(
                   child: Text(
                     'Cari venue, event, public place...',
-                    style: TextStyle(color: AppColors.textSecondary),
+                    style: context.textTheme.bodyMedium?.copyWith(
+                      color: context.adaptiveTextSecondary,
+                    ),
                   ),
                 ),
               ],

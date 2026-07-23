@@ -4,7 +4,7 @@ import 'mock_data_service.dart';
 
 class GlobalSearchService {
   GlobalSearchService({LocalStorage? storage})
-      : _storage = storage ?? LocalStorage();
+    : _storage = storage ?? LocalStorage();
 
   final LocalStorage _storage;
   static const _recentSearchesKey = 'recent_searches';
@@ -22,17 +22,23 @@ class GlobalSearchService {
               (item) =>
                   item.name.toLowerCase().contains(keyword) ||
                   item.location.toLowerCase().contains(keyword) ||
-                  item.category.toLowerCase().contains(keyword),
+                  item.city.toLowerCase().contains(keyword) ||
+                  item.province.toLowerCase().contains(keyword) ||
+                  item.address.toLowerCase().contains(keyword),
             )
             .map(
               (item) => SearchResultItem(
                 id: item.id,
                 title: item.name,
-                subtitle: '${item.category} · ${item.capacity} orang',
+                subtitle: item.city.isNotEmpty
+                    ? '${item.city}, ${item.province}'
+                    : item.location,
                 location: item.location,
                 type: SearchResultType.venue,
-                rating: item.rating,
-                badge: item.priceRange,
+                rating: item.averageRating,
+                badge: item.totalReviews > 0
+                    ? '${item.totalReviews} ulasan'
+                    : null,
               ),
             ),
       );
@@ -67,13 +73,13 @@ class GlobalSearchService {
               (item) =>
                   item.name.toLowerCase().contains(keyword) ||
                   item.location.toLowerCase().contains(keyword) ||
-                  item.type.toLowerCase().contains(keyword),
+                  item.typeLabel.toLowerCase().contains(keyword),
             )
             .map(
               (item) => SearchResultItem(
                 id: item.id,
                 title: item.name,
-                subtitle: item.type,
+                subtitle: item.type.name,
                 location: item.location,
                 type: SearchResultType.publicPlace,
                 rating: item.rating,
@@ -96,9 +102,10 @@ class GlobalSearchService {
     final trimmed = query.trim();
     if (trimmed.isEmpty) return;
     final current = await getRecentSearches();
-    final updated = [trimmed, ...current.where((item) => item != trimmed)]
-        .take(8)
-        .toList();
+    final updated = [
+      trimmed,
+      ...current.where((item) => item != trimmed),
+    ].take(8).toList();
     await _storage.save(_recentSearchesKey, updated);
   }
 

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:iconsax_flutter/iconsax_flutter.dart';
+import 'package:iconsax/iconsax.dart';
 
 import '../../../../../core/constants/app_colors.dart';
+import '../../../../../core/extensions/context_extensions.dart';
 
 class QuickActionGridCard extends StatelessWidget {
   const QuickActionGridCard({
@@ -28,7 +29,7 @@ class QuickActionGridCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: Colors.white,
+      color: context.cardColor,
       borderRadius: BorderRadius.circular(14),
       child: InkWell(
         borderRadius: BorderRadius.circular(14),
@@ -36,7 +37,7 @@ class QuickActionGridCard extends StatelessWidget {
         child: Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: AppColors.divider),
+            border: Border.all(color: context.adaptiveDivider),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -72,7 +73,7 @@ class QuickActionGridCard extends StatelessWidget {
                           ),
                           child: Text(
                             badge!,
-                            style: const TextStyle(
+                            style: TextStyle(
                               color: Colors.white,
                               fontSize: 10,
                               fontWeight: FontWeight.w600,
@@ -93,7 +94,7 @@ class QuickActionGridCard extends StatelessWidget {
                         title,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontWeight: FontWeight.w600,
                           fontSize: 13,
                           height: 1.2,
@@ -104,8 +105,8 @@ class QuickActionGridCard extends StatelessWidget {
                         subtitle,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          color: AppColors.textSecondary,
+                        style: TextStyle(
+                          color: context.adaptiveTextSecondary,
                           fontSize: 11,
                         ),
                       ),
@@ -114,7 +115,7 @@ class QuickActionGridCard extends StatelessWidget {
                         Row(
                           children: [
                             if (rating != null) ...[
-                              const Icon(
+                              Icon(
                                 Iconsax.star,
                                 size: 12,
                                 color: AppColors.secondary,
@@ -122,7 +123,7 @@ class QuickActionGridCard extends StatelessWidget {
                               const SizedBox(width: 2),
                               Text(
                                 rating!.toStringAsFixed(1),
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 11,
                                   fontWeight: FontWeight.w600,
                                 ),
@@ -136,8 +137,8 @@ class QuickActionGridCard extends StatelessWidget {
                                   footer!,
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
-                                  style: const TextStyle(
-                                    color: AppColors.primary,
+                                  style: TextStyle(
+                                    color: context.primaryColor,
                                     fontSize: 11,
                                     fontWeight: FontWeight.w600,
                                   ),

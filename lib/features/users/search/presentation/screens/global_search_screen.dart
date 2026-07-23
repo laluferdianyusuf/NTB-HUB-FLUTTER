@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:iconsax_flutter/iconsax_flutter.dart';
+import 'package:iconsax/iconsax.dart';
 
-import '../../../../../core/constants/app_colors.dart';
+import '../../../../../core/extensions/context_extensions.dart';
 import '../../../../../core/services/global_search_service.dart';
 import '../../../../../models/search_result_item.dart';
 import '../../../../../widgets/common/app_text_field.dart';
@@ -62,10 +62,10 @@ class _GlobalSearchScreenState extends ConsumerState<GlobalSearchScreen> {
     final hasQuery = _searchController.text.trim().isNotEmpty;
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Iconsax.arrow_left_2_copy),
+          icon: Icon(Iconsax.arrow_left_3),
           onPressed: () => context.pop(),
         ),
         title: const Text('Pencarian'),
@@ -84,7 +84,7 @@ class _GlobalSearchScreenState extends ConsumerState<GlobalSearchScreen> {
               onSubmitted: _performSearch,
               suffixIcon: hasQuery
                   ? IconButton(
-                      icon: const Icon(Iconsax.close_circle, size: 20),
+                      icon: Icon(Iconsax.close_circle, size: 20),
                       onPressed: () {
                         _searchController.clear();
                         _performSearch('');
@@ -152,7 +152,7 @@ class _GlobalSearchScreenState extends ConsumerState<GlobalSearchScreen> {
             Icon(
               Iconsax.search_status,
               size: 64,
-              color: AppColors.textSecondary.withValues(alpha: 0.5),
+              color: context.adaptiveTextSecondary.withValues(alpha: 0.5),
             ),
             const SizedBox(height: 16),
             const Text(
@@ -194,10 +194,10 @@ class _GlobalSearchScreenState extends ConsumerState<GlobalSearchScreen> {
 
   Widget _buildRecentSearches() {
     if (_recentSearches.isEmpty) {
-      return const Center(
+      return Center(
         child: Text(
           'Ketik untuk mencari venue, event, dan public place',
-          style: TextStyle(color: AppColors.textSecondary),
+          style: TextStyle(color: context.adaptiveTextSecondary),
         ),
       );
     }
@@ -227,9 +227,9 @@ class _GlobalSearchScreenState extends ConsumerState<GlobalSearchScreen> {
         ..._recentSearches.map(
           (keyword) => ListTile(
             contentPadding: EdgeInsets.zero,
-            leading: const Icon(Iconsax.clock, color: AppColors.textSecondary),
+            leading: Icon(Iconsax.clock, color: context.adaptiveTextSecondary),
             title: Text(keyword),
-            trailing: const Icon(Iconsax.arrow_right_3, size: 16),
+            trailing: Icon(Iconsax.arrow_right_3, size: 16),
             onTap: () {
               _searchController.text = keyword;
               _performSearch(keyword);
@@ -260,13 +260,13 @@ class _FilterChip extends StatelessWidget {
         label: Text(label),
         selected: selected,
         showCheckmark: false,
-        selectedColor: AppColors.primary.withValues(alpha: 0.15),
+        selectedColor: context.primaryColor.withValues(alpha: 0.15),
         labelStyle: TextStyle(
-          color: selected ? AppColors.primary : AppColors.textPrimary,
+          color: selected ? context.primaryColor : context.adaptiveTextPrimary,
           fontWeight: selected ? FontWeight.w600 : FontWeight.normal,
         ),
         side: BorderSide(
-          color: selected ? AppColors.primary : AppColors.divider,
+          color: selected ? context.primaryColor : context.adaptiveDivider,
         ),
         onSelected: (_) => onTap(),
       ),

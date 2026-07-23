@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:iconsax_flutter/iconsax_flutter.dart';
+import 'package:iconsax/iconsax.dart';
 
 import '../../../../../core/constants/app_colors.dart';
+import '../../../../../core/extensions/context_extensions.dart';
 import '../../../../../core/helpers/date_formatter.dart';
 import '../../../../../core/services/mock_data_service.dart';
 import '../../../../../models/transaction_model.dart';
@@ -39,21 +40,21 @@ class _TransactionCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.cardColor,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.divider),
+        border: Border.all(color: context.adaptiveDivider),
       ),
       child: Row(
         children: [
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: AppColors.primary.withValues(alpha: 0.1),
+              color: context.primaryColor.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(10),
             ),
             child: Icon(
               transaction.type == 'Booking' ? Iconsax.ticket : Iconsax.wallet,
-              color: AppColors.primary,
+              color: context.primaryColor,
               size: 22,
             ),
           ),
@@ -64,13 +65,13 @@ class _TransactionCard extends StatelessWidget {
               children: [
                 Text(
                   transaction.title,
-                  style: const TextStyle(fontWeight: FontWeight.w600),
+                  style: TextStyle(fontWeight: FontWeight.w600),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   '${transaction.type} · ${DateFormatter.formatDate(transaction.date)}',
-                  style: const TextStyle(
-                    color: AppColors.textSecondary,
+                  style: TextStyle(
+                    color: context.adaptiveTextSecondary,
                     fontSize: 12,
                   ),
                 ),
@@ -82,7 +83,7 @@ class _TransactionCard extends StatelessWidget {
             children: [
               Text(
                 transaction.formattedAmount,
-                style: const TextStyle(fontWeight: FontWeight.w600),
+                style: TextStyle(fontWeight: FontWeight.w600),
               ),
               const SizedBox(height: 4),
               Text(

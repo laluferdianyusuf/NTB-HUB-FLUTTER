@@ -92,15 +92,22 @@ class _VenuePagedTabState extends ConsumerState<_VenuePagedTab>
       emptyMessage: 'Belum ada venue',
       itemBuilder: (context, venue, index) => HomeGridCard(
         title: venue.name,
-        subtitle: '${venue.category} · ${venue.capacity} orang',
+        subtitle: _venueSubtitle(venue),
         location: venue.location,
         type: HomeGridCardType.venue,
-        rating: venue.rating,
-        badge: venue.priceRange,
+        rating: venue.averageRating,
+        badge: venue.totalReviews > 0 ? '${venue.totalReviews} ulasan' : null,
         imageUrl: venue.imageUrl,
         onTap: () => context.push('/venue/${venue.id}', extra: venue),
       ),
     );
+  }
+
+  String _venueSubtitle(VenueModel venue) {
+    final parts = <String>[];
+    if (venue.city.isNotEmpty) parts.add(venue.city);
+    if (venue.province.isNotEmpty) parts.add(venue.province);
+    return parts.isEmpty ? venue.address : parts.join(', ');
   }
 }
 
@@ -248,7 +255,7 @@ class _PublicPlacePagedTabState extends ConsumerState<_PublicPlacePagedTab>
       emptyMessage: 'Belum ada public place',
       itemBuilder: (context, place, index) => HomeGridCard(
         title: place.name,
-        subtitle: place.type,
+        subtitle: place.typeLabel,
         location: place.location,
         type: HomeGridCardType.publicPlace,
         rating: place.rating,

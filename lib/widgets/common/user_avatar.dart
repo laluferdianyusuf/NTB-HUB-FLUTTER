@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:ntbhub_flutter/core/constants/app_colors.dart';
 
-import '../../core/constants/app_colors.dart';
+import '../../core/extensions/context_extensions.dart';
 import '../../core/helpers/user_avatar_helper.dart';
 
 class UserAvatar extends StatelessWidget {
@@ -33,17 +34,15 @@ class UserAvatar extends StatelessWidget {
           width: size,
           height: size,
           fit: BoxFit.cover,
-          errorBuilder: (_, __, ___) {
+          errorBuilder: (_, _, _) {
             if (primaryUrl != fallbackUrl) {
               return Image.network(
                 fallbackUrl,
                 width: size,
                 height: size,
                 fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => _InitialsFallback(
-                  name: name,
-                  radius: radius,
-                ),
+                errorBuilder: (_, _, _) =>
+                    _InitialsFallback(name: name, radius: radius),
               );
             }
             return _InitialsFallback(name: name, radius: radius);
@@ -55,10 +54,7 @@ class UserAvatar extends StatelessWidget {
 }
 
 class _InitialsFallback extends StatelessWidget {
-  const _InitialsFallback({
-    required this.name,
-    required this.radius,
-  });
+  const _InitialsFallback({required this.name, required this.radius});
 
   final String name;
   final double radius;
@@ -70,14 +66,14 @@ class _InitialsFallback extends StatelessWidget {
     return Container(
       width: radius * 2,
       height: radius * 2,
-      color: AppColors.primary.withValues(alpha: 0.15),
+      color: context.primaryColor.withValues(alpha: 0.15),
       alignment: Alignment.center,
       child: Text(
         initial,
         style: TextStyle(
           fontSize: radius * 0.9,
           fontWeight: FontWeight.bold,
-          color: AppColors.primary,
+          color: context.primaryColor,
         ),
       ),
     );

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/extensions/context_extensions.dart';
 
 /// Placeholder screen untuk modul admin.
 /// Struktur: features/admin/presentation/screens/
@@ -12,7 +13,7 @@ class AdminDashboardScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Admin Dashboard'),
-        backgroundColor: AppColors.primary,
+        backgroundColor: context.primaryColor,
         foregroundColor: Colors.white,
       ),
       body: const Center(

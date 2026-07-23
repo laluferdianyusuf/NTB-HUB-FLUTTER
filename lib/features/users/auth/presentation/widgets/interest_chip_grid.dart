@@ -7,6 +7,7 @@ import '../../../../../core/utils/result.dart' as result;
 import '../../../../../models/interest_model.dart';
 import '../../../../../widgets/common/app_skeleton.dart';
 import '../providers/interest_provider.dart';
+import '../../../../../core/extensions/context_extensions.dart';
 
 enum InterestGridStyle { chips, enterprise }
 
@@ -236,9 +237,9 @@ class _InterestChipContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (interests.isEmpty) {
-      return const Text(
+      return Text(
         'Minat belum tersedia',
-        style: TextStyle(color: AppColors.textSecondary),
+        style: TextStyle(color: context.adaptiveTextSecondary),
       );
     }
 
@@ -261,7 +262,7 @@ class _InterestChipContent extends StatelessWidget {
           selectedColor: accent,
           backgroundColor: Colors.white,
           labelStyle: TextStyle(
-            color: isSelected ? Colors.white : AppColors.textPrimary,
+            color: isSelected ? Colors.white : context.adaptiveTextPrimary,
             fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
           ),
           side: BorderSide(
@@ -296,14 +297,14 @@ class _InterestError extends StatelessWidget {
           style: TextStyle(
             color: isDark
                 ? Colors.white.withValues(alpha: 0.75)
-                : AppColors.textSecondary,
+                : context.adaptiveTextSecondary,
           ),
         ),
         const SizedBox(height: 8),
         TextButton(
           onPressed: onRetry,
           style: TextButton.styleFrom(
-            foregroundColor: isDark ? Colors.white : AppColors.primary,
+            foregroundColor: isDark ? Colors.white : context.primaryColor,
           ),
           child: const Text('Coba Lagi'),
         ),

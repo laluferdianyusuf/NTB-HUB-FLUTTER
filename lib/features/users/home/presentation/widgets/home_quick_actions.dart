@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/constants/quick_action_data.dart';
+import '../../../../../core/extensions/context_extensions.dart';
 
 class HomeQuickActions extends StatelessWidget {
   const HomeQuickActions({super.key});
@@ -12,14 +12,14 @@ class HomeQuickActions extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Padding(
-          padding: EdgeInsets.fromLTRB(16, 12, 16, 10),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 12, 16, 10),
           child: Text(
             'Quick Action',
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w700,
-              color: AppColors.textPrimary,
+              color: context.adaptiveTextPrimary,
             ),
           ),
         ),
@@ -53,7 +53,7 @@ class _QuickActionItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: Colors.white,
+      color: context.cardColor,
       borderRadius: BorderRadius.circular(20),
       child: InkWell(
         borderRadius: BorderRadius.circular(20),
@@ -62,7 +62,7 @@ class _QuickActionItem extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(20),
-            // border: Border.all(color: AppColors.divider),
+            // border: Border.all(color: context.adaptiveDivider),
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
@@ -79,10 +79,10 @@ class _QuickActionItem extends StatelessWidget {
               const SizedBox(width: 10),
               Text(
                 action.label,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
-                  color: AppColors.textPrimary,
+                  color: context.adaptiveTextPrimary,
                 ),
               ),
             ],

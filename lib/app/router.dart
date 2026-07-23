@@ -21,6 +21,7 @@ import '../features/users/profile/presentation/screens/manage_profile_screen.dar
 import '../features/users/profile/presentation/screens/password_security_screen.dart';
 import '../features/users/profile/presentation/screens/privacy_policy_screen.dart';
 import '../features/users/profile/presentation/screens/terms_conditions_screen.dart';
+import '../features/users/profile/presentation/screens/theme_settings_screen.dart';
 import '../features/users/profile/presentation/screens/transaction_history_screen.dart';
 import '../features/users/profile/presentation/screens/transaction_pin_screen.dart';
 import '../features/users/venue_category/presentation/screens/venue_category_screen.dart';
@@ -178,6 +179,10 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: '/profile/transactions',
       builder: (context, state) => const TransactionHistoryScreen(),
+    ),
+    GoRoute(
+      path: '/profile/theme',
+      builder: (context, state) => const ThemeSettingsScreen(),
     ),
     GoRoute(
       path: '/profile/about',

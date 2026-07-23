@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:iconsax_flutter/iconsax_flutter.dart';
+import 'package:iconsax/iconsax.dart';
 
 class OnboardingSlide {
   const OnboardingSlide({
@@ -57,5 +57,6 @@ abstract final class OnboardingSlides {
       gradient: [Color(0xFF6A0572), Color(0xFFAB83A1)],
       backgroundImage: interestsBackground,
       isInterestSlide: true,
-    ),  ];
+    ),
+  ];
 }

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:iconsax_flutter/iconsax_flutter.dart';
+import 'package:iconsax/iconsax.dart';
 
-import '../../core/constants/app_colors.dart';
 import 'app_text_field.dart';
 
 class ChangePasswordForm extends StatefulWidget {
@@ -14,7 +13,8 @@ class ChangePasswordForm extends StatefulWidget {
   final Future<void> Function({
     required String currentPassword,
     required String newPassword,
-  }) onSubmit;
+  })
+  onSubmit;
   final bool isLoading;
 
   @override
@@ -85,13 +85,6 @@ class _ChangePasswordFormState extends State<ChangePasswordForm> {
             height: 52,
             child: ElevatedButton(
               onPressed: widget.isLoading ? null : _submit,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primary,
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
               child: widget.isLoading
                   ? const SizedBox(
                       width: 24,

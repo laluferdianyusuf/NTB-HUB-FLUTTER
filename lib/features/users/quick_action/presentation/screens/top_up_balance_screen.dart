@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:iconsax_flutter/iconsax_flutter.dart';
+import 'package:iconsax/iconsax.dart';
 
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/extensions/context_extensions.dart';
@@ -55,7 +55,7 @@ class _TopUpBalanceScreenState extends ConsumerState<TopUpBalanceScreen> {
               width: double.infinity,
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                gradient: const LinearGradient(
+                gradient: LinearGradient(
                   colors: [Color(0xFF2A9D8F), Color(0xFF1B5E4B)],
                 ),
                 borderRadius: BorderRadius.circular(16),
@@ -70,7 +70,7 @@ class _TopUpBalanceScreenState extends ConsumerState<TopUpBalanceScreen> {
                   const SizedBox(height: 8),
                   Text(
                     'Rp ${balance.toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (m) => '${m[1]}.')}',
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: Colors.white,
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
@@ -102,7 +102,9 @@ class _TopUpBalanceScreenState extends ConsumerState<TopUpBalanceScreen> {
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(14),
                         border: Border.all(
-                          color: isSelected ? AppColors.primary : AppColors.divider,
+                          color: isSelected
+                              ? context.primaryColor
+                              : context.adaptiveDivider,
                           width: isSelected ? 1.5 : 1,
                         ),
                       ),
@@ -111,12 +113,14 @@ class _TopUpBalanceScreenState extends ConsumerState<TopUpBalanceScreen> {
                           Container(
                             padding: const EdgeInsets.all(10),
                             decoration: BoxDecoration(
-                              color: AppColors.primary.withValues(alpha: 0.1),
+                              color: context.primaryColor.withValues(
+                                alpha: 0.1,
+                              ),
                               borderRadius: BorderRadius.circular(10),
                             ),
-                            child: const Icon(
+                            child: Icon(
                               Iconsax.wallet_add,
-                              color: AppColors.primary,
+                              color: context.primaryColor,
                             ),
                           ),
                           const SizedBox(width: 12),
@@ -128,7 +132,7 @@ class _TopUpBalanceScreenState extends ConsumerState<TopUpBalanceScreen> {
                                   children: [
                                     Text(
                                       package.formattedAmount,
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                         fontWeight: FontWeight.w700,
                                         fontSize: 16,
                                       ),
@@ -141,8 +145,12 @@ class _TopUpBalanceScreenState extends ConsumerState<TopUpBalanceScreen> {
                                           vertical: 2,
                                         ),
                                         decoration: BoxDecoration(
-                                          color: AppColors.secondary.withValues(alpha: 0.15),
-                                          borderRadius: BorderRadius.circular(8),
+                                          color: AppColors.secondary.withValues(
+                                            alpha: 0.15,
+                                          ),
+                                          borderRadius: BorderRadius.circular(
+                                            8,
+                                          ),
                                         ),
                                         child: const Text(
                                           'Populer',
@@ -159,7 +167,7 @@ class _TopUpBalanceScreenState extends ConsumerState<TopUpBalanceScreen> {
                                 if (package.bonus > 0)
                                   Text(
                                     'Bonus Rp ${package.bonus}',
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                       color: AppColors.success,
                                       fontSize: 12,
                                     ),
@@ -174,9 +182,9 @@ class _TopUpBalanceScreenState extends ConsumerState<TopUpBalanceScreen> {
                               child: CircularProgressIndicator(strokeWidth: 2),
                             )
                           else
-                            const Icon(
+                            Icon(
                               Iconsax.arrow_right_3,
-                              color: AppColors.textSecondary,
+                              color: context.adaptiveTextSecondary,
                               size: 18,
                             ),
                         ],

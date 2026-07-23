@@ -23,7 +23,9 @@ class VenueRepository {
       final venues = response.data
         ..sort((a, b) => a.name.compareTo(b.name));
 
-      return Success(venues);
+      return Success(
+        venues.where((venue) => venue.isActive).toList(),
+      );
     } on AppException catch (error) {
       return Error(mapRepositoryException(error));
     } catch (error) {

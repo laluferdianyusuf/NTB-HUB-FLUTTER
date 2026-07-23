@@ -4,6 +4,7 @@ import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/constants/app_strings.dart';
 import '../../../../../widgets/common/app_skeleton.dart';
+import '../../../../../core/extensions/context_extensions.dart';
 
 class HomeNestedPagedGridTab<T> extends StatelessWidget {
   const HomeNestedPagedGridTab({
@@ -92,7 +93,7 @@ class _ErrorBox extends StatelessWidget {
             ElevatedButton(
               onPressed: onRetry,
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primary,
+                backgroundColor: context.primaryColor,
                 foregroundColor: Colors.white,
               ),
               child: const Text(AppStrings.retry),

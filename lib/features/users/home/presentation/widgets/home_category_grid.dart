@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/helpers/category_icon_mapper.dart';
@@ -10,6 +9,7 @@ import '../../../../../models/venue_category_model.dart';
 import '../../../../../widgets/common/app_skeleton.dart';
 import '../../../../../widgets/common/category_svg_icon.dart';
 import '../../../venue_category/presentation/providers/venue_category_provider.dart';
+import '../../../../../core/extensions/context_extensions.dart';
 
 class HomeCategoryGrid extends ConsumerWidget {
   const HomeCategoryGrid({super.key});
@@ -48,12 +48,12 @@ class _CategoryGridContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (categories.isEmpty) {
-      return const SizedBox(
+      return SizedBox(
         height: 80,
         child: Center(
           child: Text(
             'Kategori belum tersedia',
-            style: TextStyle(color: AppColors.textSecondary),
+            style: TextStyle(color: context.adaptiveTextSecondary),
           ),
         ),
       );
@@ -103,7 +103,7 @@ class _CategoryTile extends StatelessWidget {
     );
 
     return Material(
-      color: Colors.white,
+      color: context.adaptiveSurface,
       borderRadius: BorderRadius.circular(14),
       child: InkWell(
         onTap: onTap,
@@ -111,7 +111,7 @@ class _CategoryTile extends StatelessWidget {
         child: Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: AppColors.divider),
+            border: Border.all(color: context.adaptiveDivider),
           ),
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
           child: Column(
@@ -136,14 +136,7 @@ class _CategoryTile extends StatelessWidget {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 textAlign: TextAlign.center,
-                style: GoogleFonts.inter(
-                  textStyle: const TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 11,
-                    height: 1.15,
-                    color: AppColors.textPrimary,
-                  ),
-                ),
+                style: context.textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w600, height: 1.15, color: context.adaptiveTextPrimary),
               ),
             ],
           ),
@@ -170,7 +163,7 @@ class _CategoryError extends StatelessWidget {
             Text(
               message ?? 'Gagal memuat kategori',
               textAlign: TextAlign.center,
-              style: const TextStyle(color: AppColors.textSecondary),
+              style: TextStyle(color: context.adaptiveTextSecondary),
             ),
             TextButton(onPressed: onRetry, child: const Text('Coba Lagi')),
           ],

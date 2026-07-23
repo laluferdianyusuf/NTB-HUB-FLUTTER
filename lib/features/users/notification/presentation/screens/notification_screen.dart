@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:iconsax_flutter/iconsax_flutter.dart';
+import 'package:iconsax/iconsax.dart';
 
 import '../../../../../core/constants/app_colors.dart';
+import '../../../../../core/extensions/context_extensions.dart';
 import '../../../../../core/helpers/date_formatter.dart';
 import '../../../../../core/services/mock_data_service.dart';
+import '../../../../../models/enums/app_enums.dart';
 import '../../../../../models/notification_model.dart';
 import '../../../../../widgets/common/app_page_scaffold.dart';
 import '../../../../../widgets/common/app_skeleton.dart';
 
-final notificationsProvider =
-    FutureProvider<List<NotificationModel>>((ref) async {
+final notificationsProvider = FutureProvider<List<NotificationModel>>((
+  ref,
+) async {
   await Future<void>.delayed(const Duration(milliseconds: 700));
   return MockDataService.notifications;
 });
@@ -25,20 +28,17 @@ class NotificationScreen extends ConsumerWidget {
     return AppPageScaffold(
       title: 'Notifikasi',
       actions: [
-        TextButton(
-          onPressed: () {},
-          child: const Text('Tandai dibaca'),
-        ),
+        TextButton(onPressed: () {}, child: const Text('Tandai dibaca')),
       ],
       body: notificationsAsync.when(
         loading: () => const AppListSkeleton(itemCount: 6),
         error: (error, _) => Center(child: Text(error.toString())),
         data: (notifications) {
           if (notifications.isEmpty) {
-            return const Center(
+            return Center(
               child: Text(
                 'Belum ada notifikasi',
-                style: TextStyle(color: AppColors.textSecondary),
+                style: TextStyle(color: context.adaptiveTextSecondary),
               ),
             );
           }
@@ -63,17 +63,17 @@ class _NotificationCard extends StatelessWidget {
   final NotificationModel notification;
 
   IconData get _icon => switch (notification.type) {
-    NotificationType.booking => Iconsax.ticket,
-    NotificationType.event => Iconsax.calendar,
-    NotificationType.system => Iconsax.setting_2,
-    NotificationType.promo => Iconsax.gift,
+    AppNotificationType.booking => Iconsax.ticket,
+    AppNotificationType.order => Iconsax.shopping_cart,
+    AppNotificationType.withdraw => Iconsax.wallet_2,
+    AppNotificationType.system => Iconsax.setting_2,
   };
 
-  Color get _iconColor => switch (notification.type) {
-    NotificationType.booking => AppColors.primary,
-    NotificationType.event => const Color(0xFF3282B8),
-    NotificationType.system => AppColors.textSecondary,
-    NotificationType.promo => AppColors.secondary,
+  Color _iconColor(BuildContext context) => switch (notification.type) {
+    AppNotificationType.booking => context.primaryColor,
+    AppNotificationType.order => const Color(0xFF3282B8),
+    AppNotificationType.withdraw => AppColors.secondary,
+    AppNotificationType.system => context.adaptiveTextSecondary,
   };
 
   @override
@@ -82,10 +82,14 @@ class _NotificationCard extends StatelessWidget {
       duration: const Duration(milliseconds: 250),
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: notification.isRead ? Colors.white : AppColors.primary.withValues(alpha: 0.05),
+        color: notification.isRead
+            ? context.cardColor
+            : context.primaryColor.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(14),
         border: Border.all(
-          color: notification.isRead ? AppColors.divider : AppColors.primary.withValues(alpha: 0.2),
+          color: notification.isRead
+              ? context.adaptiveDivider
+              : context.primaryColor.withValues(alpha: 0.2),
         ),
       ),
       child: Row(
@@ -94,10 +98,10 @@ class _NotificationCard extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: _iconColor.withValues(alpha: 0.12),
+              color: _iconColor(context).withValues(alpha: 0.12),
               borderRadius: BorderRadius.circular(10),
             ),
-            child: Icon(_icon, color: _iconColor, size: 20),
+            child: Icon(_icon, color: _iconColor(context), size: 20),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -120,8 +124,8 @@ class _NotificationCard extends StatelessWidget {
                       Container(
                         width: 8,
                         height: 8,
-                        decoration: const BoxDecoration(
-                          color: AppColors.primary,
+                        decoration: BoxDecoration(
+                          color: context.primaryColor,
                           shape: BoxShape.circle,
                         ),
                       ),
@@ -130,17 +134,17 @@ class _NotificationCard extends StatelessWidget {
                 const SizedBox(height: 4),
                 Text(
                   notification.body,
-                  style: const TextStyle(
-                    color: AppColors.textSecondary,
+                  style: TextStyle(
+                    color: context.adaptiveTextSecondary,
                     height: 1.4,
                     fontSize: 13,
                   ),
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  _formatTime(notification.createdAt),
-                  style: const TextStyle(
-                    color: AppColors.textSecondary,
+                  _formatTime(notification.createdAt ?? DateTime.now()),
+                  style: TextStyle(
+                    color: context.adaptiveTextSecondary,
                     fontSize: 11,
                   ),
                 ),

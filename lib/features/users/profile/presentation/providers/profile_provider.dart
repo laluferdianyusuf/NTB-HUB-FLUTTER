@@ -6,7 +6,7 @@ import '../../../../../models/user_model.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 
 final profileProvider = FutureProvider<result.Result<UserModel>>((ref) async {
-  final auth = ref.watch(authProvider).value;
+  final auth = await ref.watch(authProvider.future);
   if (auth == null || !auth.isAuthenticated) {
     return const result.Error(UnknownFailure('Belum login'));
   }

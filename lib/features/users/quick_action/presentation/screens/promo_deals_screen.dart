@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:iconsax_flutter/iconsax_flutter.dart';
+import 'package:iconsax/iconsax.dart';
 
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/extensions/context_extensions.dart';
@@ -35,7 +35,8 @@ class PromoDealsScreen extends ConsumerWidget {
             final promo = promos[index];
             return _PromoCard(
               promo: promo,
-              onClaim: () => context.showSnackBar('Promo "${promo.title}" diklaim'),
+              onClaim: () =>
+                  context.showSnackBar('Promo "${promo.title}" diklaim'),
             );
           },
         ),
@@ -54,9 +55,9 @@ class _PromoCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.cardColor,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.divider),
+        border: Border.all(color: context.adaptiveDivider),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -66,23 +67,28 @@ class _PromoCard extends StatelessWidget {
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  AppColors.primary.withValues(alpha: 0.9),
+                  context.primaryColor.withValues(alpha: 0.9),
                   const Color(0xFF6A0572).withValues(alpha: 0.85),
                 ],
               ),
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(16),
+              ),
             ),
             child: Row(
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
                     color: AppColors.secondary,
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
                     promo.discountLabel,
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
                       fontSize: 12,
@@ -90,7 +96,7 @@ class _PromoCard extends StatelessWidget {
                   ),
                 ),
                 const Spacer(),
-                const Icon(Iconsax.gift, color: Colors.white),
+                Icon(Iconsax.gift, color: Colors.white),
               ],
             ),
           ),
@@ -101,36 +107,37 @@ class _PromoCard extends StatelessWidget {
               children: [
                 Text(
                   promo.title,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w700,
-                    fontSize: 16,
-                  ),
+                  style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
                 ),
                 const SizedBox(height: 6),
                 Text(
                   promo.description,
-                  style: const TextStyle(
-                    color: AppColors.textSecondary,
+                  style: TextStyle(
+                    color: context.adaptiveTextSecondary,
                     height: 1.4,
                   ),
                 ),
                 const SizedBox(height: 10),
                 Row(
                   children: [
-                    const Icon(Iconsax.tag, size: 14, color: AppColors.textSecondary),
+                    Icon(
+                      Iconsax.tag,
+                      size: 14,
+                      color: context.adaptiveTextSecondary,
+                    ),
                     const SizedBox(width: 4),
                     Text(
                       promo.category,
-                      style: const TextStyle(
-                        color: AppColors.textSecondary,
+                      style: TextStyle(
+                        color: context.adaptiveTextSecondary,
                         fontSize: 12,
                       ),
                     ),
                     const Spacer(),
                     Text(
                       'Berlaku s/d ${DateFormatter.formatDate(promo.validUntil)}',
-                      style: const TextStyle(
-                        color: AppColors.textSecondary,
+                      style: TextStyle(
+                        color: context.adaptiveTextSecondary,
                         fontSize: 11,
                       ),
                     ),

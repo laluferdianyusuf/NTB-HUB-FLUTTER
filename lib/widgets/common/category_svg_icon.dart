@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-import '../../core/constants/app_colors.dart';
+import '../../core/extensions/context_extensions.dart';
 import '../../core/helpers/category_icon_mapper.dart';
 
 class CategorySvgIcon extends StatelessWidget {
@@ -33,7 +33,7 @@ class CategorySvgIcon extends StatelessWidget {
       placeholderBuilder: (_) => Icon(
         CategoryIconMapper.fallbackIcon(icon: icon),
         size: size,
-        color: AppColors.textSecondary,
+        color: context.adaptiveTextSecondary,
       ),
     );
   }

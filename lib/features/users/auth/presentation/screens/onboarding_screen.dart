@@ -2,11 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:iconsax_flutter/iconsax_flutter.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
-import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/constants/onboarding_data.dart';
 import '../../../../../core/extensions/context_extensions.dart';
 import '../providers/location_provider.dart';
@@ -26,9 +25,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   final _selectedInterests = <String>{};
   bool _isFinishing = false;
 
-  int get _interestSlideIndex => OnboardingSlides.slides.indexWhere(
-        (slide) => slide.isInterestSlide,
-      );
+  int get _interestSlideIndex =>
+      OnboardingSlides.slides.indexWhere((slide) => slide.isInterestSlide);
 
   @override
   void dispose() {
@@ -138,7 +136,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       child: Scaffold(
         backgroundColor: isFullScreenSlide
             ? Colors.black
-            : AppColors.background,
+            : Theme.of(context).scaffoldBackgroundColor,
         body: Stack(
           children: [
             PageView.builder(
@@ -160,17 +158,23 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
               },
             ),
             Positioned(
-              top: 0,
-              right: 0,
+              top: 5,
+              right: 5,
               child: SafeArea(
                 child: TextButton(
                   onPressed: _isFinishing ? null : _skipOnboarding,
                   style: TextButton.styleFrom(
                     foregroundColor: isFullScreenSlide
                         ? Colors.white
-                        : AppColors.primary,
+                        : context.primaryColor,
                   ),
-                  child: const Text('Lewati'),
+                  child: Row(
+                    children: [
+                      Text('Lewati'),
+                      SizedBox(width: 8),
+                      Icon(Iconsax.arrow_right_3),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -248,7 +252,7 @@ class _FullScreenPreviewSlide extends StatelessWidget {
                   const SizedBox(height: 20),
                   Text(
                     slide.title,
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: Colors.white,
                       fontSize: 30,
                       fontWeight: FontWeight.w700,
@@ -312,10 +316,12 @@ class _OnboardingBottomBar extends StatelessWidget {
                 ],
               )
             : null,
-        color: isFullScreenSlide ? null : AppColors.background,
+        color: isFullScreenSlide
+            ? null
+            : Theme.of(context).scaffoldBackgroundColor,
         border: isFullScreenSlide
             ? null
-            : const Border(top: BorderSide(color: AppColors.divider)),
+            : Border(top: BorderSide(color: context.adaptiveDivider)),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -328,10 +334,10 @@ class _OnboardingBottomBar extends StatelessWidget {
               dotWidth: 8,
               activeDotColor: isFullScreenSlide
                   ? Colors.white
-                  : AppColors.primary,
+                  : context.primaryColor,
               dotColor: isFullScreenSlide
                   ? Colors.white.withValues(alpha: 0.35)
-                  : AppColors.divider,
+                  : context.adaptiveDivider,
               expansionFactor: 3,
             ),
           ),
@@ -351,17 +357,17 @@ class _OnboardingBottomBar extends StatelessWidget {
                           color: Colors.white,
                         ),
                       )
-                    : const Icon(Iconsax.location, color: Colors.white),
+                    : Icon(Iconsax.location, color: Colors.white),
                 label: Text(
                   isFinishing ? 'Menyiapkan...' : 'Aktifkan Lokasi & Mulai',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
                     color: Colors.white,
                   ),
                 ),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary,
+                  backgroundColor: context.primaryColor,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -376,7 +382,7 @@ class _OnboardingBottomBar extends StatelessWidget {
                 fontSize: 12,
                 color: isFullScreenSlide
                     ? Colors.white.withValues(alpha: 0.72)
-                    : AppColors.textSecondary.withValues(alpha: 0.9),
+                    : context.adaptiveTextSecondary.withValues(alpha: 0.9),
               ),
             ),
           ] else
@@ -386,7 +392,7 @@ class _OnboardingBottomBar extends StatelessWidget {
               child: ElevatedButton(
                 onPressed: onNext,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary,
+                  backgroundColor: context.primaryColor,
                   foregroundColor: Colors.white,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -464,7 +470,7 @@ class _InterestSlide extends StatelessWidget {
                 const SizedBox(height: 18),
                 Text(
                   slide.title,
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: Colors.white,
                     fontSize: 28,
                     fontWeight: FontWeight.w700,
@@ -483,16 +489,18 @@ class _InterestSlide extends StatelessWidget {
                 ),
                 const SizedBox(height: 16),
                 Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 8,
+                  ),
                   decoration: BoxDecoration(
                     color: selectedCount > 0
-                        ? AppColors.primary.withValues(alpha: 0.22)
+                        ? context.primaryColor.withValues(alpha: 0.22)
                         : Colors.white.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(999),
                     border: Border.all(
                       color: selectedCount > 0
-                          ? AppColors.primary.withValues(alpha: 0.65)
+                          ? context.primaryColor.withValues(alpha: 0.65)
                           : Colors.white.withValues(alpha: 0.2),
                     ),
                   ),

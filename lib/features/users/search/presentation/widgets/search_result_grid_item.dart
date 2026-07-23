@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:iconsax_flutter/iconsax_flutter.dart';
+import 'package:iconsax/iconsax.dart';
 
 import '../../../../../core/constants/app_colors.dart';
+import '../../../../../core/extensions/context_extensions.dart';
 import '../../../../../models/search_result_item.dart';
 
 class SearchResultGridItem extends StatelessWidget {
@@ -13,7 +14,7 @@ class SearchResultGridItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: Colors.white,
+      color: context.cardColor,
       borderRadius: BorderRadius.circular(14),
       child: InkWell(
         borderRadius: BorderRadius.circular(14),
@@ -21,7 +22,7 @@ class SearchResultGridItem extends StatelessWidget {
         child: Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: AppColors.divider),
+            border: Border.all(color: context.adaptiveDivider),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -58,7 +59,7 @@ class SearchResultGridItem extends StatelessWidget {
                         ),
                         child: Text(
                           item.typeLabel,
-                          style: const TextStyle(
+                          style: TextStyle(
                             color: Colors.white,
                             fontSize: 10,
                             fontWeight: FontWeight.w600,
@@ -79,7 +80,7 @@ class SearchResultGridItem extends StatelessWidget {
                         item.title,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontWeight: FontWeight.w600,
                           fontSize: 13,
                           height: 1.2,
@@ -90,18 +91,18 @@ class SearchResultGridItem extends StatelessWidget {
                         item.subtitle,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          color: AppColors.textSecondary,
+                        style: TextStyle(
+                          color: context.adaptiveTextSecondary,
                           fontSize: 11,
                         ),
                       ),
                       const Spacer(),
                       Row(
                         children: [
-                          const Icon(
+                          Icon(
                             Iconsax.location,
                             size: 12,
-                            color: AppColors.textSecondary,
+                            color: context.adaptiveTextSecondary,
                           ),
                           const SizedBox(width: 4),
                           Expanded(
@@ -109,8 +110,8 @@ class SearchResultGridItem extends StatelessWidget {
                               item.location,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(
-                                color: AppColors.textSecondary,
+                              style: TextStyle(
+                                color: context.adaptiveTextSecondary,
                                 fontSize: 10,
                               ),
                             ),
@@ -122,7 +123,7 @@ class SearchResultGridItem extends StatelessWidget {
                         Row(
                           children: [
                             if (item.rating != null) ...[
-                              const Icon(
+                              Icon(
                                 Iconsax.star,
                                 size: 12,
                                 color: AppColors.secondary,
@@ -130,7 +131,7 @@ class SearchResultGridItem extends StatelessWidget {
                               const SizedBox(width: 2),
                               Text(
                                 item.rating!.toStringAsFixed(1),
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 11,
                                   fontWeight: FontWeight.w600,
                                 ),
@@ -144,8 +145,8 @@ class SearchResultGridItem extends StatelessWidget {
                                   item.badge!,
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
-                                  style: const TextStyle(
-                                    color: AppColors.primary,
+                                  style: TextStyle(
+                                    color: context.primaryColor,
                                     fontSize: 10,
                                     fontWeight: FontWeight.w500,
                                   ),

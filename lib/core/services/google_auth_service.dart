@@ -139,46 +139,12 @@ class GoogleAuthService {
       ];
     }
 
-    if (cached.isNotEmpty) return cached;
-
-    return const [
-      GoogleAccountInfo(
-        id: 'demo_1',
-        email: 'ahmad.rizki@gmail.com',
-        displayName: 'Ahmad Rizki',
-      ),
-      GoogleAccountInfo(
-        id: 'demo_2',
-        email: 'siti.nurhaliza@gmail.com',
-        displayName: 'Siti Nurhaliza',
-      ),
-    ];
+    return cached;
   }
 
   Future<GoogleUserCredential?> signInWithAccount(
     GoogleAccountInfo account,
   ) async {
-    if (account.id.startsWith('demo_')) {
-      return GoogleUserCredential(
-        id: account.id,
-        email: account.email,
-        displayName: account.displayName,
-        photoUrl: account.photoUrl,
-        idToken: 'demo_id_token_${account.id}',
-        accessToken: 'demo_access_token_${account.id}',
-      );
-    }
-
-    if (kIsWeb) {
-      throw UnsupportedError(
-        'Login Google di web harus menggunakan tombol resmi Google.',
-      );
-    }
-
-    return signIn();
-  }
-
-  Future<GoogleUserCredential?> signIn() async {
     if (kIsWeb) {
       throw UnsupportedError(
         'Login Google di web harus menggunakan tombol resmi Google.',
@@ -189,6 +155,40 @@ class GoogleAuthService {
       throw StateError(
         'GOOGLE_CLIENT_ID belum diatur di .env untuk login Google.',
       );
+    }
+
+    final current = _googleSignIn.currentUser;
+    if (current != null && current.email == account.email) {
+      try {
+        return await _credentialFromAccount(current);
+      } catch (error, stackTrace) {
+        AppLogger.error(
+          'Google sign-in with cached account failed',
+          error,
+          stackTrace,
+        );
+      }
+    }
+
+    await _googleSignIn.signOut();
+    return signIn();
+  }
+
+  Future<GoogleUserCredential?> signIn({bool forceAccountPicker = false}) async {
+    if (kIsWeb) {
+      throw UnsupportedError(
+        'Login Google di web harus menggunakan tombol resmi Google.',
+      );
+    }
+
+    if (!isConfigured) {
+      throw StateError(
+        'GOOGLE_CLIENT_ID belum diatur di .env untuk login Google.',
+      );
+    }
+
+    if (forceAccountPicker) {
+      await _googleSignIn.signOut();
     }
 
     try {

@@ -12,4 +12,8 @@ abstract final class AppStrings {
   static const String loading = 'Memuat...';
   static const String noData = 'Belum ada data';
   static const String errorGeneric = 'Terjadi kesalahan. Silakan coba lagi.';
+  static const int otpCountdownSeconds = 120;
+  static const double defaultBorderRadius = 16;
+  static const double cardBorderRadius = 16;
+  static const double buttonBorderRadius = 14;
 }

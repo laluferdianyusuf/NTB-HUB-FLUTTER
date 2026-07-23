@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:iconsax_flutter/iconsax_flutter.dart';
+import 'package:iconsax/iconsax.dart';
 
-import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/extensions/context_extensions.dart';
 import '../../../../../widgets/common/app_page_scaffold.dart';
 import '../../../../../widgets/common/app_text_field.dart';
@@ -29,7 +28,9 @@ class _TransactionPinScreenState extends ConsumerState<TransactionPinScreen> {
   }
 
   Future<void> _loadPinStatus() async {
-    final pin = await ref.read(profileSettingsServiceProvider).getTransactionPin();
+    final pin = await ref
+        .read(profileSettingsServiceProvider)
+        .getTransactionPin();
     if (mounted) setState(() => _hasExistingPin = pin != null);
   }
 
@@ -51,9 +52,9 @@ class _TransactionPinScreenState extends ConsumerState<TransactionPinScreen> {
     }
 
     setState(() => _isSaving = true);
-    await ref.read(profileSettingsServiceProvider).setTransactionPin(
-      _pinController.text,
-    );
+    await ref
+        .read(profileSettingsServiceProvider)
+        .setTransactionPin(_pinController.text);
     await ref.read(profileSettingsProvider.notifier).refreshPinStatus();
 
     if (!mounted) return;
@@ -74,7 +75,7 @@ class _TransactionPinScreenState extends ConsumerState<TransactionPinScreen> {
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: AppColors.primary.withValues(alpha: 0.08),
+                color: context.primaryColor.withValues(alpha: 0.08),
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Column(
@@ -82,21 +83,23 @@ class _TransactionPinScreenState extends ConsumerState<TransactionPinScreen> {
                   Icon(
                     Iconsax.password_check,
                     size: 48,
-                    color: AppColors.primary.withValues(alpha: 0.8),
+                    color: context.primaryColor.withValues(alpha: 0.8),
                   ),
                   const SizedBox(height: 12),
                   Text(
-                    _hasExistingPin ? 'Ubah Transaction PIN' : 'Atur Transaction PIN',
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 16,
-                    ),
+                    _hasExistingPin
+                        ? 'Ubah Transaction PIN'
+                        : 'Atur Transaction PIN',
+                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
                   ),
                   const SizedBox(height: 8),
-                  const Text(
+                  Text(
                     'PIN digunakan untuk konfirmasi transaksi booking dan pembayaran.',
                     textAlign: TextAlign.center,
-                    style: TextStyle(color: AppColors.textSecondary, height: 1.5),
+                    style: TextStyle(
+                      color: context.adaptiveTextSecondary,
+                      height: 1.5,
+                    ),
                   ),
                 ],
               ),

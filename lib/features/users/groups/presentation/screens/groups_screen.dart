@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:iconsax_flutter/iconsax_flutter.dart';
+import 'package:iconsax/iconsax.dart';
 
 import '../../../../../core/constants/app_colors.dart';
+import '../../../../../core/extensions/context_extensions.dart';
 import '../../../../../database/app_database.dart';
 import '../../../../../models/group_model.dart';
 
@@ -19,7 +20,7 @@ class GroupsScreen extends ConsumerWidget {
     final groupsAsync = ref.watch(groupsListProvider);
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: groupsAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, _) => Center(child: Text(error.toString())),
@@ -30,9 +31,9 @@ class GroupsScreen extends ConsumerWidget {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: AppColors.primary,
+        backgroundColor: context.primaryColor,
         onPressed: () {},
-        child: const Icon(Iconsax.add, color: Colors.white, size: 24),
+        child: Icon(Iconsax.add, color: Colors.white, size: 24),
       ),
     );
   }
@@ -50,23 +51,16 @@ class _GroupCard extends StatelessWidget {
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
-        side: const BorderSide(color: AppColors.divider),
+        side: BorderSide(color: context.adaptiveDivider),
       ),
       child: ListTile(
         contentPadding: const EdgeInsets.all(16),
         leading: CircleAvatar(
           backgroundColor: AppColors.secondary.withValues(alpha: 0.2),
           radius: 28,
-          child: const Icon(
-            Iconsax.people,
-            color: AppColors.primary,
-            size: 24,
-          ),
+          child: Icon(Iconsax.people, color: context.primaryColor, size: 24),
         ),
-        title: Text(
-          group.name,
-          style: const TextStyle(fontWeight: FontWeight.bold),
-        ),
+        title: Text(group.name, style: TextStyle(fontWeight: FontWeight.bold)),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -79,8 +73,8 @@ class _GroupCard extends StatelessWidget {
             const SizedBox(height: 6),
             Text(
               '${group.memberCount} anggota · ${group.category}',
-              style: const TextStyle(
-                color: AppColors.textSecondary,
+              style: TextStyle(
+                color: context.adaptiveTextSecondary,
                 fontSize: 12,
               ),
             ),
@@ -89,8 +83,8 @@ class _GroupCard extends StatelessWidget {
         trailing: OutlinedButton(
           onPressed: () {},
           style: OutlinedButton.styleFrom(
-            foregroundColor: AppColors.primary,
-            side: const BorderSide(color: AppColors.primary),
+            foregroundColor: context.primaryColor,
+            side: BorderSide(color: context.primaryColor),
           ),
           child: const Text('Gabung'),
         ),

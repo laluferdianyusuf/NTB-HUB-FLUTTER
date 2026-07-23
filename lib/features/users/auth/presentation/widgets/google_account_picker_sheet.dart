@@ -2,12 +2,12 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:iconsax_flutter/iconsax_flutter.dart';
+import 'package:iconsax/iconsax.dart';
 
-import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/extensions/context_extensions.dart';
 import '../../../../../core/services/google_auth_service.dart';
 import '../../../../../core/utils/result.dart' as result;
+import '../../../../../models/auth_model.dart';
 import '../../../../../widgets/common/app_skeleton.dart';
 import '../providers/auth_provider.dart';
 
@@ -51,6 +51,33 @@ class _GoogleAccountPickerSheetState
     });
   }
 
+  void _handleGoogleLoginResult(result.Result<AuthModel> loginResult) {
+    final authNotifier = ref.read(authProvider.notifier);
+
+    if (authNotifier.shouldNavigateToHome(loginResult)) {
+      if (!mounted) return;
+      Navigator.of(context).pop();
+      context.go('/home');
+      return;
+    }
+
+    switch (loginResult) {
+      case result.Success(:final data):
+        if (data.requiresEmailVerification || !data.isAuthenticated) {
+          if (!mounted) return;
+          Navigator.of(context).pop();
+          final query = Uri(
+            path: '/verify-email',
+            queryParameters: {'userId': data.userId, 'email': data.email},
+          ).toString();
+          context.go(query);
+          return;
+        }
+      case result.Error(:final failure):
+        context.showSnackBar(failure.message, isError: true);
+    }
+  }
+
   Future<void> _signInWithAccount(GoogleAccountInfo account) async {
     setState(() {
       _signingIn = true;
@@ -64,14 +91,7 @@ class _GoogleAccountPickerSheetState
     if (!mounted) return;
     setState(() => _signingIn = false);
 
-    switch (loginResult) {
-      case result.Success():
-        if (!mounted) return;
-        Navigator.of(context).pop();
-        context.go('/home');
-      case result.Error(:final failure):
-        context.showSnackBar(failure.message, isError: true);
-    }
+    _handleGoogleLoginResult(loginResult);
   }
 
   Future<void> _pickAnotherAccount() async {
@@ -96,21 +116,14 @@ class _GoogleAccountPickerSheetState
     if (!mounted) return;
     setState(() => _signingIn = false);
 
-    switch (loginResult) {
-      case result.Success():
-        if (!mounted) return;
-        Navigator.of(context).pop();
-        context.go('/home');
-      case result.Error(:final failure):
-        context.showSnackBar(failure.message, isError: true);
-    }
+    _handleGoogleLoginResult(loginResult);
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: const BoxDecoration(
-        color: Colors.white,
+      decoration: BoxDecoration(
+        color: context.isDarkMode ? context.adaptiveSurface : Colors.white,
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       padding: EdgeInsets.only(
@@ -128,7 +141,7 @@ class _GoogleAccountPickerSheetState
               width: 44,
               height: 5,
               decoration: BoxDecoration(
-                color: AppColors.divider,
+                color: context.adaptiveDivider,
                 borderRadius: BorderRadius.circular(99),
               ),
             ),
@@ -140,37 +153,49 @@ class _GoogleAccountPickerSheetState
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
           ),
           const SizedBox(height: 6),
-          const Text(
+          Text(
             'Lanjutkan ke NTB Hub dengan akun Google Anda',
             textAlign: TextAlign.center,
-            style: TextStyle(color: AppColors.textSecondary),
+            style: TextStyle(color: context.adaptiveTextSecondary),
           ),
           const SizedBox(height: 20),
           if (_loading)
             const AppListSkeleton(itemCount: 3)
           else ...[
+            if (_accounts.isEmpty)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 16),
+                child: Text(
+                  'Belum ada akun Google tersimpan. Pilih akun Google Anda di bawah.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: context.adaptiveTextSecondary),
+                ),
+              ),
             ..._accounts.map((account) {
               final isLoadingThis =
                   _signingIn && _selectedEmail == account.email;
               return Padding(
                 padding: const EdgeInsets.only(bottom: 10),
                 child: Material(
-                  color: AppColors.background,
+                  color: Theme.of(context).scaffoldBackgroundColor,
                   borderRadius: BorderRadius.circular(14),
                   child: InkWell(
                     borderRadius: BorderRadius.circular(14),
-                    onTap: _signingIn ? null : () => _signInWithAccount(account),
+                    onTap: _signingIn
+                        ? null
+                        : () => _signInWithAccount(account),
                     child: Padding(
                       padding: const EdgeInsets.all(14),
                       child: Row(
                         children: [
                           CircleAvatar(
-                            backgroundColor:
-                                AppColors.primary.withValues(alpha: 0.12),
+                            backgroundColor: context.primaryColor.withValues(
+                              alpha: 0.12,
+                            ),
                             child: Text(
                               account.initial,
-                              style: const TextStyle(
-                                color: AppColors.primary,
+                              style: TextStyle(
+                                color: context.primaryColor,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -182,14 +207,12 @@ class _GoogleAccountPickerSheetState
                               children: [
                                 Text(
                                   account.displayName,
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.w600,
-                                  ),
+                                  style: TextStyle(fontWeight: FontWeight.w600),
                                 ),
                                 Text(
                                   account.email,
-                                  style: const TextStyle(
-                                    color: AppColors.textSecondary,
+                                  style: TextStyle(
+                                    color: context.adaptiveTextSecondary,
                                     fontSize: 12,
                                   ),
                                 ),
@@ -203,10 +226,10 @@ class _GoogleAccountPickerSheetState
                               child: CircularProgressIndicator(strokeWidth: 2),
                             )
                           else
-                            const Icon(
+                            Icon(
                               Iconsax.arrow_right_3,
                               size: 18,
-                              color: AppColors.textSecondary,
+                              color: context.adaptiveTextSecondary,
                             ),
                         ],
                       ),
@@ -221,7 +244,7 @@ class _GoogleAccountPickerSheetState
               label: const Text('Gunakan akun Google lain'),
               style: OutlinedButton.styleFrom(
                 minimumSize: const Size.fromHeight(48),
-                side: const BorderSide(color: AppColors.divider),
+                side: BorderSide(color: context.adaptiveDivider),
               ),
             ),
           ],
@@ -242,7 +265,7 @@ class _GoogleLogo extends StatelessWidget {
       alignment: Alignment.center,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(4),
-        border: Border.all(color: AppColors.divider),
+        border: Border.all(color: context.adaptiveDivider),
       ),
       child: const Text(
         'G',

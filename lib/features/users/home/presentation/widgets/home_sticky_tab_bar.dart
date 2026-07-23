@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../../core/constants/app_colors.dart';
 import '../models/home_tab_item.dart';
+import '../../../../../core/extensions/context_extensions.dart';
 
 class HomeStickyTabBarDelegate extends SliverPersistentHeaderDelegate {
   HomeStickyTabBarDelegate({
@@ -29,7 +30,7 @@ class HomeStickyTabBarDelegate extends SliverPersistentHeaderDelegate {
     bool overlapsContent,
   ) {
     return Material(
-      color: AppColors.background,
+      color: Theme.of(context).scaffoldBackgroundColor,
       elevation: forceElevated || overlapsContent ? 2 : 0,
       shadowColor: Colors.black26,
       child: TabBar(
@@ -38,16 +39,16 @@ class HomeStickyTabBarDelegate extends SliverPersistentHeaderDelegate {
         tabAlignment: TabAlignment.start,
         padding: const EdgeInsets.symmetric(horizontal: 12),
         labelPadding: const EdgeInsets.symmetric(horizontal: 16),
-        dividerColor: AppColors.divider,
-        labelColor: AppColors.primary,
-        unselectedLabelColor: AppColors.textSecondary,
-        indicatorColor: AppColors.primary,
+        dividerColor: context.adaptiveDivider,
+        labelColor: context.primaryColor,
+        unselectedLabelColor: context.adaptiveTextSecondary,
+        indicatorColor: context.primaryColor,
         indicatorWeight: 3,
-        labelStyle: const TextStyle(
+        labelStyle: TextStyle(
           fontWeight: FontWeight.w600,
           fontSize: 13,
         ),
-        unselectedLabelStyle: const TextStyle(
+        unselectedLabelStyle: TextStyle(
           fontWeight: FontWeight.w500,
           fontSize: 13,
         ),

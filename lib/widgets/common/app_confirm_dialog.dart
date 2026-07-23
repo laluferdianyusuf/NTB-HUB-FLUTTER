@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../core/constants/app_colors.dart';
+import '../../core/extensions/context_extensions.dart';
 
 class AppConfirmDialog extends StatelessWidget {
   const AppConfirmDialog({
@@ -46,7 +47,10 @@ class AppConfirmDialog extends StatelessWidget {
       title: Text(title),
       content: Text(
         message,
-        style: const TextStyle(color: AppColors.textSecondary, height: 1.5),
+        style: context.textTheme.bodyMedium?.copyWith(
+          color: context.adaptiveTextSecondary,
+          height: 1.5,
+        ),
       ),
       actions: [
         TextButton(
@@ -56,7 +60,8 @@ class AppConfirmDialog extends StatelessWidget {
         FilledButton(
           onPressed: () => Navigator.of(context).pop(true),
           style: FilledButton.styleFrom(
-            backgroundColor: isDestructive ? AppColors.error : AppColors.primary,
+            backgroundColor:
+                isDestructive ? AppColors.error : context.primaryColor,
           ),
           child: Text(confirmLabel),
         ),

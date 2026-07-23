@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:iconsax_flutter/iconsax_flutter.dart';
+import 'package:iconsax/iconsax.dart';
 
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/constants/app_strings.dart';
+import '../../../../../core/extensions/context_extensions.dart';
 import '../../../../../core/helpers/date_formatter.dart';
 
 class BookingScreen extends StatelessWidget {
@@ -32,10 +33,10 @@ class BookingScreen extends StatelessWidget {
     ];
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: const Text(AppStrings.booking),
-        backgroundColor: AppColors.primary,
+        backgroundColor: context.primaryColor,
         foregroundColor: Colors.white,
       ),
       body: ListView.builder(
@@ -48,7 +49,7 @@ class BookingScreen extends StatelessWidget {
             elevation: 0,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
-              side: const BorderSide(color: AppColors.divider),
+              side: BorderSide(color: context.adaptiveDivider),
             ),
             child: Padding(
               padding: const EdgeInsets.all(16),
@@ -57,12 +58,12 @@ class BookingScreen extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: AppColors.primary.withValues(alpha: 0.1),
+                      color: context.primaryColor.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    child: const Icon(
+                    child: Icon(
                       Iconsax.buildings,
-                      color: AppColors.primary,
+                      color: context.primaryColor,
                       size: 24,
                     ),
                   ),
@@ -73,7 +74,7 @@ class BookingScreen extends StatelessWidget {
                       children: [
                         Text(
                           booking.venue,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 16,
                           ),
@@ -81,8 +82,8 @@ class BookingScreen extends StatelessWidget {
                         const SizedBox(height: 4),
                         Text(
                           DateFormatter.formatDate(booking.date),
-                          style: const TextStyle(
-                            color: AppColors.textSecondary,
+                          style: TextStyle(
+                            color: context.adaptiveTextSecondary,
                           ),
                         ),
                       ],
@@ -113,10 +114,13 @@ class BookingScreen extends StatelessWidget {
         },
       ),
       floatingActionButton: FloatingActionButton.extended(
-        backgroundColor: AppColors.primary,
+        backgroundColor: context.primaryColor,
         onPressed: () {},
-        icon: const Icon(Iconsax.add, color: Colors.white, size: 20),
-        label: const Text('Booking Baru', style: TextStyle(color: Colors.white)),
+        icon: Icon(Iconsax.add, color: Colors.white, size: 20),
+        label: const Text(
+          'Booking Baru',
+          style: TextStyle(color: Colors.white),
+        ),
       ),
     );
   }

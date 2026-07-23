@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:iconsax_flutter/iconsax_flutter.dart';
+import 'package:iconsax/iconsax.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_strings.dart';
+import '../../../../core/extensions/context_extensions.dart';
 import '../../../../core/helpers/date_formatter.dart';
 
 class EventListScreen extends StatelessWidget {
@@ -32,10 +33,10 @@ class EventListScreen extends StatelessWidget {
     ];
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: const Text(AppStrings.events),
-        backgroundColor: AppColors.primary,
+        backgroundColor: context.primaryColor,
         foregroundColor: Colors.white,
       ),
       body: ListView.builder(
@@ -48,7 +49,7 @@ class EventListScreen extends StatelessWidget {
             elevation: 0,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
-              side: const BorderSide(color: AppColors.divider),
+              side: BorderSide(color: context.adaptiveDivider),
             ),
             child: Padding(
               padding: const EdgeInsets.all(16),
@@ -63,7 +64,7 @@ class EventListScreen extends StatelessWidget {
                           color: AppColors.secondary.withValues(alpha: 0.2),
                           borderRadius: BorderRadius.circular(10),
                         ),
-                        child: const Icon(
+                        child: Icon(
                           Iconsax.calendar,
                           color: AppColors.secondary,
                           size: 22,
@@ -73,7 +74,7 @@ class EventListScreen extends StatelessWidget {
                       Expanded(
                         child: Text(
                           event.title,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 16,
                           ),
@@ -82,10 +83,7 @@ class EventListScreen extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 12),
-                  _EventDetailRow(
-                    icon: Iconsax.location,
-                    text: event.location,
-                  ),
+                  _EventDetailRow(icon: Iconsax.location, text: event.location),
                   const SizedBox(height: 6),
                   _EventDetailRow(
                     icon: Iconsax.calendar,
@@ -102,7 +100,7 @@ class EventListScreen extends StatelessWidget {
                     child: ElevatedButton(
                       onPressed: () {},
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.primary,
+                        backgroundColor: context.primaryColor,
                         foregroundColor: Colors.white,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
@@ -131,12 +129,12 @@ class _EventDetailRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Icon(icon, color: AppColors.textSecondary, size: 16),
+        Icon(icon, color: context.adaptiveTextSecondary, size: 16),
         const SizedBox(width: 8),
         Expanded(
           child: Text(
             text,
-            style: const TextStyle(color: AppColors.textSecondary),
+            style: TextStyle(color: context.adaptiveTextSecondary),
           ),
         ),
       ],

@@ -4,9 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:iconsax_flutter/iconsax_flutter.dart';
+import 'package:iconsax/iconsax.dart';
 
-import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/extensions/context_extensions.dart';
 import '../../../../../core/utils/result.dart' as result;
 import '../providers/auth_provider.dart';
@@ -119,13 +118,13 @@ class _VerifyEmailScreenState extends ConsumerState<VerifyEmailScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        foregroundColor: AppColors.textPrimary,
+        foregroundColor: context.adaptiveTextPrimary,
         leading: IconButton(
-          icon: const Icon(Iconsax.arrow_left_2_copy),
+          icon: Icon(Iconsax.arrow_left_3),
           onPressed: () => context.go('/login'),
         ),
       ),
@@ -139,32 +138,32 @@ class _VerifyEmailScreenState extends ConsumerState<VerifyEmailScreen> {
                 child: Container(
                   padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
-                    color: AppColors.primary.withValues(alpha: 0.1),
+                    color: context.primaryColor.withValues(alpha: 0.1),
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(
+                  child: Icon(
                     Iconsax.sms,
                     size: 48,
-                    color: AppColors.primary,
+                    color: context.primaryColor,
                   ),
                 ),
               ),
               const SizedBox(height: 24),
-              const Text(
+              Text(
                 'Verifikasi Email',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
+                  color: context.adaptiveTextPrimary,
                 ),
               ),
               const SizedBox(height: 8),
               Text(
                 'Masukkan PIN 6 digit yang dikirim ke\n${widget.email}',
                 textAlign: TextAlign.center,
-                style: const TextStyle(
-                  color: AppColors.textSecondary,
+                style: TextStyle(
+                  color: context.adaptiveTextSecondary,
                   height: 1.5,
                 ),
               ),
@@ -177,31 +176,14 @@ class _VerifyEmailScreenState extends ConsumerState<VerifyEmailScreen> {
                 maxLength: 6,
                 obscureText: true,
                 inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                style: const TextStyle(
-                  fontSize: 28,
+                style: context.textTheme.headlineMedium?.copyWith(
                   fontWeight: FontWeight.bold,
                   letterSpacing: 12,
+                  color: context.adaptiveTextPrimary,
                 ),
-                decoration: InputDecoration(
+                decoration: context.appInputDecoration(
                   counterText: '',
                   hintText: '••••••',
-                  filled: true,
-                  fillColor: Colors.white,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(color: AppColors.divider),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(color: AppColors.divider),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(
-                      color: AppColors.primary,
-                      width: 2,
-                    ),
-                  ),
                 ),
                 onSubmitted: (_) => _handleVerify(),
               ),
@@ -211,7 +193,7 @@ class _VerifyEmailScreenState extends ConsumerState<VerifyEmailScreen> {
                 child: ElevatedButton(
                   onPressed: _isVerifying ? null : _handleVerify,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary,
+                    backgroundColor: context.primaryColor,
                     foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),

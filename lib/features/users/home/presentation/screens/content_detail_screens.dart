@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:iconsax_flutter/iconsax_flutter.dart';
+import 'package:iconsax/iconsax.dart';
 
-import '../../../../../core/constants/app_colors.dart';
+import '../../../../../core/extensions/context_extensions.dart';
 import '../../../../../core/helpers/date_formatter.dart';
 import '../../../../../core/utils/result.dart' as result;
 import '../../../../../models/home_event_model.dart';
@@ -217,7 +217,7 @@ class _VenueDetailBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: CustomScrollView(
         physics: const BouncingScrollPhysics(
           parent: AlwaysScrollableScrollPhysics(),
@@ -229,7 +229,7 @@ class _VenueDetailBody extends StatelessWidget {
             child: Container(
               width: double.infinity,
               decoration: BoxDecoration(
-                color: AppColors.background,
+                color: Theme.of(context).scaffoldBackgroundColor,
                 borderRadius: const BorderRadius.vertical(
                   top: Radius.circular(28),
                 ),
@@ -248,7 +248,7 @@ class _VenueDetailBody extends StatelessWidget {
                   if (_hasVenueStats(venue)) ...[
                     const VenueDetailSectionHeader(
                       title: 'Informasi Venue',
-                      subtitle: 'Ringkasan fasilitas dan kapasitas',
+                      subtitle: 'Ringkasan statistik venue',
                     ),
                     const SizedBox(height: 16),
                     VenueDetailStatGrid(venue: venue),
@@ -260,14 +260,14 @@ class _VenueDetailBody extends StatelessWidget {
                     width: double.infinity,
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: context.cardColor,
                       borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: AppColors.divider),
+                      border: Border.all(color: context.adaptiveDivider),
                     ),
                     child: Text(
                       venue.displayDescription,
-                      style: const TextStyle(
-                        color: AppColors.textSecondary,
+                      style: TextStyle(
+                        color: context.adaptiveTextSecondary,
                         height: 1.65,
                         fontSize: 14,
                       ),
@@ -285,10 +285,10 @@ class _VenueDetailBody extends StatelessWidget {
   }
 
   bool _hasVenueStats(VenueModel venue) {
-    return venue.capacity > 0 ||
-        venue.rating > 0 ||
-        venue.priceRange.isNotEmpty ||
-        (venue.category.isNotEmpty && venue.category != 'Umum');
+    return venue.averageRating > 0 ||
+        venue.totalReviews > 0 ||
+        venue.totalLikes > 0 ||
+        venue.totalViews > 0;
   }
 }
 
@@ -336,8 +336,8 @@ class _EventDetailBody extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               event.displayDescription,
-              style: const TextStyle(
-                color: AppColors.textSecondary,
+              style: TextStyle(
+                color: context.adaptiveTextSecondary,
                 height: 1.6,
               ),
             ),
@@ -347,7 +347,7 @@ class _EventDetailBody extends StatelessWidget {
               height: 52,
               child: ElevatedButton.icon(
                 onPressed: () {},
-                icon: const Icon(Iconsax.user_add, color: Colors.white),
+                icon: Icon(Iconsax.user_add, color: Colors.white),
                 label: const Text(
                   'Daftar Event',
                   style: TextStyle(color: Colors.white),
@@ -386,7 +386,7 @@ class _PublicPlaceDetailBody extends StatelessWidget {
             const SizedBox(height: 20),
             _InfoRow(icon: Iconsax.location, text: place.location),
             const SizedBox(height: 8),
-            _InfoRow(icon: Iconsax.tag, text: place.type),
+            _InfoRow(icon: Iconsax.tag, text: place.typeLabel),
             if (place.rating > 0) ...[
               const SizedBox(height: 8),
               _InfoRow(
@@ -407,8 +407,8 @@ class _PublicPlaceDetailBody extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               place.displayDescription,
-              style: const TextStyle(
-                color: AppColors.textSecondary,
+              style: TextStyle(
+                color: context.adaptiveTextSecondary,
                 height: 1.6,
               ),
             ),
@@ -418,7 +418,7 @@ class _PublicPlaceDetailBody extends StatelessWidget {
               height: 52,
               child: OutlinedButton.icon(
                 onPressed: () {},
-                icon: const Icon(Iconsax.map),
+                icon: Icon(Iconsax.map),
                 label: const Text('Lihat di Peta'),
               ),
             ),
@@ -515,7 +515,7 @@ class _HeroBanner extends StatelessWidget {
             ),
             child: Text(
               label,
-              style: const TextStyle(color: Colors.white, fontSize: 12),
+              style: TextStyle(color: Colors.white, fontSize: 12),
             ),
           ),
           const SizedBox(height: 16),
@@ -523,7 +523,7 @@ class _HeroBanner extends StatelessWidget {
           const SizedBox(height: 12),
           Text(
             title,
-            style: const TextStyle(
+            style: TextStyle(
               color: Colors.white,
               fontSize: 22,
               fontWeight: FontWeight.bold,
@@ -545,12 +545,12 @@ class _InfoRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Icon(icon, size: 18, color: AppColors.primary),
+        Icon(icon, size: 18, color: context.primaryColor),
         const SizedBox(width: 10),
         Expanded(
           child: Text(
             text,
-            style: const TextStyle(color: AppColors.textPrimary),
+            style: TextStyle(color: context.adaptiveTextPrimary),
           ),
         ),
       ],

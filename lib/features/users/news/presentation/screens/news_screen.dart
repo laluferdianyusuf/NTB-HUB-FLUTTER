@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:iconsax_flutter/iconsax_flutter.dart';
+import 'package:iconsax/iconsax.dart';
 
-import '../../../../../core/constants/app_colors.dart';
+import '../../../../../core/extensions/context_extensions.dart';
 import '../../../../../core/utils/result.dart' as result;
 import '../../../../../models/news_model.dart';
 import '../../../../../widgets/common/app_skeleton.dart';
@@ -19,7 +18,7 @@ class NewsScreen extends ConsumerWidget {
     final newsAsync = ref.watch(newsListProvider);
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: newsAsync.when(
           loading: () => const _NewsLoadingView(),
@@ -44,10 +43,7 @@ class NewsScreen extends ConsumerWidget {
 }
 
 class _NewsContent extends StatelessWidget {
-  const _NewsContent({
-    required this.newsList,
-    required this.onRefresh,
-  });
+  const _NewsContent({required this.newsList, required this.onRefresh});
 
   final List<NewsModel> newsList;
   final Future<void> Function() onRefresh;
@@ -59,9 +55,13 @@ class _NewsContent extends StatelessWidget {
         onRefresh: onRefresh,
         child: ListView(
           physics: const AlwaysScrollableScrollPhysics(),
-          children: const [
+          children: [
             SizedBox(height: 120),
-            Icon(Iconsax.document, size: 48, color: AppColors.textSecondary),
+            Icon(
+              Iconsax.document,
+              size: 48,
+              color: context.adaptiveTextSecondary,
+            ),
             SizedBox(height: 12),
             Center(child: Text('Belum ada berita')),
           ],
@@ -85,17 +85,13 @@ class _NewsContent extends StatelessWidget {
                   Expanded(
                     child: Text(
                       'Berita',
-                      style: GoogleFonts.inter(
-                        fontSize: 24,
+                      style: context.textTheme.headlineMedium?.copyWith(
                         fontWeight: FontWeight.w700,
-                        color: AppColors.textPrimary,
+                        color: context.adaptiveTextPrimary,
                       ),
                     ),
                   ),
-                  IconButton(
-                    onPressed: onRefresh,
-                    icon: const Icon(Iconsax.refresh),
-                  ),
+                  IconButton(onPressed: onRefresh, icon: Icon(Iconsax.refresh)),
                 ],
               ),
             ),
@@ -105,10 +101,9 @@ class _NewsContent extends StatelessWidget {
               padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
               child: Text(
                 'Berita Terbaru',
-                style: GoogleFonts.inter(
-                  fontSize: 16,
+                style: context.textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.w700,
-                  color: AppColors.textPrimary,
+                  color: context.adaptiveTextPrimary,
                 ),
               ),
             ),
@@ -128,10 +123,9 @@ class _NewsContent extends StatelessWidget {
                 padding: const EdgeInsets.fromLTRB(16, 24, 16, 12),
                 child: Text(
                   'Berita Lainnya',
-                  style: GoogleFonts.inter(
-                    fontSize: 16,
+                  style: context.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.w700,
-                    color: AppColors.textPrimary,
+                    color: context.adaptiveTextPrimary,
                   ),
                 ),
               ),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../core/constants/app_colors.dart';
+import '../../core/extensions/context_extensions.dart';
 
 class AppSkeleton extends StatefulWidget {
   const AppSkeleton({
@@ -39,6 +39,8 @@ class _AppSkeletonState extends State<AppSkeleton>
 
   @override
   Widget build(BuildContext context) {
+    final baseColor = context.adaptiveDivider;
+
     return AnimatedBuilder(
       animation: _controller,
       builder: (context, child) {
@@ -48,8 +50,8 @@ class _AppSkeletonState extends State<AppSkeleton>
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(widget.borderRadius),
             color: Color.lerp(
-              AppColors.divider,
-              AppColors.divider.withValues(alpha: 0.45),
+              baseColor,
+              baseColor.withValues(alpha: 0.45),
               _controller.value,
             ),
           ),
@@ -95,9 +97,9 @@ class _GridCardSkeleton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.adaptiveSurface,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.divider),
+        border: Border.all(color: context.adaptiveDivider),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -137,12 +139,12 @@ class AppListSkeleton extends StatelessWidget {
       itemBuilder: (_, _) => Container(
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: context.adaptiveSurface,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: AppColors.divider),
+          border: Border.all(color: context.adaptiveDivider),
         ),
-        child: Row(
-          children: const [
+        child: const Row(
+          children: [
             AppSkeleton(width: 48, height: 48, borderRadius: 12),
             SizedBox(width: 12),
             Expanded(

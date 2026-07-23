@@ -2,17 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:iconsax_flutter/iconsax_flutter.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:latlong2/latlong.dart';
 
 import '../../../../../core/constants/app_colors.dart';
+import '../../../../../core/extensions/context_extensions.dart';
 import '../../../../../core/helpers/date_formatter.dart';
+import '../../../../../core/helpers/map_tile_helper.dart';
 import '../../../../../core/utils/result.dart' as result;
 import '../../../../../models/map_place_model.dart';
 import '../../../../../models/task_model.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../auth/presentation/providers/location_provider.dart';
 import '../providers/task_provider.dart';
+
 class TaskScreen extends ConsumerStatefulWidget {
   const TaskScreen({super.key});
 
@@ -37,14 +40,14 @@ class _TaskScreenState extends ConsumerState<TaskScreen> {
     );
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: const Text('Task'),
         actions: [
           if (isLoggedIn)
             IconButton(
               onPressed: () => ref.invalidate(tasksProvider),
-              icon: const Icon(Iconsax.refresh),
+              icon: Icon(Iconsax.refresh),
             ),
         ],
       ),
@@ -115,6 +118,7 @@ class _LoggedInTaskContent extends ConsumerWidget {
     );
   }
 }
+
 class _TaskBody extends StatelessWidget {
   const _TaskBody({
     required this.tasks,
@@ -169,6 +173,7 @@ class _TaskBody extends StatelessWidget {
     );
   }
 }
+
 class _TaskMap extends StatelessWidget {
   const _TaskMap({
     required this.tasks,
@@ -188,13 +193,12 @@ class _TaskMap extends StatelessWidget {
       options: MapOptions(
         initialCenter: MapPlaces.mataramCenter,
         initialZoom: 10,
-        interactionOptions: const InteractionOptions(flags: InteractiveFlag.all),
+        interactionOptions: const InteractionOptions(
+          flags: InteractiveFlag.all,
+        ),
       ),
       children: [
-        TileLayer(
-          urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-          userAgentPackageName: 'com.ntbhub.flutter',
-        ),
+        MapTileHelper.tileLayer(context),
         MarkerLayer(
           markers: [
             ...tasks.map((task) {
@@ -245,9 +249,9 @@ class _TaskMarker extends StatelessWidget {
   final TaskModel task;
   final bool isSelected;
 
-  Color get _color => switch (task.status) {
+  Color _color(BuildContext context) => switch (task.status) {
     TaskStatus.pending => AppColors.secondary,
-    TaskStatus.inProgress => AppColors.primary,
+    TaskStatus.inProgress => context.primaryColor,
     TaskStatus.completed => AppColors.success,
   };
 
@@ -255,7 +259,7 @@ class _TaskMarker extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: _color,
+        color: _color(context),
         shape: BoxShape.circle,
         border: Border.all(
           color: isSelected ? Colors.white : Colors.transparent,
@@ -301,8 +305,8 @@ class _TaskSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: const BoxDecoration(
-        color: Colors.white,
+      decoration: BoxDecoration(
+        color: context.cardColor,
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
         boxShadow: [
           BoxShadow(
@@ -319,7 +323,7 @@ class _TaskSheet extends StatelessWidget {
             width: 44,
             height: 5,
             decoration: BoxDecoration(
-              color: AppColors.divider,
+              color: context.adaptiveDivider,
               borderRadius: BorderRadius.circular(99),
             ),
           ),
@@ -340,13 +344,13 @@ class _TaskSheet extends StatelessWidget {
                       vertical: 4,
                     ),
                     decoration: BoxDecoration(
-                      color: AppColors.primary.withValues(alpha: 0.1),
+                      color: context.primaryColor.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Text(
                       '${tasks.length} task',
-                      style: const TextStyle(
-                        color: AppColors.primary,
+                      style: TextStyle(
+                        color: context.primaryColor,
                         fontWeight: FontWeight.w600,
                         fontSize: 12,
                       ),
@@ -401,29 +405,22 @@ class _TaskSheetContent extends StatelessWidget {
         controller: scrollController,
         padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
         children: [
-          const Icon(
-            Iconsax.lock,
-            size: 48,
-            color: AppColors.primary,
-          ),
+          Icon(Iconsax.lock, size: 48, color: context.primaryColor),
           const SizedBox(height: 16),
-          const Text(
+          Text(
             'Login untuk melihat task',
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w600,
-              color: AppColors.textPrimary,
+              color: context.adaptiveTextPrimary,
             ),
           ),
           const SizedBox(height: 8),
-          const Text(
+          Text(
             'Masuk ke akun Anda untuk melihat dan mengelola daftar task.',
             textAlign: TextAlign.center,
-            style: TextStyle(
-              color: AppColors.textSecondary,
-              height: 1.4,
-            ),
+            style: TextStyle(color: context.adaptiveTextSecondary, height: 1.4),
           ),
           const SizedBox(height: 20),
           SizedBox(
@@ -490,6 +487,7 @@ class _TaskSheetContent extends StatelessWidget {
     );
   }
 }
+
 class _TaskListTile extends StatelessWidget {
   const _TaskListTile({
     required this.task,
@@ -501,9 +499,9 @@ class _TaskListTile extends StatelessWidget {
   final bool isSelected;
   final VoidCallback onTap;
 
-  Color get _statusColor => switch (task.status) {
+  Color _statusColor(BuildContext context) => switch (task.status) {
     TaskStatus.pending => AppColors.secondary,
-    TaskStatus.inProgress => AppColors.primary,
+    TaskStatus.inProgress => context.primaryColor,
     TaskStatus.completed => AppColors.success,
   };
 
@@ -513,10 +511,12 @@ class _TaskListTile extends StatelessWidget {
       duration: const Duration(milliseconds: 220),
       curve: Curves.easeOutCubic,
       decoration: BoxDecoration(
-        color: isSelected ? AppColors.primary.withValues(alpha: 0.06) : Colors.white,
+        color: isSelected
+            ? context.primaryColor.withValues(alpha: 0.06)
+            : Colors.white,
         borderRadius: BorderRadius.circular(14),
         border: Border.all(
-          color: isSelected ? AppColors.primary : AppColors.divider,
+          color: isSelected ? context.primaryColor : context.adaptiveDivider,
         ),
       ),
       child: Material(
@@ -534,19 +534,22 @@ class _TaskListTile extends StatelessWidget {
                     Expanded(
                       child: Text(
                         task.title,
-                        style: const TextStyle(fontWeight: FontWeight.w600),
+                        style: TextStyle(fontWeight: FontWeight.w600),
                       ),
                     ),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 3,
+                      ),
                       decoration: BoxDecoration(
-                        color: _statusColor.withValues(alpha: 0.12),
+                        color: _statusColor(context).withValues(alpha: 0.12),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
                         task.statusLabel,
                         style: TextStyle(
-                          color: _statusColor,
+                          color: _statusColor(context),
                           fontSize: 11,
                           fontWeight: FontWeight.w600,
                         ),
@@ -559,8 +562,8 @@ class _TaskListTile extends StatelessWidget {
                   task.description,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    color: AppColors.textSecondary,
+                  style: TextStyle(
+                    color: context.adaptiveTextSecondary,
                     fontSize: 13,
                     height: 1.4,
                   ),
@@ -568,20 +571,24 @@ class _TaskListTile extends StatelessWidget {
                 const SizedBox(height: 10),
                 Row(
                   children: [
-                    const Icon(Iconsax.clock, size: 14, color: AppColors.textSecondary),
+                    Icon(
+                      Iconsax.clock,
+                      size: 14,
+                      color: context.adaptiveTextSecondary,
+                    ),
                     const SizedBox(width: 4),
                     Text(
                       DateFormatter.formatDate(task.dueDate),
-                      style: const TextStyle(
-                        color: AppColors.textSecondary,
+                      style: TextStyle(
+                        color: context.adaptiveTextSecondary,
                         fontSize: 12,
                       ),
                     ),
                     const Spacer(),
                     Text(
                       'Prioritas ${task.priority}',
-                      style: const TextStyle(
-                        color: AppColors.primary,
+                      style: TextStyle(
+                        color: context.primaryColor,
                         fontSize: 12,
                         fontWeight: FontWeight.w500,
                       ),

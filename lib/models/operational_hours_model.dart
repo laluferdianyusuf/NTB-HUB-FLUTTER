@@ -3,25 +3,31 @@ import '../core/helpers/json_field_helper.dart';
 class OperationalDayModel {
   const OperationalDayModel({
     required this.dayOfWeek,
-    required this.openTime,
-    required this.closeTime,
-    required this.isOpen,
+    required this.opensAt,
+    required this.closesAt,
+    this.id,
+    this.venueId,
     this.dayName,
   });
 
+  final String? id;
+  final String? venueId;
   final int dayOfWeek;
-  final String openTime;
-  final String closeTime;
-  final bool isOpen;
+  final int opensAt;
+  final int closesAt;
   final String? dayName;
 
   static const dayLabels = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
+
+  String get openTime => _minutesToTime(opensAt);
+  String get closeTime => _minutesToTime(closesAt);
+  bool get isOpen => closesAt > opensAt;
 
   String get shortLabel {
     if (dayName != null && dayName!.trim().isNotEmpty) {
       return dayName!.trim();
     }
-    if (dayOfWeek >= 1 && dayOfWeek <= 7) {
+    if (dayOfWeek >= 0 && dayOfWeek <= 6) {
       return dayLabels[dayOfWeek % 7];
     }
     return '-';
@@ -33,36 +39,50 @@ class OperationalDayModel {
   }
 
   factory OperationalDayModel.fromJson(Map<String, dynamic> json) {
-    final source = JsonFieldHelper.readMap(json, ['operational', 'data']) ?? json;
+    final source = JsonFieldHelper.readMap(json, ['operational', 'data']) ??
+        json;
 
     final dayValue = source['dayOfWeek'] ??
         source['day_of_week'] ??
         source['day'] ??
         source['weekday'];
 
+    final opensAt = JsonFieldHelper.readInt(source, [
+          'opensAt',
+          'opens_at',
+          'openMinutes',
+          'open_minutes',
+        ]) ??
+        _timeToMinutes(JsonFieldHelper.readString(source, [
+          'openTime',
+          'open_time',
+          'startTime',
+          'start_time',
+          'open',
+        ])) ??
+        480;
+
+    final closesAt = JsonFieldHelper.readInt(source, [
+          'closesAt',
+          'closes_at',
+          'closeMinutes',
+          'close_minutes',
+        ]) ??
+        _timeToMinutes(JsonFieldHelper.readString(source, [
+          'closeTime',
+          'close_time',
+          'endTime',
+          'end_time',
+          'close',
+        ])) ??
+        1020;
+
     return OperationalDayModel(
+      id: JsonFieldHelper.readString(source, ['id', '_id']),
+      venueId: JsonFieldHelper.readString(source, ['venueId', 'venue_id']),
       dayOfWeek: _parseDayOfWeek(dayValue) ?? 0,
-      openTime: JsonFieldHelper.readString(source, [
-            'openTime',
-            'open_time',
-            'startTime',
-            'start_time',
-            'open',
-          ]) ??
-          '08:00',
-      closeTime: JsonFieldHelper.readString(source, [
-            'closeTime',
-            'close_time',
-            'endTime',
-            'end_time',
-            'close',
-          ]) ??
-          '17:00',
-      isOpen: JsonFieldHelper.readBool(source, [
-        'isOpen',
-        'is_open',
-        'active',
-      ], fallback: true),
+      opensAt: opensAt,
+      closesAt: closesAt,
       dayName: JsonFieldHelper.readString(source, [
         'dayName',
         'day_name',
@@ -70,6 +90,15 @@ class OperationalDayModel {
       ]),
     );
   }
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'venue_id': venueId,
+        'day_of_week': dayOfWeek,
+        'opens_at': opensAt,
+        'closes_at': closesAt,
+        'day_name': dayName,
+      };
 
   static int _normalizeDay(int day) {
     if (day >= 0 && day <= 6) {
@@ -115,6 +144,22 @@ class OperationalDayModel {
       default:
         return int.tryParse(value.toString());
     }
+  }
+
+  static String _minutesToTime(int minutes) {
+    final hour = (minutes ~/ 60).clamp(0, 23);
+    final minute = (minutes % 60).clamp(0, 59);
+    return '${hour.toString().padLeft(2, '0')}:${minute.toString().padLeft(2, '0')}';
+  }
+
+  static int? _timeToMinutes(String? value) {
+    if (value == null || value.trim().isEmpty) return null;
+    final parts = value.split(':');
+    if (parts.length < 2) return null;
+    final hour = int.tryParse(parts[0]);
+    final minute = int.tryParse(parts[1]);
+    if (hour == null || minute == null) return null;
+    return hour * 60 + minute;
   }
 }
 

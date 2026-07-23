@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:iconsax_flutter/iconsax_flutter.dart';
+import 'package:iconsax/iconsax.dart';
+import 'package:ntbhub_flutter/widgets/common/app_image.dart';
 
 import '../../../../../core/constants/app_colors.dart';
+import '../../../../../core/extensions/context_extensions.dart';
 import '../../../../../models/venue_model.dart';
-import 'package:ntbhub_flutter/widgets/common/app_image.dart';
 
 class VenueDetailSliverHeader extends StatelessWidget {
   const VenueDetailSliverHeader({
@@ -30,22 +31,24 @@ class VenueDetailSliverHeader extends StatelessWidget {
       scrolledUnderElevation: 0,
       shadowColor: Colors.black.withValues(alpha: 0.08),
       backgroundColor: Colors.transparent,
-      foregroundColor: AppColors.textPrimary,
+      foregroundColor: AppColors.textPrimaryLight,
       surfaceTintColor: Colors.transparent,
       centerTitle: false,
       title: const SizedBox.shrink(),
       leading: Padding(
         padding: const EdgeInsets.only(left: 16),
         child: _HeroIconButton(
-          icon: Iconsax.arrow_left_2_copy,
+          icon: Iconsax.arrow_left_3,
           onPressed: () => context.pop(),
         ),
       ),
       flexibleSpace: FlexibleSpaceBar(
         background: PageView.builder(
-          itemCount: 1,
-          itemBuilder: (_, i) => AppImage(
-            source: venue.imageUrl,
+          itemCount: venue.allImages.isEmpty ? 1 : venue.allImages.length,
+          itemBuilder: (_, index) => AppImage(
+            source: venue.allImages.isEmpty
+                ? (venue.imageUrl ?? '')
+                : venue.allImages[index],
             fit: BoxFit.cover,
             width: double.infinity,
             height: double.infinity,
@@ -72,7 +75,7 @@ class _HeroBackdrop extends StatelessWidget {
           Image.network(
             imageUrl,
             fit: BoxFit.cover,
-            errorBuilder: (_, __, ___) => const _FallbackBackdrop(),
+            errorBuilder: (_, _, _) => const _FallbackBackdrop(),
           )
         else
           const _FallbackBackdrop(),
@@ -99,7 +102,7 @@ class _HeroBackdrop extends StatelessWidget {
                   vertical: 5,
                 ),
                 decoration: BoxDecoration(
-                  color: AppColors.primary.withValues(alpha: 0.85),
+                  color: context.primaryColor.withValues(alpha: 0.85),
                   borderRadius: BorderRadius.circular(999),
                 ),
                 child: const Text(
@@ -117,7 +120,7 @@ class _HeroBackdrop extends StatelessWidget {
                 venue.name,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
+                style: TextStyle(
                   color: Colors.white,
                   fontSize: 30,
                   fontWeight: FontWeight.w800,
@@ -194,7 +197,7 @@ class _HeroIconButton extends StatelessWidget {
         child: SizedBox(
           width: 40,
           height: 40,
-          child: Icon(icon, size: 20, color: AppColors.textPrimary),
+          child: Icon(icon, size: 20, color: context.adaptiveTextPrimary),
         ),
       ),
     );
@@ -209,29 +212,29 @@ class VenueDetailStatGrid extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final stats = <_VenueStatData>[
-      if (venue.capacity > 0)
-        _VenueStatData(
-          icon: Iconsax.people,
-          label: 'Kapasitas',
-          value: '${venue.capacity} orang',
-        ),
-      if (venue.category.isNotEmpty && venue.category != 'Umum')
-        _VenueStatData(
-          icon: Iconsax.tag,
-          label: 'Kategori',
-          value: venue.category,
-        ),
-      if (venue.priceRange.isNotEmpty)
-        _VenueStatData(
-          icon: Iconsax.wallet_2,
-          label: 'Harga',
-          value: venue.priceRange,
-        ),
-      if (venue.rating > 0)
+      if (venue.averageRating > 0)
         _VenueStatData(
           icon: Iconsax.star,
           label: 'Rating',
-          value: venue.rating.toStringAsFixed(1),
+          value: venue.averageRating.toStringAsFixed(1),
+        ),
+      if (venue.totalReviews > 0)
+        _VenueStatData(
+          icon: Iconsax.message_text,
+          label: 'Ulasan',
+          value: '${venue.totalReviews}',
+        ),
+      if (venue.totalLikes > 0)
+        _VenueStatData(
+          icon: Iconsax.heart,
+          label: 'Suka',
+          value: '${venue.totalLikes}',
+        ),
+      if (venue.totalViews > 0)
+        _VenueStatData(
+          icon: Iconsax.eye,
+          label: 'Dilihat',
+          value: '${venue.totalViews}',
         ),
     ];
 
@@ -276,9 +279,9 @@ class _VenueStatCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.cardColor,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.divider),
+        border: Border.all(color: context.adaptiveDivider),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.04),
@@ -295,16 +298,16 @@ class _VenueStatCard extends StatelessWidget {
             width: 34,
             height: 34,
             decoration: BoxDecoration(
-              color: AppColors.primary.withValues(alpha: 0.1),
+              color: context.primaryColor.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(10),
             ),
-            child: Icon(data.icon, size: 18, color: AppColors.primary),
+            child: Icon(data.icon, size: 18, color: context.primaryColor),
           ),
           const Spacer(),
           Text(
             data.label,
-            style: const TextStyle(
-              color: AppColors.textSecondary,
+            style: TextStyle(
+              color: context.adaptiveTextSecondary,
               fontSize: 11,
               fontWeight: FontWeight.w500,
             ),
@@ -314,8 +317,8 @@ class _VenueStatCard extends StatelessWidget {
             data.value,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: const TextStyle(
-              color: AppColors.textPrimary,
+            style: TextStyle(
+              color: context.adaptiveTextPrimary,
               fontSize: 14,
               fontWeight: FontWeight.w700,
             ),
@@ -343,10 +346,10 @@ class VenueDetailSectionHeader extends StatelessWidget {
       children: [
         Text(
           title,
-          style: const TextStyle(
+          style: TextStyle(
             fontWeight: FontWeight.w700,
             fontSize: 18,
-            color: AppColors.textPrimary,
+            color: context.adaptiveTextPrimary,
             letterSpacing: -0.3,
           ),
         ),
@@ -354,8 +357,8 @@ class VenueDetailSectionHeader extends StatelessWidget {
           const SizedBox(height: 4),
           Text(
             subtitle!,
-            style: const TextStyle(
-              color: AppColors.textSecondary,
+            style: TextStyle(
+              color: context.adaptiveTextSecondary,
               fontSize: 13,
             ),
           ),

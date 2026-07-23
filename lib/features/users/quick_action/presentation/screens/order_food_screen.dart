@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:iconsax_flutter/iconsax_flutter.dart';
+import 'package:iconsax/iconsax.dart';
 
 import '../../../../../core/extensions/context_extensions.dart';
 import '../../../../../core/services/mock_data_service.dart';
@@ -45,7 +45,8 @@ class OrderFoodScreen extends ConsumerWidget {
               rating: item.rating,
               icon: Iconsax.coffee,
               colors: const [Color(0xFFE76F51), Color(0xFFF4A261)],
-              onTap: () => context.showSnackBar('${item.name} ditambahkan ke keranjang'),
+              onTap: () =>
+                  context.showSnackBar('${item.name} ditambahkan ke keranjang'),
             );
           },
         ),

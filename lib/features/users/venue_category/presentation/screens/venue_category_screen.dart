@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:iconsax_flutter/iconsax_flutter.dart';
+import 'package:iconsax/iconsax.dart';
 
-import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/extensions/context_extensions.dart';
 import '../../../../../core/helpers/category_icon_mapper.dart';
 import '../../../../../core/utils/result.dart' as result;
@@ -74,21 +72,15 @@ class VenueCategoryScreen extends ConsumerWidget {
                     children: [
                       Text(
                         categoryName,
-                        style: GoogleFonts.inter(
-                          textStyle: const TextStyle(
-                            fontWeight: FontWeight.w700,
-                            fontSize: 16,
-                          ),
+                        style: context.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w700,
                         ),
                       ),
                       const SizedBox(height: 4),
                       Text(
                         'Pilih sub kategori venue',
-                        style: GoogleFonts.inter(
-                          textStyle: const TextStyle(
-                            color: AppColors.textSecondary,
-                            fontSize: 12,
-                          ),
+                        style: context.textTheme.bodySmall?.copyWith(
+                          color: context.adaptiveTextSecondary,
                         ),
                       ),
                     ],
@@ -131,10 +123,10 @@ class _SubCategoryGrid extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (subCategories.isEmpty) {
-      return const Center(
+      return Center(
         child: Text(
           'Belum ada sub kategori',
-          style: TextStyle(color: AppColors.textSecondary),
+          style: TextStyle(color: context.adaptiveTextSecondary),
         ),
       );
     }
@@ -151,7 +143,7 @@ class _SubCategoryGrid extends StatelessWidget {
       itemBuilder: (context, index) {
         final item = subCategories[index];
         return Material(
-          color: Colors.white,
+          color: context.adaptiveSurface,
           borderRadius: BorderRadius.circular(14),
           child: InkWell(
             borderRadius: BorderRadius.circular(14),
@@ -160,7 +152,7 @@ class _SubCategoryGrid extends StatelessWidget {
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(14),
-                border: Border.all(color: AppColors.divider),
+                border: Border.all(color: context.adaptiveDivider),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -168,12 +160,12 @@ class _SubCategoryGrid extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: AppColors.primary.withValues(alpha: 0.08),
+                      color: context.primaryColor.withValues(alpha: 0.08),
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    child: const Icon(
+                    child: Icon(
                       Iconsax.category,
-                      color: AppColors.primary,
+                      color: context.primaryColor,
                       size: 18,
                     ),
                   ),
@@ -182,12 +174,9 @@ class _SubCategoryGrid extends StatelessWidget {
                     item.name,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: GoogleFonts.inter(
-                      textStyle: const TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 13,
-                        height: 1.2,
-                      ),
+                    style: context.textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
+                      height: 1.2,
                     ),
                   ),
                   const SizedBox(height: 6),
@@ -196,12 +185,9 @@ class _SubCategoryGrid extends StatelessWidget {
                       item.description ?? item.code,
                       maxLines: 3,
                       overflow: TextOverflow.ellipsis,
-                      style: GoogleFonts.inter(
-                        textStyle: const TextStyle(
-                          color: AppColors.textSecondary,
-                          fontSize: 11,
-                          height: 1.3,
-                        ),
+                      style: context.textTheme.labelSmall?.copyWith(
+                        color: context.adaptiveTextSecondary,
+                        height: 1.3,
                       ),
                     ),
                   ),

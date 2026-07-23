@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:iconsax_flutter/iconsax_flutter.dart';
+import 'package:flutter/services.dart';
+import 'package:iconsax/iconsax.dart';
 
-import '../../core/constants/app_colors.dart';
+import '../../core/extensions/context_extensions.dart';
 
 class AppTextField extends StatefulWidget {
   const AppTextField({
@@ -21,6 +22,11 @@ class AppTextField extends StatefulWidget {
     this.readOnly = false,
     this.autofocus = false,
     this.enabled = true,
+    this.textAlign = TextAlign.start,
+    this.style,
+    this.inputFormatters,
+    this.maxLength,
+    this.counterText,
   });
 
   final TextEditingController? controller;
@@ -38,6 +44,11 @@ class AppTextField extends StatefulWidget {
   final bool readOnly;
   final bool autofocus;
   final bool enabled;
+  final TextAlign textAlign;
+  final TextStyle? style;
+  final List<TextInputFormatter>? inputFormatters;
+  final int? maxLength;
+  final String? counterText;
 
   @override
   State<AppTextField> createState() => _AppTextFieldState();
@@ -54,9 +65,9 @@ class _AppTextFieldState extends State<AppTextField> {
         if (widget.label != null) ...[
           Text(
             widget.label!,
-            style: const TextStyle(
+            style: context.textTheme.titleSmall?.copyWith(
               fontWeight: FontWeight.w600,
-              color: AppColors.textPrimary,
+              color: context.adaptiveTextPrimary,
             ),
           ),
           const SizedBox(height: 8),
@@ -73,16 +84,19 @@ class _AppTextFieldState extends State<AppTextField> {
           readOnly: widget.readOnly,
           autofocus: widget.autofocus,
           enabled: widget.enabled,
-          decoration: InputDecoration(
+          textAlign: widget.textAlign,
+          maxLength: widget.maxLength,
+          inputFormatters: widget.inputFormatters,
+          style: widget.style ?? context.inputTextStyle,
+          decoration: context.appInputDecoration(
             hintText: widget.hint,
-            prefixIcon: widget.prefixIcon != null
-                ? Icon(widget.prefixIcon, color: AppColors.primary, size: 20)
-                : null,
+            counterText: widget.counterText,
+            prefixIcon:
+                widget.prefixIcon != null ? Icon(widget.prefixIcon, size: 20) : null,
             suffixIcon: widget.isPassword
                 ? IconButton(
                     icon: Icon(
                       _obscure ? Iconsax.eye_slash : Iconsax.eye,
-                      color: AppColors.textSecondary,
                       size: 20,
                     ),
                     onPressed: () => setState(() => _obscure = !_obscure),

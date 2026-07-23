@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../../core/constants/app_colors.dart';
 import 'google_account_picker_sheet.dart';
+import '../../../../../core/extensions/context_extensions.dart';
 
 class GoogleSignInButton extends ConsumerWidget {
   const GoogleSignInButton({super.key});
@@ -15,16 +16,16 @@ class GoogleSignInButton extends ConsumerWidget {
       child: OutlinedButton.icon(
         onPressed: () => GoogleAccountPickerSheet.show(context),
         icon: const _GoogleLogo(),
-        label: const Text(
+        label: Text(
           'Lanjutkan dengan Google',
           style: TextStyle(
             fontSize: 15,
             fontWeight: FontWeight.w600,
-            color: AppColors.textPrimary,
+            color: context.adaptiveTextPrimary,
           ),
         ),
         style: OutlinedButton.styleFrom(
-          side: const BorderSide(color: AppColors.divider),
+          side: BorderSide(color: context.adaptiveDivider),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
@@ -39,14 +40,14 @@ class AuthDivider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Row(
+    return Row(
       children: [
-        Expanded(child: Divider(color: AppColors.divider)),
+        Expanded(child: Divider(color: context.adaptiveDivider)),
         Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16),
-          child: Text('atau', style: TextStyle(color: AppColors.textSecondary)),
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Text('atau', style: TextStyle(color: context.adaptiveTextSecondary)),
         ),
-        Expanded(child: Divider(color: AppColors.divider)),
+        Expanded(child: Divider(color: context.adaptiveDivider)),
       ],
     );
   }
@@ -64,7 +65,7 @@ class _GoogleLogo extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(4),
-        border: Border.all(color: AppColors.divider),
+        border: Border.all(color: context.adaptiveDivider),
       ),
       child: const Text(
         'G',

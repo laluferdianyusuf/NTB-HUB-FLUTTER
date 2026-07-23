@@ -2,12 +2,12 @@ import 'package:extended_nested_scroll_view/extended_nested_scroll_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:iconsax_flutter/iconsax_flutter.dart';
+import 'package:iconsax/iconsax.dart';
 
-import '../../../../../core/constants/app_colors.dart';
+import '../../../../../core/extensions/context_extensions.dart';
+import '../../../../../widgets/common/user_avatar.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../search/presentation/widgets/home_search_bar.dart';
-import '../../../../../widgets/common/user_avatar.dart';
 import '../../data/datasources/home_content_datasource.dart';
 import '../models/home_tab_item.dart';
 import '../widgets/home_carousel.dart';
@@ -48,7 +48,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     final int item = 10;
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         bottom: false,
         child: Column(
@@ -143,7 +143,7 @@ class _HomeTopHeader extends ConsumerWidget {
     final isLoading = authAsync.isLoading;
 
     return ColoredBox(
-      color: AppColors.background,
+      color: Theme.of(context).scaffoldBackgroundColor,
       child: Padding(
         padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
         child: Row(
@@ -166,7 +166,9 @@ class _HomeTopHeader extends ConsumerWidget {
                               child: SizedBox(
                                 width: 20,
                                 height: 20,
-                                child: CircularProgressIndicator(strokeWidth: 2),
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
                               ),
                             ),
                           )
@@ -177,10 +179,10 @@ class _HomeTopHeader extends ConsumerWidget {
                                 (name != null && name.isNotEmpty)
                                     ? name
                                     : 'Pengguna',
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
-                                  color: AppColors.textPrimary,
+                                  color: context.adaptiveTextPrimary,
                                 ),
                               ),
                               const SizedBox(height: 2),
@@ -188,8 +190,8 @@ class _HomeTopHeader extends ConsumerWidget {
                                 (email != null && email.isNotEmpty)
                                     ? email
                                     : '-',
-                                style: const TextStyle(
-                                  color: AppColors.textSecondary,
+                                style: TextStyle(
+                                  color: context.adaptiveTextSecondary,
                                   fontSize: 12,
                                 ),
                               ),
@@ -205,14 +207,14 @@ class _HomeTopHeader extends ConsumerWidget {
                   onPressed: onTaskTap,
                   icon: Badge.count(
                     count: taskCount,
-                    child: const Icon(Iconsax.task),
+                    child: Icon(Iconsax.task),
                   ),
                 ),
                 IconButton(
                   onPressed: onNotificationTap,
                   icon: Badge.count(
                     count: taskCount,
-                    child: const Icon(Iconsax.notification),
+                    child: Icon(Iconsax.notification),
                   ),
                 ),
               ],

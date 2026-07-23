@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:iconsax_flutter/iconsax_flutter.dart';
+import 'package:iconsax/iconsax.dart';
 
 import '../../../../../core/constants/app_colors.dart';
+import '../../../../../core/extensions/context_extensions.dart';
 
 enum HomeGridCardType { venue, event, publicPlace }
 
@@ -57,7 +58,7 @@ class HomeGridCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: Colors.white,
+      color: context.cardColor,
       borderRadius: BorderRadius.circular(14),
       child: InkWell(
         borderRadius: BorderRadius.circular(14),
@@ -65,7 +66,7 @@ class HomeGridCard extends StatelessWidget {
         child: Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: AppColors.divider),
+            border: Border.all(color: context.adaptiveDivider),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -116,7 +117,7 @@ class HomeGridCard extends StatelessWidget {
                         ),
                         child: Text(
                           _typeLabel,
-                          style: const TextStyle(
+                          style: TextStyle(
                             color: Colors.white,
                             fontSize: 10,
                             fontWeight: FontWeight.w600,
@@ -137,7 +138,7 @@ class HomeGridCard extends StatelessWidget {
                         title,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontWeight: FontWeight.w600,
                           fontSize: 13,
                           height: 1.2,
@@ -148,18 +149,18 @@ class HomeGridCard extends StatelessWidget {
                         subtitle,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          color: AppColors.textSecondary,
+                        style: TextStyle(
+                          color: context.adaptiveTextSecondary,
                           fontSize: 11,
                         ),
                       ),
                       const Spacer(),
                       Row(
                         children: [
-                          const Icon(
+                          Icon(
                             Iconsax.location,
                             size: 12,
-                            color: AppColors.textSecondary,
+                            color: context.adaptiveTextSecondary,
                           ),
                           const SizedBox(width: 4),
                           Expanded(
@@ -167,8 +168,8 @@ class HomeGridCard extends StatelessWidget {
                               location,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(
-                                color: AppColors.textSecondary,
+                              style: TextStyle(
+                                color: context.adaptiveTextSecondary,
                                 fontSize: 10,
                               ),
                             ),
@@ -180,7 +181,7 @@ class HomeGridCard extends StatelessWidget {
                         Row(
                           children: [
                             if (rating != null) ...[
-                              const Icon(
+                              Icon(
                                 Iconsax.star,
                                 size: 12,
                                 color: AppColors.secondary,
@@ -188,7 +189,7 @@ class HomeGridCard extends StatelessWidget {
                               const SizedBox(width: 2),
                               Text(
                                 rating!.toStringAsFixed(1),
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 11,
                                   fontWeight: FontWeight.w600,
                                 ),
@@ -202,8 +203,8 @@ class HomeGridCard extends StatelessWidget {
                                   badge!,
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
-                                  style: const TextStyle(
-                                    color: AppColors.primary,
+                                  style: TextStyle(
+                                    color: context.primaryColor,
                                     fontSize: 10,
                                     fontWeight: FontWeight.w500,
                                   ),
