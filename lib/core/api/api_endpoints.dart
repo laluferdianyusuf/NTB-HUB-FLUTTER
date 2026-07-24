@@ -22,8 +22,13 @@ abstract final class ApiEndpoints {
   static String newsDetail(String id) => '/news/detail-news/$id';
   static const String allVenues = '/venues/venue/venues';
   static String venueDetail(String id) => '/venues/venue/$id';
+  static String venueLike(String venueId) => '/venues/venue/$venueId/like';
+  static String venueImpression(String venueId) =>
+      '/venues/venue/$venueId/inpression';
+  static String venueReviews(String venueId) => '/reviews/review/$venueId';
   static const String allPublicPlaces = '/public-places/list-places';
-  static String publicPlaceDetail(String id) => '/public-places/detail-place/$id';
+  static String publicPlaceDetail(String id) =>
+      '/public-places/detail-place/$id';
   static const String allEvents = '/events/list-events';
   static String eventDetail(String id) => '/events/detail-event/$id';
   static String venueServices(String venueId) =>

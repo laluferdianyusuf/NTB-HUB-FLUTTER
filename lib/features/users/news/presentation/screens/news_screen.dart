@@ -2,7 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:iconsax/iconsax.dart';
 
+import '../../../../../core/constants/app_spacing.dart';
+import '../../../../../core/constants/app_strings.dart';
 import '../../../../../core/extensions/context_extensions.dart';
+import '../../../../../widgets/common/app_section_header.dart';
+import '../../../../../widgets/common/app_status_message.dart';
+import '../../../../../widgets/common/app_tab_page_header.dart';
 import '../../../../../core/utils/result.dart' as result;
 import '../../../../../models/news_model.dart';
 import '../../../../../widgets/common/app_skeleton.dart';
@@ -78,34 +83,22 @@ class _NewsContent extends StatelessWidget {
         physics: const AlwaysScrollableScrollPhysics(),
         slivers: [
           SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      'Berita',
-                      style: context.textTheme.headlineMedium?.copyWith(
-                        fontWeight: FontWeight.w700,
-                        color: context.adaptiveTextPrimary,
-                      ),
-                    ),
-                  ),
-                  IconButton(onPressed: onRefresh, icon: Icon(Iconsax.refresh)),
-                ],
-              ),
+            child: AppTabPageHeader(
+              title: AppStrings.news,
+              actions: [
+                IconButton(onPressed: onRefresh, icon: Icon(Iconsax.refresh)),
+              ],
             ),
           ),
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
-              child: Text(
-                'Berita Terbaru',
-                style: context.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w700,
-                  color: context.adaptiveTextPrimary,
-                ),
+              padding: const EdgeInsets.fromLTRB(
+                AppSpacing.lg,
+                AppSpacing.sm,
+                AppSpacing.lg,
+                AppSpacing.md,
               ),
+              child: AppSectionHeader(title: 'Berita Terbaru'),
             ),
           ),
           SliverToBoxAdapter(
@@ -120,14 +113,13 @@ class _NewsContent extends StatelessWidget {
           if (others.isNotEmpty) ...[
             SliverToBoxAdapter(
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(16, 24, 16, 12),
-                child: Text(
-                  'Berita Lainnya',
-                  style: context.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w700,
-                    color: context.adaptiveTextPrimary,
-                  ),
+                padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.lg,
+                  AppSpacing.xxl,
+                  AppSpacing.lg,
+                  AppSpacing.md,
                 ),
+                child: AppSectionHeader(title: 'Berita Lainnya'),
               ),
             ),
             SliverPadding(
@@ -182,18 +174,10 @@ class _NewsErrorView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(message, textAlign: TextAlign.center),
-            const SizedBox(height: 12),
-            ElevatedButton(onPressed: onRetry, child: const Text('Coba Lagi')),
-          ],
-        ),
-      ),
+    return AppStatusMessage(
+      message: message,
+      actionLabel: AppStrings.retry,
+      onAction: onRetry,
     );
   }
 }

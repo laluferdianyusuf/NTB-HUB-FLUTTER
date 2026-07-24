@@ -14,6 +14,7 @@ class VenueModel {
     this.image,
     this.gallery = const [],
     this.isActive = false,
+    this.isLiked = false,
     this.averageRating = 0,
     this.totalReviews = 0,
     this.totalLikes = 0,
@@ -34,6 +35,7 @@ class VenueModel {
   final String? image;
   final List<String> gallery;
   final bool isActive;
+  final bool isLiked;
   final double averageRating;
   final int totalReviews;
   final int totalLikes;
@@ -43,10 +45,11 @@ class VenueModel {
 
   /// Alamat lengkap untuk tampilan UI.
   String get location {
-    final parts = [address, city, province]
-        .map((part) => part.trim())
-        .where((part) => part.isNotEmpty)
-        .toList();
+    final parts = [
+      address,
+      city,
+      province,
+    ].map((part) => part.trim()).where((part) => part.isNotEmpty).toList();
     return parts.isEmpty ? '-' : parts.join(', ');
   }
 
@@ -95,8 +98,8 @@ class VenueModel {
       image: image ?? other.image,
       gallery: gallery.isNotEmpty ? gallery : other.gallery,
       isActive: isActive || other.isActive,
-      averageRating:
-          averageRating > 0 ? averageRating : other.averageRating,
+      isLiked: isLiked || other.isLiked,
+      averageRating: averageRating > 0 ? averageRating : other.averageRating,
       totalReviews: totalReviews > 0 ? totalReviews : other.totalReviews,
       totalLikes: totalLikes > 0 ? totalLikes : other.totalLikes,
       totalViews: totalViews > 0 ? totalViews : other.totalViews,
@@ -106,38 +109,35 @@ class VenueModel {
   }
 
   factory VenueModel.fromJson(Map<String, dynamic> json) {
-    final source = JsonFieldHelper.readMap(json, [
-          'venue',
-          'data',
-          'result',
-        ]) ??
-        json;
+    final source =
+        JsonFieldHelper.readMap(json, ['venue', 'data', 'result']) ?? json;
 
     return VenueModel(
       id: JsonFieldHelper.readString(source, ['id', '_id']) ?? '',
-      name: JsonFieldHelper.readString(source, [
+      name:
+          JsonFieldHelper.readString(source, [
             'name',
             'title',
             'venueName',
             'venue_name',
           ]) ??
           'Venue',
-      address: JsonFieldHelper.readString(source, [
+      address:
+          JsonFieldHelper.readString(source, [
             'address',
             'street',
             'streetAddress',
             'street_address',
           ]) ??
           '',
-      city: JsonFieldHelper.readString(source, ['city', 'area', 'district']) ??
+      city:
+          JsonFieldHelper.readString(source, ['city', 'area', 'district']) ??
           '',
-      province: JsonFieldHelper.readString(source, [
-            'province',
-            'state',
-            'region',
-          ]) ??
+      province:
+          JsonFieldHelper.readString(source, ['province', 'state', 'region']) ??
           '',
-      description: JsonFieldHelper.readString(source, [
+      description:
+          JsonFieldHelper.readString(source, [
             'description',
             'desc',
             'about',
@@ -174,28 +174,37 @@ class VenueModel {
         'is_active',
         'active',
       ], fallback: false),
-      averageRating: JsonFieldHelper.readDouble(source, [
+      isLiked: JsonFieldHelper.readBool(source, [
+        'isLiked',
+        'is_liked',
+        'liked',
+      ], fallback: false),
+      averageRating:
+          JsonFieldHelper.readDouble(source, [
             'averageRating',
             'average_rating',
             'rating',
             'score',
           ]) ??
           0,
-      totalReviews: JsonFieldHelper.readInt(source, [
+      totalReviews:
+          JsonFieldHelper.readInt(source, [
             'totalReviews',
             'total_reviews',
             'reviewCount',
             'review_count',
           ]) ??
           0,
-      totalLikes: JsonFieldHelper.readInt(source, [
+      totalLikes:
+          JsonFieldHelper.readInt(source, [
             'totalLikes',
             'total_likes',
             'likeCount',
             'like_count',
           ]) ??
           0,
-      totalViews: JsonFieldHelper.readInt(source, [
+      totalViews:
+          JsonFieldHelper.readInt(source, [
             'totalViews',
             'total_views',
             'viewCount',

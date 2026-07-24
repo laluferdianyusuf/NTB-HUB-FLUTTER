@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:iconsax/iconsax.dart';
 
+import '../../../../../core/constants/app_spacing.dart';
 import '../../../../../core/extensions/context_extensions.dart';
 import '../../../../../core/services/theme_settings_service.dart';
 import '../../../../../core/theme/theme_provider.dart';
@@ -10,6 +11,8 @@ import '../../../../../core/utils/result.dart' as result;
 import '../../../../../models/user_model.dart';
 import '../../../../../widgets/common/app_confirm_dialog.dart';
 import '../../../../../widgets/common/app_page_scaffold.dart';
+import '../../../../../widgets/common/app_status_message.dart';
+import '../../../../../widgets/common/app_tab_page_header.dart';
 import '../../../../../widgets/common/user_avatar.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../providers/profile_provider.dart';
@@ -24,64 +27,30 @@ class ProfileScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      appBar: AppBar(title: const Text('Profile')),
-      body: userAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, _) => _ProfileMessageState(
-          message: error.toString(),
-          actionLabel: 'Coba Lagi',
-          onAction: () => ref.invalidate(profileProvider),
-        ),
-        data: (resultValue) => switch (resultValue) {
-          result.Success(:final data) => _ProfileContent(user: data),
-          result.Error(:final failure) => _ProfileMessageState(
-            message: failure.message,
-            actionLabel: failure.message == 'Belum login'
-                ? 'Masuk'
-                : 'Coba Lagi',
-            onAction: () {
-              if (failure.message == 'Belum login') {
-                context.go('/login');
-              } else {
-                ref.invalidate(profileProvider);
-              }
-            },
+      body: SafeArea(
+        child: userAsync.when(
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (error, _) => AppStatusMessage(
+            message: error.toString(),
+            actionLabel: 'Coba Lagi',
+            onAction: () => ref.invalidate(profileProvider),
           ),
-        },
-      ),
-    );
-  }
-}
-
-class _ProfileMessageState extends StatelessWidget {
-  const _ProfileMessageState({
-    required this.message,
-    required this.actionLabel,
-    required this.onAction,
-  });
-
-  final String message;
-  final String actionLabel;
-  final VoidCallback onAction;
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Iconsax.user, size: 48, color: context.adaptiveTextSecondary),
-            const SizedBox(height: 16),
-            Text(
-              message,
-              textAlign: TextAlign.center,
-              style: TextStyle(color: context.adaptiveTextSecondary),
+          data: (resultValue) => switch (resultValue) {
+            result.Success(:final data) => _ProfileContent(user: data),
+            result.Error(:final failure) => AppStatusMessage(
+              message: failure.message,
+              actionLabel: failure.message == 'Belum login'
+                  ? 'Masuk'
+                  : 'Coba Lagi',
+              onAction: () {
+                if (failure.message == 'Belum login') {
+                  context.go('/login');
+                } else {
+                  ref.invalidate(profileProvider);
+                }
+              },
             ),
-            const SizedBox(height: 20),
-            ElevatedButton(onPressed: onAction, child: Text(actionLabel)),
-          ],
+          },
         ),
       ),
     );
@@ -114,8 +83,9 @@ class _ProfileContent extends ConsumerWidget {
     final themeState = ref.watch(appThemeProvider);
 
     return ListView(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.only(bottom: AppSpacing.section),
       children: [
+        const AppTabPageHeader(title: 'Profile'),
         Center(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -192,9 +162,21 @@ class _ProfileContent extends ConsumerWidget {
           loading: () => const SizedBox.shrink(),
           error: (_, _) => const SizedBox.shrink(),
           data: (state) => SwitchListTile(
-            secondary: Icon(Iconsax.finger_scan, color: context.primaryColor),
+            secondary: Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: context.primaryColor.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Icon(Iconsax.finger_scan, color: context.primaryColor),
+            ),
             title: const Text('Enable Biometric'),
-            subtitle: const Text('Login cepat dengan sidik jari / Face ID'),
+            subtitle: const Text(
+              'Login cepat dengan sidik jari / Face ID',
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
+            ),
             value: state.biometricEnabled,
             activeThumbColor: context.primaryColor,
             onChanged: (value) {
@@ -243,7 +225,7 @@ class _ProfileContent extends ConsumerWidget {
           title: const Text('Logout', style: TextStyle(color: Colors.red)),
           onTap: () => _handleLogout(context, ref),
         ),
-        const SizedBox(height: 28),
+        const SizedBox(height: AppSpacing.section),
       ],
     );
   }

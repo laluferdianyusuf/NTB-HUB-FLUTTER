@@ -5,6 +5,8 @@ import '../core/helpers/json_field_helper.dart';
 import '../core/network/dio_client.dart';
 import '../core/repository/repository_exception_mapper.dart';
 import '../core/utils/result.dart';
+import '../models/review_model.dart';
+import '../models/venue_interaction_model.dart';
 import '../models/venue_model.dart';
 import '../models/venue_service_model.dart';
 
@@ -20,12 +22,9 @@ class VenueRepository {
         fromJson: _parseVenueList,
       );
 
-      final venues = response.data
-        ..sort((a, b) => a.name.compareTo(b.name));
+      final venues = response.data..sort((a, b) => a.name.compareTo(b.name));
 
-      return Success(
-        venues.where((venue) => venue.isActive).toList(),
-      );
+      return Success(venues.where((venue) => venue.isActive).toList());
     } on AppException catch (error) {
       return Error(mapRepositoryException(error));
     } catch (error) {
@@ -48,6 +47,58 @@ class VenueRepository {
     }
   }
 
+  Future<Result<VenueLikeResult>> toggleVenueLike(String venueId) async {
+    try {
+      final response = await _client.post<Map<String, dynamic>>(
+        ApiEndpoints.venueLike(venueId),
+        fromJson: (json) => json as Map<String, dynamic>,
+      );
+
+      return Success(VenueLikeResult.fromJson(response.data));
+    } on AppException catch (error) {
+      return Error(mapRepositoryException(error));
+    } catch (error) {
+      return Error(UnknownFailure(error.toString()));
+    }
+  }
+
+  Future<Result<VenueImpression>> recordImpression(String venueId) async {
+    try {
+      final response = await _client.post<Map<String, dynamic>>(
+        ApiEndpoints.venueImpression(venueId),
+        fromJson: (json) => json as Map<String, dynamic>,
+      );
+
+      return Success(VenueImpression.fromJson(response.data));
+    } on AppException catch (error) {
+      return Error(mapRepositoryException(error));
+    } catch (error) {
+      return Error(UnknownFailure(error.toString()));
+    }
+  }
+
+  Future<Result<List<Review>>> getVenueReviews(String venueId) async {
+    try {
+      final response = await _client.get<List<Review>>(
+        ApiEndpoints.venueReviews(venueId),
+        fromJson: _parseReviewList,
+      );
+
+      final reviews = response.data
+        ..sort((a, b) {
+          final aDate = a.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0);
+          final bDate = b.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0);
+          return bDate.compareTo(aDate);
+        });
+
+      return Success(reviews);
+    } on AppException catch (error) {
+      return Error(mapRepositoryException(error));
+    } catch (error) {
+      return Error(UnknownFailure(error.toString()));
+    }
+  }
+
   Future<Result<List<VenueServiceModel>>> getVenueServices(
     String venueId, {
     VenueServiceQuery query = const VenueServiceQuery(isActive: true),
@@ -59,14 +110,17 @@ class VenueRepository {
         fromJson: _parseVenueServiceList,
       );
 
-      final services = response.data
-          .where((service) => service.isActive && service.id.isNotEmpty)
-          .toList()
-        ..sort((a, b) {
-          final aDate = a.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0);
-          final bDate = b.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0);
-          return bDate.compareTo(aDate);
-        });
+      final services =
+          response.data
+              .where((service) => service.isActive && service.id.isNotEmpty)
+              .toList()
+            ..sort((a, b) {
+              final aDate =
+                  a.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0);
+              final bDate =
+                  b.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0);
+              return bDate.compareTo(aDate);
+            });
 
       return Success(services);
     } on AppException catch (error) {
@@ -99,16 +153,22 @@ class VenueRepository {
   }
 
   List<VenueModel> _parseVenueList(dynamic json) {
-    return JsonFieldHelper.readObjectList(json)
-        .map(VenueModel.fromJson)
-        .where((venue) => venue.id.isNotEmpty)
-        .toList();
+    return JsonFieldHelper.readObjectList(
+      json,
+    ).map(VenueModel.fromJson).where((venue) => venue.id.isNotEmpty).toList();
   }
 
   List<VenueServiceModel> _parseVenueServiceList(dynamic json) {
     return JsonFieldHelper.readObjectList(json)
         .map(VenueServiceModel.fromJson)
         .where((service) => service.id.isNotEmpty)
+        .toList();
+  }
+
+  List<Review> _parseReviewList(dynamic json) {
+    return JsonFieldHelper.readObjectList(json)
+        .map(Review.fromJson)
+        .where((review) => review.id.isNotEmpty)
         .toList();
   }
 }

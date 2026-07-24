@@ -2,17 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:iconsax/iconsax.dart';
 
+import '../../../../../core/constants/app_spacing.dart';
+import '../../../../../core/constants/app_strings.dart';
 import '../../../../../core/extensions/context_extensions.dart';
 import '../../../../../core/helpers/date_formatter.dart';
 import '../../../../../core/utils/result.dart' as result;
 import '../../../../../models/home_event_model.dart';
 import '../../../../../models/public_place_model.dart';
 import '../../../../../models/venue_model.dart';
+import '../../../../../widgets/common/AppButton.dart';
 import '../../../../../widgets/common/app_page_scaffold.dart';
+import '../../../../../widgets/common/app_section_header.dart';
 import '../../../../../widgets/common/app_skeleton.dart';
+import '../../../../../widgets/common/app_status_message.dart';
+import '../../../../../widgets/common/app_surface_card.dart';
 import '../providers/home_content_provider.dart';
-import '../widgets/venue_detail_hero.dart';
-import '../widgets/venue_services_section.dart';
+import '../widgets/venue_detail/venue_detail_body.dart';
 
 class VenueDetailScreen extends ConsumerWidget {
   const VenueDetailScreen({
@@ -31,11 +36,7 @@ class VenueDetailScreen extends ConsumerWidget {
     return detailAsync.when(
       loading: () {
         if (initialVenue != null) {
-          return _VenueDetailBody(
-            venueId: venueId,
-            venue: initialVenue!,
-            onRetry: () => ref.invalidate(venueDetailProvider(venueId)),
-          );
+          return VenueDetailBody(venueId: venueId, venue: initialVenue!);
         }
         return AppPageScaffold(
           title: 'Detail Venue',
@@ -44,11 +45,7 @@ class VenueDetailScreen extends ConsumerWidget {
       },
       error: (error, _) {
         if (initialVenue != null) {
-          return _VenueDetailBody(
-            venueId: venueId,
-            venue: initialVenue!,
-            onRetry: () => ref.invalidate(venueDetailProvider(venueId)),
-          );
+          return VenueDetailBody(venueId: venueId, venue: initialVenue!);
         }
         return _DetailErrorScaffold(
           title: 'Detail Venue',
@@ -57,18 +54,13 @@ class VenueDetailScreen extends ConsumerWidget {
         );
       },
       data: (resultValue) => switch (resultValue) {
-        result.Success(:final data) => _VenueDetailBody(
+        result.Success(:final data) => VenueDetailBody(
           venueId: venueId,
           venue: data.mergeWith(initialVenue),
-          onRetry: () => ref.invalidate(venueDetailProvider(venueId)),
         ),
         result.Error(:final failure) =>
           initialVenue != null
-              ? _VenueDetailBody(
-                  venueId: venueId,
-                  venue: initialVenue!,
-                  onRetry: () => ref.invalidate(venueDetailProvider(venueId)),
-                )
+              ? VenueDetailBody(venueId: venueId, venue: initialVenue!)
               : _DetailErrorScaffold(
                   title: 'Detail Venue',
                   message: failure.message,
@@ -203,95 +195,6 @@ class PublicPlaceDetailScreen extends ConsumerWidget {
   }
 }
 
-class _VenueDetailBody extends StatelessWidget {
-  const _VenueDetailBody({
-    required this.venueId,
-    required this.venue,
-    required this.onRetry,
-  });
-
-  final String venueId;
-  final VenueModel venue;
-  final VoidCallback onRetry;
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      body: CustomScrollView(
-        physics: const BouncingScrollPhysics(
-          parent: AlwaysScrollableScrollPhysics(),
-        ),
-        slivers: [
-          VenueDetailSliverHeader(venue: venue),
-          const SliverToBoxAdapter(child: SizedBox(height: 12)),
-          SliverToBoxAdapter(
-            child: Container(
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: Theme.of(context).scaffoldBackgroundColor,
-                borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(28),
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.04),
-                    blurRadius: 12,
-                    offset: const Offset(0, -2),
-                  ),
-                ],
-              ),
-              padding: const EdgeInsets.fromLTRB(20, 36, 20, 20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  if (_hasVenueStats(venue)) ...[
-                    const VenueDetailSectionHeader(
-                      title: 'Informasi Venue',
-                      subtitle: 'Ringkasan statistik venue',
-                    ),
-                    const SizedBox(height: 16),
-                    VenueDetailStatGrid(venue: venue),
-                    const SizedBox(height: 28),
-                  ],
-                  const VenueDetailSectionHeader(title: 'Deskripsi'),
-                  const SizedBox(height: 10),
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: context.cardColor,
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: context.adaptiveDivider),
-                    ),
-                    child: Text(
-                      venue.displayDescription,
-                      style: TextStyle(
-                        color: context.adaptiveTextSecondary,
-                        height: 1.65,
-                        fontSize: 14,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 28),
-                  VenueServicesSection(venueId: venueId),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  bool _hasVenueStats(VenueModel venue) {
-    return venue.averageRating > 0 ||
-        venue.totalReviews > 0 ||
-        venue.totalLikes > 0 ||
-        venue.totalViews > 0;
-  }
-}
-
 class _EventDetailBody extends StatelessWidget {
   const _EventDetailBody({required this.event, required this.onRetry});
 
@@ -303,7 +206,7 @@ class _EventDetailBody extends StatelessWidget {
     return AppPageScaffold(
       title: 'Detail Event',
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(AppSpacing.pageHorizontal),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -314,45 +217,38 @@ class _EventDetailBody extends StatelessWidget {
               colors: const [Color(0xFF0F4C75), Color(0xFF3282B8)],
               imageUrl: event.imageUrl,
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: AppSpacing.xl),
             _InfoRow(icon: Iconsax.location, text: event.location),
-            const SizedBox(height: 8),
+            const SizedBox(height: AppSpacing.sm),
             _InfoRow(
               icon: Iconsax.calendar_1,
               text: DateFormatter.formatDate(event.date),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: AppSpacing.sm),
             _InfoRow(icon: Iconsax.tag, text: event.category),
-            const SizedBox(height: 8),
+            const SizedBox(height: AppSpacing.sm),
             _InfoRow(
               icon: Iconsax.people,
               text: '${event.attendees} peserta terdaftar',
             ),
-            const SizedBox(height: 24),
-            const Text(
-              'Tentang Event',
-              style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              event.displayDescription,
-              style: TextStyle(
-                color: context.adaptiveTextSecondary,
-                height: 1.6,
-              ),
-            ),
-            const SizedBox(height: 24),
-            SizedBox(
-              width: double.infinity,
-              height: 52,
-              child: ElevatedButton.icon(
-                onPressed: () {},
-                icon: Icon(Iconsax.user_add, color: Colors.white),
-                label: const Text(
-                  'Daftar Event',
-                  style: TextStyle(color: Colors.white),
+            const SizedBox(height: AppSpacing.section),
+            const AppSectionHeader(title: 'Tentang Event'),
+            const SizedBox(height: AppSpacing.md),
+            AppSurfaceCard(
+              padding: const EdgeInsets.all(AppSpacing.lg),
+              child: Text(
+                event.displayDescription,
+                style: TextStyle(
+                  color: context.adaptiveTextSecondary,
+                  height: 1.6,
                 ),
               ),
+            ),
+            const SizedBox(height: AppSpacing.section),
+            AppButton(
+              label: 'Daftar Event',
+              icon: Iconsax.user_add,
+              onPressed: () {},
             ),
           ],
         ),
@@ -372,7 +268,7 @@ class _PublicPlaceDetailBody extends StatelessWidget {
     return AppPageScaffold(
       title: 'Detail Public Place',
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(AppSpacing.pageHorizontal),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -383,44 +279,41 @@ class _PublicPlaceDetailBody extends StatelessWidget {
               colors: const [Color(0xFF6A0572), Color(0xFFAB83A1)],
               imageUrl: place.imageUrl,
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: AppSpacing.xl),
             _InfoRow(icon: Iconsax.location, text: place.location),
-            const SizedBox(height: 8),
+            const SizedBox(height: AppSpacing.sm),
             _InfoRow(icon: Iconsax.tag, text: place.typeLabel),
             if (place.rating > 0) ...[
-              const SizedBox(height: 8),
+              const SizedBox(height: AppSpacing.sm),
               _InfoRow(
                 icon: Iconsax.star,
                 text: 'Rating ${place.rating.toStringAsFixed(1)}',
               ),
             ],
-            const SizedBox(height: 8),
+            const SizedBox(height: AppSpacing.sm),
             _InfoRow(
               icon: Iconsax.clock,
               text: place.isOpen ? 'Sedang buka' : 'Tutup sementara',
             ),
-            const SizedBox(height: 24),
-            const Text(
-              'Informasi',
-              style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              place.displayDescription,
-              style: TextStyle(
-                color: context.adaptiveTextSecondary,
-                height: 1.6,
+            const SizedBox(height: AppSpacing.section),
+            const AppSectionHeader(title: 'Informasi'),
+            const SizedBox(height: AppSpacing.md),
+            AppSurfaceCard(
+              padding: const EdgeInsets.all(AppSpacing.lg),
+              child: Text(
+                place.displayDescription,
+                style: TextStyle(
+                  color: context.adaptiveTextSecondary,
+                  height: 1.6,
+                ),
               ),
             ),
-            const SizedBox(height: 24),
-            SizedBox(
-              width: double.infinity,
-              height: 52,
-              child: OutlinedButton.icon(
-                onPressed: () {},
-                icon: Icon(Iconsax.map),
-                label: const Text('Lihat di Peta'),
-              ),
+            const SizedBox(height: AppSpacing.section),
+            AppButton(
+              label: 'Lihat di Peta',
+              icon: Iconsax.map,
+              isOutlined: true,
+              onPressed: () {},
             ),
           ],
         ),
@@ -444,21 +337,10 @@ class _DetailErrorScaffold extends StatelessWidget {
   Widget build(BuildContext context) {
     return AppPageScaffold(
       title: title,
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(message, textAlign: TextAlign.center),
-              const SizedBox(height: 12),
-              ElevatedButton(
-                onPressed: onRetry,
-                child: const Text('Coba Lagi'),
-              ),
-            ],
-          ),
-        ),
+      body: AppStatusMessage(
+        message: message,
+        actionLabel: AppStrings.retry,
+        onAction: onRetry,
       ),
     );
   }

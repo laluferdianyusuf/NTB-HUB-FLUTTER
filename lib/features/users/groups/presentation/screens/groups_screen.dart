@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:iconsax/iconsax.dart';
 
-import '../../../../../core/constants/app_colors.dart';
+import '../../../../../core/constants/app_spacing.dart';
+import '../../../../../core/constants/app_strings.dart';
 import '../../../../../core/extensions/context_extensions.dart';
 import '../../../../../database/app_database.dart';
 import '../../../../../models/group_model.dart';
+import '../../../../../widgets/common/app_surface_card.dart';
+import '../../../../../widgets/common/app_tab_page_header.dart';
 
 final groupsListProvider = FutureProvider<List<GroupModel>>((ref) async {
   await Future<void>.delayed(const Duration(milliseconds: 300));
@@ -21,19 +24,38 @@ class GroupsScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      body: groupsAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, _) => Center(child: Text(error.toString())),
-        data: (groups) => ListView.builder(
-          padding: const EdgeInsets.all(16),
-          itemCount: groups.length,
-          itemBuilder: (context, index) => _GroupCard(group: groups[index]),
+      body: SafeArea(
+        child: groupsAsync.when(
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (error, _) => Center(child: Text(error.toString())),
+          data: (groups) => CustomScrollView(
+            slivers: [
+              const SliverToBoxAdapter(
+                child: AppTabPageHeader(title: AppStrings.groups),
+              ),
+              SliverPadding(
+                padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.lg,
+                  AppSpacing.sm,
+                  AppSpacing.lg,
+                  AppSpacing.xxl,
+                ),
+                sliver: SliverList.separated(
+                  itemCount: groups.length,
+                  separatorBuilder: (_, _) =>
+                      const SizedBox(height: AppSpacing.md),
+                  itemBuilder: (context, index) =>
+                      _GroupCard(group: groups[index]),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: context.primaryColor,
         onPressed: () {},
-        child: Icon(Iconsax.add, color: Colors.white, size: 24),
+        child: const Icon(Iconsax.add, color: Colors.white, size: 24),
       ),
     );
   }
@@ -46,48 +68,40 @@ class _GroupCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 12),
-      elevation: 0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: context.adaptiveDivider),
-      ),
-      child: ListTile(
-        contentPadding: const EdgeInsets.all(16),
-        leading: CircleAvatar(
-          backgroundColor: AppColors.secondary.withValues(alpha: 0.2),
-          radius: 28,
-          child: Icon(Iconsax.people, color: context.primaryColor, size: 24),
-        ),
-        title: Text(group.name, style: TextStyle(fontWeight: FontWeight.bold)),
-        subtitle: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 4),
-            Text(
-              group.description,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
+    return AppSurfaceCard(
+      child: Row(
+        children: [
+          Container(
+            width: 52,
+            height: 52,
+            decoration: BoxDecoration(
+              color: context.primaryColor.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(14),
             ),
-            const SizedBox(height: 6),
-            Text(
-              '${group.memberCount} anggota · ${group.category}',
-              style: TextStyle(
-                color: context.adaptiveTextSecondary,
-                fontSize: 12,
-              ),
-            ),
-          ],
-        ),
-        trailing: OutlinedButton(
-          onPressed: () {},
-          style: OutlinedButton.styleFrom(
-            foregroundColor: context.primaryColor,
-            side: BorderSide(color: context.primaryColor),
+            child: Icon(Iconsax.people, color: context.primaryColor),
           ),
-          child: const Text('Gabung'),
-        ),
+          const SizedBox(width: AppSpacing.md),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  group.name,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w700,
+                    color: context.adaptiveTextPrimary,
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.xs),
+                Text(
+                  '${group.memberCount} anggota',
+                  style: TextStyle(color: context.adaptiveTextSecondary),
+                ),
+              ],
+            ),
+          ),
+          Icon(Iconsax.arrow_right_3, color: context.adaptiveTextSecondary),
+        ],
       ),
     );
   }

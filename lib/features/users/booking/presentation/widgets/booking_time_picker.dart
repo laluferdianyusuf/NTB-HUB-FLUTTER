@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:ntbhub_flutter/core/constants/app_colors.dart';
 
 import '../../../../../core/extensions/context_extensions.dart';
 import '../../../../../models/booking_time_selection.dart';
@@ -174,7 +175,7 @@ class _TimeSlotBox extends StatelessWidget {
           child: Ink(
             height: 52,
             decoration: BoxDecoration(
-              color: isSelected ? context.primaryColor : Colors.white,
+              color: isSelected ? context.primaryColor : Colors.transparent,
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
                 color: isSelected

@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:ntbhub_flutter/widgets/common/app_image.dart';
 
+import '../../../../../widgets/common/app_section_header.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/extensions/context_extensions.dart';
+import '../../../../../core/utils/result.dart';
 import '../../../../../models/venue_model.dart';
+import '../providers/home_content_provider.dart';
 
-class VenueDetailSliverHeader extends StatelessWidget {
+class VenueDetailSliverHeader extends ConsumerStatefulWidget {
   const VenueDetailSliverHeader({
     super.key,
     required this.venue,
@@ -20,40 +23,82 @@ class VenueDetailSliverHeader extends StatelessWidget {
   static const _fallbackGradient = [Color(0xFF1B5E4B), Color(0xFF2E8B6E)];
 
   @override
+  ConsumerState<VenueDetailSliverHeader> createState() =>
+      _VenueDetailSliverHeaderState();
+}
+
+class _VenueDetailSliverHeaderState
+    extends ConsumerState<VenueDetailSliverHeader> {
+  late bool _isLiked = widget.venue.isLiked;
+  bool _isTogglingFavorite = false;
+
+  @override
+  void didUpdateWidget(covariant VenueDetailSliverHeader oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.venue.id != widget.venue.id ||
+        oldWidget.venue.isLiked != widget.venue.isLiked) {
+      _isLiked = widget.venue.isLiked;
+    }
+  }
+
+  Future<void> _toggleFavorite() async {
+    if (_isTogglingFavorite) return;
+
+    setState(() => _isTogglingFavorite = true);
+    try {
+      final result = await ref
+          .read(venueRepositoryProvider)
+          .toggleVenueLike(widget.venue.id);
+
+      if (!mounted) return;
+
+      switch (result) {
+        case Success(:final data):
+          setState(() => _isLiked = data.isLiked);
+          ref.invalidate(venueDetailProvider(widget.venue.id));
+          context.showSnackBar(
+            data.isLiked ? 'Added to favorites' : 'Removed from favorites',
+          );
+        case Error(:final failure):
+          context.showSnackBar(failure.message, isError: true);
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isTogglingFavorite = false);
+      }
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final topPadding = MediaQuery.paddingOf(context).top;
+    final appBarTheme = Theme.of(context).appBarTheme;
 
     return SliverAppBar(
-      expandedHeight: expandedHeight,
+      expandedHeight: widget.expandedHeight,
       pinned: true,
       stretch: true,
-      elevation: 0,
-      scrolledUnderElevation: 0,
-      shadowColor: Colors.black.withValues(alpha: 0.08),
-      backgroundColor: Colors.transparent,
-      foregroundColor: AppColors.textPrimaryLight,
-      surfaceTintColor: Colors.transparent,
-      centerTitle: false,
-      title: const SizedBox.shrink(),
-      leading: Padding(
-        padding: const EdgeInsets.only(left: 16),
-        child: _HeroIconButton(
-          icon: Iconsax.arrow_left_3,
-          onPressed: () => context.pop(),
-        ),
-      ),
-      flexibleSpace: FlexibleSpaceBar(
-        background: PageView.builder(
-          itemCount: venue.allImages.isEmpty ? 1 : venue.allImages.length,
-          itemBuilder: (_, index) => AppImage(
-            source: venue.allImages.isEmpty
-                ? (venue.imageUrl ?? '')
-                : venue.allImages[index],
-            fit: BoxFit.cover,
-            width: double.infinity,
-            height: double.infinity,
+      backgroundColor: appBarTheme.backgroundColor,
+      foregroundColor: appBarTheme.foregroundColor,
+      elevation: appBarTheme.elevation ?? 0,
+      scrolledUnderElevation: appBarTheme.scrolledUnderElevation ?? 0,
+      leadingWidth: 64,
+
+      actions: [
+        IconButton(
+          icon: Icon(
+            _isLiked ? Iconsax.heart5 : Iconsax.heart,
+            color: _isLiked ? AppColors.error : null,
           ),
+          onPressed: _isTogglingFavorite ? () {} : _toggleFavorite,
         ),
+        IconButton(
+          icon: const Icon(Iconsax.share),
+          onPressed: () => context.showSnackBar('Share link copied'),
+        ),
+      ],
+      flexibleSpace: FlexibleSpaceBar(
+        collapseMode: CollapseMode.parallax,
+        background: _HeroBackdrop(venue: widget.venue),
       ),
     );
   }
@@ -66,94 +111,100 @@ class _HeroBackdrop extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final imageUrl = venue.imageUrl?.trim();
+    final images = venue.allImages;
 
     return Stack(
       fit: StackFit.expand,
       children: [
-        if (imageUrl != null && imageUrl.isNotEmpty)
-          Image.network(
-            imageUrl,
-            fit: BoxFit.cover,
-            errorBuilder: (_, _, _) => const _FallbackBackdrop(),
-          )
+        if (images.isEmpty)
+          const _FallbackBackdrop()
         else
-          const _FallbackBackdrop(),
-        const DecoratedBox(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [Color(0x73000000), Color(0x12000000), Color(0xE6000000)],
-              stops: [0, 0.42, 1],
+          PageView.builder(
+            itemCount: images.length,
+            itemBuilder: (_, index) => AppImage(
+              source: images[index],
+              fit: BoxFit.cover,
+              width: double.infinity,
+              height: double.infinity,
+              errorIcon: Iconsax.buildings,
+              placeholder: const _FallbackBackdrop(),
             ),
           ),
-        ),
-        Positioned(
-          left: 20,
-          right: 20,
-          bottom: 36,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 5,
-                ),
-                decoration: BoxDecoration(
-                  color: context.primaryColor.withValues(alpha: 0.85),
-                  borderRadius: BorderRadius.circular(999),
-                ),
-                child: const Text(
-                  'Venue',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 11,
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: 0.5,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 10),
-              Text(
-                venue.name,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 30,
-                  fontWeight: FontWeight.w800,
-                  height: 1.12,
-                  letterSpacing: -0.8,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  Icon(
-                    Iconsax.location,
-                    size: 15,
-                    color: Colors.white.withValues(alpha: 0.92),
-                  ),
-                  const SizedBox(width: 6),
-                  Expanded(
-                    child: Text(
-                      venue.location,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        color: Colors.white.withValues(alpha: 0.9),
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
+        // const DecoratedBox(
+        //   decoration: BoxDecoration(
+        //     gradient: LinearGradient(
+        //       begin: Alignment.topCenter,
+        //       end: Alignment.bottomCenter,
+        //       colors: [Color(0x73000000), Color(0x12000000), Color(0xE6000000)],
+        //       stops: [0, 0.42, 1],
+        //     ),
+        //   ),
+        // ),
+        // Positioned(
+        //   left: 20,
+        //   right: 20,
+        //   bottom: 36,
+        //   child: Column(
+        //     crossAxisAlignment: CrossAxisAlignment.start,
+        //     children: [
+        //       Container(
+        //         padding: const EdgeInsets.symmetric(
+        //           horizontal: 10,
+        //           vertical: 5,
+        //         ),
+        //         decoration: BoxDecoration(
+        //           color: context.primaryColor.withValues(alpha: 0.85),
+        //           borderRadius: BorderRadius.circular(999),
+        //         ),
+        //         child: const Text(
+        //           'Venue',
+        //           style: TextStyle(
+        //             color: Colors.white,
+        //             fontSize: 11,
+        //             fontWeight: FontWeight.w700,
+        //             letterSpacing: 0.5,
+        //           ),
+        //         ),
+        //       ),
+        //       const SizedBox(height: 10),
+        //       Text(
+        //         venue.name,
+        //         maxLines: 2,
+        //         overflow: TextOverflow.ellipsis,
+        //         style: const TextStyle(
+        //           color: Colors.white,
+        //           fontSize: 30,
+        //           fontWeight: FontWeight.w800,
+        //           height: 1.12,
+        //           letterSpacing: -0.8,
+        //         ),
+        //       ),
+        //       const SizedBox(height: 8),
+        //       Row(
+        //         children: [
+        //           Icon(
+        //             Iconsax.location,
+        //             size: 15,
+        //             color: Colors.white.withValues(alpha: 0.92),
+        //           ),
+        //           const SizedBox(width: 6),
+        //           Expanded(
+        //             child: Text(
+        //               venue.location,
+        //               maxLines: 1,
+        //               overflow: TextOverflow.ellipsis,
+        //               style: TextStyle(
+        //                 color: Colors.white.withValues(alpha: 0.9),
+        //                 fontSize: 14,
+        //                 fontWeight: FontWeight.w500,
+        //               ),
+        //             ),
+        //           ),
+        //         ],
+        //       ),
+        //     ],
+        //   ),
+        // ),
       ],
     );
   }
@@ -174,31 +225,6 @@ class _FallbackBackdrop extends StatelessWidget {
       ),
       child: Center(
         child: Icon(Iconsax.buildings, size: 80, color: Colors.white24),
-      ),
-    );
-  }
-}
-
-class _HeroIconButton extends StatelessWidget {
-  const _HeroIconButton({required this.icon, required this.onPressed});
-
-  final IconData icon;
-  final VoidCallback onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: Colors.white.withValues(alpha: 0.94),
-      shadowColor: Colors.black26,
-      shape: const CircleBorder(),
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: onPressed,
-        child: SizedBox(
-          width: 40,
-          height: 40,
-          child: Icon(icon, size: 20, color: context.adaptiveTextPrimary),
-        ),
       ),
     );
   }
@@ -341,29 +367,6 @@ class VenueDetailSectionHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          title,
-          style: TextStyle(
-            fontWeight: FontWeight.w700,
-            fontSize: 18,
-            color: context.adaptiveTextPrimary,
-            letterSpacing: -0.3,
-          ),
-        ),
-        if (subtitle != null) ...[
-          const SizedBox(height: 4),
-          Text(
-            subtitle!,
-            style: TextStyle(
-              color: context.adaptiveTextSecondary,
-              fontSize: 13,
-            ),
-          ),
-        ],
-      ],
-    );
+    return AppSectionHeader(title: title, subtitle: subtitle);
   }
 }

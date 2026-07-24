@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:ntbhub_flutter/core/theme/app_theme.dart';
 
 import '../core/constants/app_strings.dart';
 import '../core/theme/theme_provider.dart';
@@ -19,8 +18,8 @@ class App extends ConsumerWidget {
       debugShowCheckedModeBanner: false,
       title: AppStrings.appName,
       routerConfig: appRouter,
-      theme: AppTheme.light(),
-      darkTheme: AppTheme.dark(),
+      theme: themeState.lightTheme,
+      darkTheme: themeState.darkTheme,
       themeMode: themeState.themeMode,
     );
   }

@@ -47,35 +47,54 @@ class OperationalDayModel {
         source['day'] ??
         source['weekday'];
 
-    final opensAt = JsonFieldHelper.readInt(source, [
-          'opensAt',
-          'opens_at',
-          'openMinutes',
-          'open_minutes',
-        ]) ??
-        _timeToMinutes(JsonFieldHelper.readString(source, [
-          'openTime',
-          'open_time',
-          'startTime',
-          'start_time',
-          'open',
-        ])) ??
-        480;
+    final openFromString = _timeToMinutes(
+      JsonFieldHelper.readString(source, [
+        'openTime',
+        'open_time',
+        'startTime',
+        'start_time',
+        'open',
+      ]),
+    );
+    final closeFromString = _timeToMinutes(
+      JsonFieldHelper.readString(source, [
+        'closeTime',
+        'close_time',
+        'endTime',
+        'end_time',
+        'close',
+      ]),
+    );
 
-    final closesAt = JsonFieldHelper.readInt(source, [
-          'closesAt',
-          'closes_at',
-          'closeMinutes',
-          'close_minutes',
-        ]) ??
-        _timeToMinutes(JsonFieldHelper.readString(source, [
-          'closeTime',
-          'close_time',
-          'endTime',
-          'end_time',
-          'close',
-        ])) ??
-        1020;
+    final opensAt = openFromString ??
+        _normalizeTimeValue(
+          JsonFieldHelper.readInt(source, [
+                'opensAt',
+                'opens_at',
+                'openMinutes',
+                'open_minutes',
+                'openHour',
+                'open_hour',
+                'hourOpen',
+                'hour_open',
+              ]) ??
+              8,
+        );
+
+    final closesAt = closeFromString ??
+        _normalizeTimeValue(
+          JsonFieldHelper.readInt(source, [
+                'closesAt',
+                'closes_at',
+                'closeMinutes',
+                'close_minutes',
+                'closeHour',
+                'close_hour',
+                'hourClose',
+                'hour_close',
+              ]) ??
+              17,
+        );
 
     return OperationalDayModel(
       id: JsonFieldHelper.readString(source, ['id', '_id']),
@@ -144,6 +163,25 @@ class OperationalDayModel {
       default:
         return int.tryParse(value.toString());
     }
+  }
+
+  static int _normalizeTimeValue(int value) {
+    // BE often sends hour-of-day (e.g. 9 = 09:00 WITA, 17 = 17:00).
+    if (value >= 0 && value <= 23) {
+      return value * 60;
+    }
+
+    // HHmm compact format e.g. 930 = 09:30, 1730 = 17:30.
+    if (value >= 100 && value <= 2359) {
+      final hour = value ~/ 100;
+      final minute = value % 100;
+      if (hour >= 0 && hour <= 23 && minute >= 0 && minute <= 59) {
+        return hour * 60 + minute;
+      }
+    }
+
+    // Already minutes from midnight.
+    return value;
   }
 
   static String _minutesToTime(int minutes) {

@@ -23,8 +23,8 @@ class VenueServicesSection extends ConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const VenueDetailSectionHeader(
-          title: 'Layanan Venue',
-          subtitle: 'Pilih layanan yang tersedia di venue ini',
+          title: 'Fasilitas',
+          subtitle: 'Fasilitas yang tersedia di venue ini',
         ),
         const SizedBox(height: 16),
         AnimatedSwitcher(
@@ -141,19 +141,19 @@ class _VenueServiceCard extends StatelessWidget {
                               color: context.adaptiveTextPrimary,
                             ),
                           ),
-                          if (service.displayCategory.isNotEmpty) ...[
-                            const SizedBox(height: 4),
-                            Text(
-                              service.displayCategory,
-                              style: TextStyle(
-                                color: context.primaryColor.withValues(
-                                  alpha: 0.9,
-                                ),
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ],
+                          // if (service.displayCategory.isNotEmpty) ...[
+                          //   const SizedBox(height: 4),
+                          //   Text(
+                          //     service.displayCategory,
+                          //     style: TextStyle(
+                          //       color: context.primaryColor.withValues(
+                          //         alpha: 0.9,
+                          //       ),
+                          //       fontSize: 12,
+                          //       fontWeight: FontWeight.w600,
+                          //     ),
+                          //   ),
+                          // ],
                           if (service.description.trim().isNotEmpty) ...[
                             const SizedBox(height: 6),
                             Text(

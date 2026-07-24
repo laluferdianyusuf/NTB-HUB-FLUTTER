@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 
 import '../../../../../core/constants/app_colors.dart';
+import '../../../../../core/constants/app_spacing.dart';
 import '../../../../../core/constants/app_strings.dart';
 import '../../../../../core/extensions/context_extensions.dart';
 import '../../../../../core/helpers/date_formatter.dart';
+import '../../../../../widgets/common/app_page_scaffold.dart';
+import '../../../../../widgets/common/app_surface_card.dart';
 
 class BookingScreen extends StatelessWidget {
   const BookingScreen({super.key});
@@ -32,95 +35,74 @@ class BookingScreen extends StatelessWidget {
       ),
     ];
 
-    return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      appBar: AppBar(
-        title: const Text(AppStrings.booking),
-        backgroundColor: context.primaryColor,
-        foregroundColor: Colors.white,
-      ),
+    return AppPageScaffold(
+      title: AppStrings.booking,
       body: ListView.builder(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(AppSpacing.pageHorizontal),
         itemCount: bookings.length,
         itemBuilder: (context, index) {
           final booking = bookings[index];
-          return Card(
-            margin: const EdgeInsets.only(bottom: 12),
-            elevation: 0,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-              side: BorderSide(color: context.adaptiveDivider),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: context.primaryColor.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Icon(
-                      Iconsax.buildings,
-                      color: context.primaryColor,
-                      size: 24,
-                    ),
+          return AppSurfaceCard(
+            margin: const EdgeInsets.only(bottom: AppSpacing.md),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(AppSpacing.md),
+                  decoration: BoxDecoration(
+                    color: context.primaryColor.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(10),
                   ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          booking.venue,
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          DateFormatter.formatDate(booking.date),
-                          style: TextStyle(
-                            color: context.adaptiveTextSecondary,
-                          ),
-                        ),
-                      ],
-                    ),
+                  child: Icon(
+                    Iconsax.buildings,
+                    color: context.primaryColor,
+                    size: 24,
                   ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      color: booking.statusColor.withValues(alpha: 0.15),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Text(
-                      booking.status,
-                      style: TextStyle(
-                        color: booking.statusColor,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
+                ),
+                const SizedBox(width: AppSpacing.lg),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        booking.venue,
+                        style: TextStyle(
+                          fontWeight: FontWeight.w700,
+                          fontSize: 16,
+                          color: context.adaptiveTextPrimary,
+                        ),
                       ),
+                      const SizedBox(height: AppSpacing.xs),
+                      Text(
+                        DateFormatter.formatDate(booking.date),
+                        style: TextStyle(
+                          color: context.adaptiveTextSecondary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: booking.statusColor.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    booking.status,
+                    style: TextStyle(
+                      color: booking.statusColor,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           );
         },
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        backgroundColor: context.primaryColor,
-        onPressed: () {},
-        icon: Icon(Iconsax.add, color: Colors.white, size: 20),
-        label: const Text(
-          'Booking Baru',
-          style: TextStyle(color: Colors.white),
-        ),
       ),
     );
   }

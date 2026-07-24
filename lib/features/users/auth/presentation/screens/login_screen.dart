@@ -7,6 +7,7 @@ import 'package:iconsax/iconsax.dart';
 
 import '../../../../../core/constants/app_strings.dart';
 import '../../../../../core/extensions/context_extensions.dart';
+import '../../../../../widgets/common/AppButton.dart';
 import '../../../../../core/utils/result.dart' as result;
 import '../providers/auth_provider.dart';
 import '../widgets/auth_form_field.dart';
@@ -143,34 +144,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   ),
                 ),
                 const SizedBox(height: 24),
-                SizedBox(
-                  height: 52,
-                  child: ElevatedButton(
-                    onPressed: _isLoading ? null : _handleLogin,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: context.primaryColor,
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    child: _isLoading
-                        ? const SizedBox(
-                            width: 24,
-                            height: 24,
-                            child: CircularProgressIndicator(
-                              color: Colors.white,
-                              strokeWidth: 2,
-                            ),
-                          )
-                        : const Text(
-                            'Masuk',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                  ),
+                AppButton(
+                  label: 'Masuk',
+                  onPressed: _isLoading ? null : _handleLogin,
+                  isLoading: _isLoading,
                 ),
                 const SizedBox(height: 24),
                 const AuthDivider(),

@@ -1,4 +1,62 @@
 import '../core/helpers/json_field_helper.dart';
+import 'venue_model.dart';
+
+class VenueLikeResult {
+  const VenueLikeResult({
+    required this.isLiked,
+    this.totalLikes,
+  });
+
+  final bool isLiked;
+  final int? totalLikes;
+
+  factory VenueLikeResult.fromJson(Map<String, dynamic> json) {
+    final source =
+        JsonFieldHelper.readMap(json, ['likeVenue', 'venue', 'data', 'result']) ??
+            json;
+
+    for (final key in ['isLiked', 'is_liked', 'liked']) {
+      final value = source[key];
+      if (value is bool) {
+        return VenueLikeResult(
+          isLiked: value,
+          totalLikes: JsonFieldHelper.readInt(source, [
+            'totalLikes',
+            'total_likes',
+            'likeCount',
+            'like_count',
+          ]),
+        );
+      }
+    }
+
+    final like = LikeVenue.fromJson(source);
+    if (like.id.isNotEmpty) {
+      return const VenueLikeResult(isLiked: true);
+    }
+
+    final venue = VenueModel.fromJson(source);
+    if (venue.id.isNotEmpty) {
+      return VenueLikeResult(
+        isLiked: venue.isLiked,
+        totalLikes: venue.totalLikes,
+      );
+    }
+
+    final action = JsonFieldHelper.readString(source, ['action', 'status']);
+    if (action != null) {
+      final normalized = action.toLowerCase();
+      if (normalized.contains('unlike') || normalized.contains('removed')) {
+        return const VenueLikeResult(isLiked: false);
+      }
+      if (normalized.contains('like') || normalized.contains('added')) {
+        return const VenueLikeResult(isLiked: true);
+      }
+    }
+
+    return const VenueLikeResult(isLiked: true);
+  }
+}
 
 class LikeVenue {
   const LikeVenue({
