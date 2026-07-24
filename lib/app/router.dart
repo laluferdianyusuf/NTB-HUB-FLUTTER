@@ -24,6 +24,7 @@ import '../features/users/profile/presentation/screens/terms_conditions_screen.d
 import '../features/users/profile/presentation/screens/theme_settings_screen.dart';
 import '../features/users/profile/presentation/screens/transaction_history_screen.dart';
 import '../features/users/profile/presentation/screens/transaction_pin_screen.dart';
+import '../features/users/profile/presentation/screens/wallet_screen.dart';
 import '../features/users/venue_category/presentation/screens/venue_category_screen.dart';
 import '../features/users/quick_action/presentation/screens/new_products_screen.dart';
 import '../features/users/quick_action/presentation/screens/order_food_screen.dart';
@@ -155,6 +156,10 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: '/quick/new-products',
       builder: (context, state) => const NewProductsScreen(),
+    ),
+    GoRoute(
+      path: '/profile/wallet',
+      builder: (context, state) => const WalletScreen(),
     ),
     GoRoute(
       path: '/profile/manage',

@@ -99,7 +99,12 @@ class Account {
             JsonFieldHelper.readString(source, ['type']),
           ) ??
           AccountType.user,
-      ownerId: JsonFieldHelper.readString(source, ['ownerId', 'owner_id']) ??
+      ownerId: JsonFieldHelper.readString(source, [
+            'ownerId',
+            'owner_id',
+            'userId',
+            'user_id',
+          ]) ??
           '',
       balance: JsonFieldHelper.readDecimal(source, ['balance', 'amount']),
       isActive: JsonFieldHelper.readBool(source, [

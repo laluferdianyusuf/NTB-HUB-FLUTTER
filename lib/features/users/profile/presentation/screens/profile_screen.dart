@@ -2,21 +2,24 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:ntbhub_flutter/core/constants/app_spacing.dart';
+import 'package:ntbhub_flutter/core/extensions/context_extensions.dart';
+import 'package:ntbhub_flutter/core/helpers/currency_formatter.dart';
+import 'package:ntbhub_flutter/core/services/theme_settings_service.dart';
+import 'package:ntbhub_flutter/core/theme/theme_provider.dart';
+import 'package:ntbhub_flutter/core/utils/result.dart' as result;
+import 'package:ntbhub_flutter/models/user_model.dart';
+import 'package:ntbhub_flutter/models/wallet_model.dart';
+import 'package:ntbhub_flutter/widgets/common/app_confirm_dialog.dart';
+import 'package:ntbhub_flutter/widgets/common/app_page_scaffold.dart';
+import 'package:ntbhub_flutter/widgets/common/app_status_message.dart';
+import 'package:ntbhub_flutter/widgets/common/app_tab_page_header.dart';
+import 'package:ntbhub_flutter/widgets/common/user_avatar.dart';
 
-import '../../../../../core/constants/app_spacing.dart';
-import '../../../../../core/extensions/context_extensions.dart';
-import '../../../../../core/services/theme_settings_service.dart';
-import '../../../../../core/theme/theme_provider.dart';
-import '../../../../../core/utils/result.dart' as result;
-import '../../../../../models/user_model.dart';
-import '../../../../../widgets/common/app_confirm_dialog.dart';
-import '../../../../../widgets/common/app_page_scaffold.dart';
-import '../../../../../widgets/common/app_status_message.dart';
-import '../../../../../widgets/common/app_tab_page_header.dart';
-import '../../../../../widgets/common/user_avatar.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../providers/profile_provider.dart';
 import '../providers/profile_settings_provider.dart';
+import '../providers/wallet_provider.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
@@ -81,6 +84,7 @@ class _ProfileContent extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final settingsAsync = ref.watch(profileSettingsProvider);
     final themeState = ref.watch(appThemeProvider);
+    final walletAsync = ref.watch(walletBalanceProvider);
 
     return ListView(
       padding: const EdgeInsets.only(bottom: AppSpacing.section),
@@ -127,8 +131,8 @@ class _ProfileContent extends ConsumerWidget {
         ProfileMenuTile(
           icon: Iconsax.wallet,
           title: 'Dompet',
-          subtitle: _themeSubtitle(themeState),
-          onTap: () => context.push('/profile/theme'),
+          subtitle: _walletSubtitle(walletAsync),
+          onTap: () => context.push('/profile/wallet'),
         ),
         const ProfileSectionHeader(title: 'Tampilan'),
         ProfileMenuTile(
@@ -227,6 +231,21 @@ class _ProfileContent extends ConsumerWidget {
         ),
         const SizedBox(height: AppSpacing.section),
       ],
+    );
+  }
+
+  String _walletSubtitle(
+    AsyncValue<result.Result<WalletSnapshot>> walletAsync,
+  ) {
+    return walletAsync.when(
+      loading: () => 'Memuat saldo...',
+      error: (_, _) => 'Tap untuk lihat dompet',
+      data: (balanceResult) => switch (balanceResult) {
+        result.Success(:final data) => CurrencyFormatter.formatIdr(
+          data.balance,
+        ),
+        result.Error() => 'Tap untuk lihat dompet',
+      },
     );
   }
 

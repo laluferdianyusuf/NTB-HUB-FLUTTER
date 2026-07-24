@@ -40,4 +40,7 @@ abstract final class ApiEndpoints {
       '/venue-unit/by-service/$serviceId';
   static String venueSubCategoriesByCategory(String categoryId) =>
       '/venue-sub-category/by-category/$categoryId';
+  static const String accountEnsure = '/account/ensure';
+  static String ledgerAccountBalance(String accountId) =>
+      '/ledger/account/$accountId/balance';
 }
